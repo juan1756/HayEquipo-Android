@@ -25,10 +25,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="id.com.hayequipo.core.canchaActivity"
+        <activity android:name=".core.CanchaActivity"
                   android:screenOrientation="portrait" ></activity>
         <service
-            android:name="edu.uade.sip2.hayequipo_android.core.FloatingWidgetService"
+            android:name=".core.FloatingWidgetService"
             android:enabled="true"
             android:exported="false" />
     </application>
