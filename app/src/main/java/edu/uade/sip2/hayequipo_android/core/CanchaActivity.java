@@ -7,10 +7,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,20 +40,6 @@ public class CanchaActivity extends AppCompatActivity {
 
         button = (Button) findViewById(R.id.button);
         button2 = (Button) findViewById(R.id.button2);
-        // textView = (TextView) findViewById(R.id.textView);
-
-
-        int badge_count = getIntent().getIntExtra("badge_count", 0);
-
-        // textView.setText(badge_count + " messages received previously");
-
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addAnotherJug();
-            }
-        });
-
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +53,6 @@ public class CanchaActivity extends AppCompatActivity {
                             Log.e("error","uno");
                             break;
                         case 1:
-                            startService(new Intent(CanchaActivity.this, SecondService.class));
                             Toast.makeText(CanchaActivity.this,"dos",Toast.LENGTH_SHORT);
                             cantService++;
                             Log.e("error","dos");
@@ -133,34 +116,6 @@ public class CanchaActivity extends AppCompatActivity {
     private void errorToast() {
         Toast.makeText(this, "Draw over other app permission not available. Can't start the application without the permission.", Toast.LENGTH_LONG).show();
     }
-
-
-    private void addAnotherJug(){
-        RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params1.leftMargin = (int) 200; //(xCordinate*pixels_grid_X);
-        params1.topMargin = (int) 50; //(yCordinate*pixels_grid_Y);
-        //final RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout);
-        //layout.setLayoutParams(params1);
-
-        View mOverlayView = LayoutInflater.from(this).inflate(R.layout.overlay_layout2, null);
-        mOverlayView.setLayoutParams(params1);
-/*
-        View rootView = null;
-        View currentFocus = getWindow().getCurrentFocus();
-        if (currentFocus != null)
-            rootView = currentFocus.getRootView();
-*/
-        RelativeLayout my = (RelativeLayout) findViewById(R.id.activity_cancha);
-
-        /**
-         * The parent layout in which the button is to be displayed.
-         * Finally adding the button to the parent layout.
-         * layout is the reference to ur relative layout.
-         */
-
-        my.addView(mOverlayView,params1);
-    }
-
 }
 
 
