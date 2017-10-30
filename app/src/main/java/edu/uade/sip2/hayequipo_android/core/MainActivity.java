@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -38,6 +39,16 @@ public class MainActivity extends AppCompatActivity
     private ListView lv;
     private FancyAdapter mFancyAdapter;
     private int mMethod;
+    private final String[] partidos ={
+            "Partido 1",
+            "Partido 2",
+            "Partido 3",
+            "Partido 4",
+            "Partido 5",
+            "Partido 6",
+            "Partido 7",
+            "ETC"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -296,27 +307,32 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            TextView result;
+
+            LayoutInflater inflater= getLayoutInflater();
+
+
+
+            View result = convertView;
             int normalId;
             int specialId;
 
             if (convertView == null) {
-                result = (TextView) getLayoutInflater().inflate(R.layout.text_item, parent, false);
-                result.setTextColor(Color.WHITE);
+                // result = (TextView) getLayoutInflater().inflate(R.layout.text_item, parent, false);
+                // result.setTextColor(Color.WHITE);
+                 result =inflater.inflate(R.layout.item, null,true);
+                TextView txtTitle = (TextView) result.findViewById(R.id.item);
+                ImageView imageView = (ImageView) result.findViewById(R.id.icon);
+                TextView extratxt = (TextView) result.findViewById(R.id.textView1);
 
-                /*   normalId = R.drawable.list_item_selector_normal;
-                result.setBackgroundResource(normalId);*/
-            /*   result.setBackgroundColor(getResources().getColor();
-              result.setBackgroundColor(getResources().getColor(R.color.primary));*/
-            /*  result.setBackgroundResource(R.color.primary);*/
+                txtTitle.setText(partidos[position]);
 
             } else {
-                result = (TextView) convertView;
+                 result =  convertView;
             }
 
             final String cheese = getItem(position);
 
-            result.setText(cheese);
+           // result.setText(cheese);
 
 
 
