@@ -1,7 +1,6 @@
 package edu.uade.sip2.hayequipo_android.conn;
 
 
-
 import android.content.Context;
 
 import com.android.volley.Request;
@@ -13,8 +12,8 @@ public final class VolleySingleton {
 
 
     private static VolleySingleton singleton;
-    private RequestQueue requestQueue;
     private static Context context;
+    private RequestQueue requestQueue;
 
 
     private VolleySingleton(Context context) {
@@ -24,6 +23,7 @@ public final class VolleySingleton {
 
     /**
      * Retorna la instancia unica del singleton
+     *
      * @param context contexto donde se ejecutarán las peticiones
      * @return Instancia
      */
@@ -36,6 +36,7 @@ public final class VolleySingleton {
 
     /**
      * Obtiene la instancia de la cola de peticiones
+     *
      * @return cola de peticiones
      */
     public RequestQueue getRequestQueue() {
@@ -47,6 +48,7 @@ public final class VolleySingleton {
 
     /**
      * Añade la petición a la cola
+     *
      * @param req petición
      * @param <T> Resultado final de tipo T
      */

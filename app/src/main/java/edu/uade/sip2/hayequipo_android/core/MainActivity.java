@@ -1,26 +1,24 @@
 package edu.uade.sip2.hayequipo_android.core;
 
-import edu.uade.sip2.hayequipo_android.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -29,7 +27,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import edu.uade.sip2.hayequipo_android.data.Menus;
+import edu.uade.sip2.hayequipo_android.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -38,27 +36,18 @@ public class MainActivity extends AppCompatActivity
     private static int menus = 1;
     private ListView lv;
     private FancyAdapter mFancyAdapter;
-    private int mMethod;
-    private final String[] partidos ={
-            "Partido 1",
-            "Partido 2",
-            "Partido 3",
-            "Partido 4",
-            "Partido 5",
-            "Partido 6",
-            "Partido 7",
-            "ETC"
-    };
+    private String[] partidos = new String[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        this.partidos = getResources().getStringArray(R.array.partidos_mock);
 
         lv = (ListView) findViewById(android.R.id.list);
 
-        mFancyAdapter = new FancyAdapter(Menus.PARTIDOS);
+        mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
@@ -90,7 +79,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                switch(menus){
+                switch (menus) {
 
                     case 0:
 
@@ -129,9 +118,9 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void cambiarAmigos(){
+    private void cambiarAmigos() {
 
-        mFancyAdapter = new FancyAdapter(Menus.AMIGOS);
+        mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.amigos_mock));
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
@@ -139,23 +128,23 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void cambiarPartidos(){
-        mFancyAdapter = new FancyAdapter(Menus.PARTIDOS);
+    private void cambiarPartidos() {
+        mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
     }
 
 
-    private void cambiarSolicitudes(){
-        mFancyAdapter = new FancyAdapter(Menus.SOLICITUDES);
+    private void cambiarSolicitudes() {
+        mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.solicitud_mock));
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
     }
 
 
-    private void cambiarCancha(){
+    private void cambiarCancha() {
         Intent intent = new Intent(this, CanchaActivity.class);
         startActivity(intent);
         finish();
@@ -182,15 +171,12 @@ public class MainActivity extends AppCompatActivity
 
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int dialogWidth = (int)(displayMetrics.widthPixels * 0.80);
-        int dialogHeight = (int)(displayMetrics.heightPixels * 0.80);
+        int dialogWidth = (int) (displayMetrics.widthPixels * 0.80);
+        int dialogHeight = (int) (displayMetrics.heightPixels * 0.80);
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
 
         dialog.show();
     }
-
-
-
 
 
     @Override
@@ -227,8 +213,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -258,7 +242,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-           cambiarAmigos();
+            cambiarAmigos();
         } else if (id == R.id.nav_gallery) {
             cambiarPartidos();
         } else if (id == R.id.nav_slideshow) {
@@ -277,7 +261,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
 
     private class FancyAdapter extends BaseAdapter {
@@ -308,8 +291,7 @@ public class MainActivity extends AppCompatActivity
         public View getView(int position, View convertView, ViewGroup parent) {
 
 
-            LayoutInflater inflater= getLayoutInflater();
-
+            LayoutInflater inflater = getLayoutInflater();
 
 
             View result = convertView;
@@ -319,7 +301,7 @@ public class MainActivity extends AppCompatActivity
             if (convertView == null) {
                 // result = (TextView) getLayoutInflater().inflate(R.layout.text_item, parent, false);
                 // result.setTextColor(Color.WHITE);
-                 result =inflater.inflate(R.layout.item, null,true);
+                result = inflater.inflate(R.layout.item, null, true);
                 TextView txtTitle = (TextView) result.findViewById(R.id.item);
                 ImageView imageView = (ImageView) result.findViewById(R.id.icon);
                 TextView extratxt = (TextView) result.findViewById(R.id.textView1);
@@ -327,13 +309,12 @@ public class MainActivity extends AppCompatActivity
                 txtTitle.setText(partidos[position]);
 
             } else {
-                 result =  convertView;
+                result = convertView;
             }
 
             final String cheese = getItem(position);
 
-           // result.setText(cheese);
-
+            // result.setText(cheese);
 
 
             normalId = R.drawable.list_item_selector_normal;

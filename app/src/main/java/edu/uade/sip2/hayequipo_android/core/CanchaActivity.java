@@ -9,10 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.andremion.counterfab.CounterFab;
 
 import edu.uade.sip2.hayequipo_android.R;
 
@@ -25,10 +22,7 @@ public class CanchaActivity extends AppCompatActivity {
 
     private static final int DRAW_OVER_OTHER_APP_PERMISSION = 123;
     private Button button;
-    private Button button2;
     private int cantService = 0;
-    private TextView textView;
-    private CounterFab counterFab;
 
 
     @Override
@@ -39,7 +33,6 @@ public class CanchaActivity extends AppCompatActivity {
         askForSystemOverlayPermission();
 
         button = (Button) findViewById(R.id.button);
-        button2 = (Button) findViewById(R.id.button2);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,16 +43,14 @@ public class CanchaActivity extends AppCompatActivity {
                         case 0:
                             startService(new Intent(CanchaActivity.this, FloatingWidgetService.class));
                             cantService++;
-                            Log.e("error","uno");
+                            Log.e(getString(R.string.error_tag), getString(R.string.uno_s));
                             break;
                         case 1:
-                            Toast.makeText(CanchaActivity.this,"dos",Toast.LENGTH_SHORT);
+                            Toast.makeText(CanchaActivity.this, getString(R.string.dos_s), Toast.LENGTH_SHORT);
                             cantService++;
-                            Log.e("error","dos");
+                            Log.e(getString(R.string.error_tag), getString(R.string.dos_s));
                             break;
                     }
-
-
 
 
                 } else {
@@ -76,7 +67,7 @@ public class CanchaActivity extends AppCompatActivity {
             //If the draw over permission is not available open the settings screen
             //to grant the permission.
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
+                    Uri.parse(getString(R.string._package) + getPackageName()));
             startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION);
         }
     }
@@ -89,7 +80,7 @@ public class CanchaActivity extends AppCompatActivity {
 
         // To prevent starting the service if the required permission is NOT granted.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this)) {
-            startService(new Intent(CanchaActivity.this, FloatingWidgetService.class).putExtra("activity_background", true));
+            startService(new Intent(CanchaActivity.this, FloatingWidgetService.class).putExtra(getString(R.string.background), true));
             finish();
         } else {
             errorToast();
@@ -114,10 +105,6 @@ public class CanchaActivity extends AppCompatActivity {
     }
 
     private void errorToast() {
-        Toast.makeText(this, "Draw over other app permission not available. Can't start the application without the permission.", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.draw_error), Toast.LENGTH_LONG).show();
     }
 }
-
-
-
-

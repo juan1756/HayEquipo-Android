@@ -1,8 +1,56 @@
 <resources>
+
+    <!-- Titles -->
     <string name="app_name">HayEquipo-Android</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+    <!-- Commons -->
+    <string name="_package">package:</string>
+    <string name="background">activity_background</string>
+    <string name="draw_error">Draw over other app permission not available. Can't start the application without the permission.</string>
+
+    <string name="error_tag">error</string>
+    <string name="uno_s">uno</string>
+    <string name="dos_s">dos</string>
+
+
+
+
+    <!-- Arrays -->
+
+    <string-array name="partidos_mock">
+        <item>Partido 1</item>
+        <item>Partido 2</item>
+        <item>Partido 3</item>
+        <item>Partido 4</item>
+        <item>Partido 5</item>
+        <item>Partido 6</item>
+        <item>Partido 7</item>
+        <item>Partido 8</item>
+        <item>Partido 9</item>
+        <item>Partido 10</item>
+        <item>Partido X</item>
+    </string-array>
+
+    <string-array name="amigos_mock">
+        <item>Amigo 1</item>
+        <item>Amigo 2</item>
+        <item>Amigo 3</item>
+        <item>Amigo 4</item>
+        <item>Amigo 5</item>
+        <item>Amigo 6</item>
+        <item>Amigo X</item>
+    </string-array>
+
+    <string-array name="solicitud_mock">
+        <item>Solicitud 1</item>
+        <item>Solicitud 2</item>
+        <item>Solicitud 3</item>
+        <item>Solicitud X</item>
+    </string-array>
+
 </resources>
