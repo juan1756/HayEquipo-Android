@@ -52,42 +52,60 @@
                 android:textColorHint="@color/white">
 
                 <EditText
-                    android:id="@+id/input_usr"
+                    android:id="@+id/input_nombre_partido"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Usuario"
+                    android:hint="Nombre"
+                    android:inputType="text"
+                    android:textColor="@color/white"/>
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:textColorHint="@color/white">
+
+                <EditText
+                    android:id="@+id/input_lugar_partido"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Lugar"
+                    android:inputType="text"
+                    android:textColor="@color/white"/>
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:textColorHint="@color/white">
+
+                <EditText
+                    android:id="@+id/input_fecha_partido"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Fecha (por ahora string)"
                     android:inputType="text"
                     android:textColor="@color/white"/>
             </android.support.design.widget.TextInputLayout>
 
 
             <android.support.v7.widget.AppCompatButton
-                android:id="@+id/btn_buscar_usuario"
+                android:id="@+id/btn_crear_partido"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:layout_marginTop="24dp"
                 android:padding="12dp"
-                android:text="BUSCAR"/>
+                android:text="CREAR PARTIDO"/>
 
 
-            <TextView
-                android:id="@+id/label_usuario"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="-"
-                android:inputType="text"
-                android:textColor="@color/white"/>
 
-
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/btn_agregar_usuario"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:layout_marginTop="24dp"
-                android:padding="12dp"
-                android:text="AGREGAR"/>
 
 
         </LinearLayout>

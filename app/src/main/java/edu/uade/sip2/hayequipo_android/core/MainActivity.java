@@ -1,16 +1,17 @@
 package edu.uade.sip2.hayequipo_android.core;
 
+import butterknife.Bind;
 import edu.uade.sip2.hayequipo_android.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -25,29 +26,48 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import edu.uade.sip2.hayequipo_android.data.Menus;
+import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
+import edu.uade.sip2.hayequipo_android.entities.Partido;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
+    @Bind(R.id.btn_buscar_usuario)
+    Button _buscar_usuario;
+    @Bind(R.id.input_usr)
+    EditText _usuario;
+    @Bind(R.id.label_usuario)
+    TextView _label_usuario;
+    @Bind(R.id.btn_agregar_usuario)
+    Button _agregar_usuario;
+    @Bind(R.id.input_nombre_partido)
+    EditText _nombre_partido;
+    @Bind(R.id.input_fecha_partido)
+    EditText _fecha_partido;
+    @Bind(R.id.input_lugar_partido)
+    EditText _lugar_partido;
+    @Bind(R.id.btn_crear_partido)
+    Button _crear_partido;
+
     private static int menus = 1;
     private ListView lv;
     private FancyAdapter mFancyAdapter;
     private int mMethod;
-    private final String[] partidos ={
-            "Partido 1",
-            "Partido 2",
-            "Partido 3",
-            "Partido 4",
-            "Partido 5",
-            "Partido 6",
-            "Partido 7",
-            "ETC"
+    private ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
+    public static final String nombre_partidos[] = {
+            "prueba 1"
+
     };
 
     @Override
@@ -58,10 +78,15 @@ public class MainActivity extends AppCompatActivity
 
         lv = (ListView) findViewById(android.R.id.list);
 
-        mFancyAdapter = new FancyAdapter(Menus.PARTIDOS);
+
+
+
+        mFancyAdapter = new FancyAdapter(nombre_partidos);
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
+
+        actualizarLista();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
@@ -72,7 +97,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "TODO", Snackbar.LENGTH_LONG)
                         .setAction("TODO", null).show();
-                showMyDialog(MainActivity.this);
+                showPartidoDialog(MainActivity.this);
             }
         });
 
@@ -89,37 +114,10 @@ public class MainActivity extends AppCompatActivity
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Log.e("click","partido pos:"+position);
 
-                switch(menus){
+                cambiarPartido(position);
 
-                    case 0:
-
-                        break;
-
-                    case 1:
-
-                        break;
-
-                    case 2:
-
-                        break;
-
-                    case 3:
-
-                        break;
-
-                    case 4:
-
-                        break;
-
-                    case 5:
-
-                        break;
-
-                    default:
-
-                        break;
-                }
 
 
             }
@@ -162,16 +160,27 @@ public class MainActivity extends AppCompatActivity
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
+    private void cambiarPartido(int position){
+        Intent intent = new Intent(this, PartidoActivity.class);
+        intent.putExtra("id", position);
+        startActivity(intent);
+        finish();
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
 
-    private void showMyDialog(Context context) {
+
+    private void showPartidoDialog(final Context context){
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.busqueda);
+        dialog.setContentView(R.layout.crear_partido);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);
 
         ImageView view = (ImageView) dialog.findViewById(R.id.black_cross);
-
+        Button crear = (Button) dialog.findViewById(R.id.btn_crear_partido);
+       final EditText nombre = (EditText) dialog.findViewById(R.id.input_nombre_partido);
+       final EditText fecha = (EditText) dialog.findViewById(R.id.input_fecha_partido);
+       final EditText lugar = (EditText) dialog.findViewById(R.id.input_lugar_partido);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,6 +196,107 @@ public class MainActivity extends AppCompatActivity
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
 
         dialog.show();
+
+
+        crear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String nombre_partido = nombre.getText().toString();
+                String fecha_partido = fecha.getText().toString();
+                String lugar_partido = lugar.getText().toString();
+
+                if(!nombre_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("")){
+
+                   int id_random = HarcodedUsersAndPlays.getIdPartido(0);
+                    Partido partido = new Partido(id_random,nombre_partido,lugar_partido,fecha_partido);
+                    HarcodedUsersAndPlays.agregarPartido(partido);
+
+                    dialog.dismiss();
+                    Toast.makeText(getBaseContext(),"el partido se ha agregado exitostamente!",Toast.LENGTH_LONG);
+                    agregarPartido(partido);
+
+                }else{
+
+                    Toast.makeText(context,"los campos no pueden estar vacios!",Toast.LENGTH_LONG);
+
+                }
+
+
+            }
+        });
+    }
+
+
+
+    private void actualizarLista(){
+
+        ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
+
+        for(Partido p : partidos){
+
+            LayoutInflater inflater= getLayoutInflater();
+
+            View result;
+            int specialId = R.drawable.list_item_selector_special;
+
+            result =inflater.inflate(R.layout.item, null,true);
+            TextView txtTitle = (TextView) result.findViewById(R.id.textNombre);
+            TextView txtLugar = (TextView) result.findViewById(R.id.textLugar);
+            TextView txtParticipantes = (TextView) result.findViewById(R.id.textParticipantes);
+           // TextView extratxt = (TextView) result.findViewById(R.id.textView1);
+
+            result.setBackgroundResource(specialId);
+            txtTitle.setText(p.getNombre());
+            txtLugar.setText(p.getLugar());
+            txtParticipantes.setText("Participantes: "+String.valueOf(p.getParticipantes()));
+
+            lv.addFooterView(result);
+
+        }
+
+    }
+
+    private void agregarPartido(Partido p){
+
+        Log.e("actualizando lista","actualizando..");
+        /*
+        partidos = HarcodedUsers.obtenerPartidos();
+        if(partidos!=null) {
+            for (Partido p : partidos) {
+                int i = p.getId();
+                nombre_partidos[i] = p.getNombre();
+            }
+        }
+
+
+        mFancyAdapter = new FancyAdapter(nombre_partidos);
+        */
+       // lv.setSelector(R.drawable.list_selector);
+        //lv.setDrawSelectorOnTop(false);
+       // lv.setAdapter(mFancyAdapter);
+
+        LayoutInflater inflater= getLayoutInflater();
+
+
+
+        View result;
+        int specialId = R.drawable.list_item_selector_special;
+
+            result =inflater.inflate(R.layout.item, null,true);
+            TextView txtNombre = (TextView) result.findViewById(R.id.textNombre);
+              TextView txtLugar = (TextView) result.findViewById(R.id.textLugar);
+            TextView txtParticipantes = (TextView) result.findViewById(R.id.textParticipantes);
+           TextView txtFecha = (TextView) result.findViewById(R.id.textFecha);
+
+            result.setBackgroundResource(specialId);
+
+        txtNombre.setText(p.getNombre());
+        txtLugar.setText(p.getLugar());
+        txtFecha.setText(p.getFecha());
+        txtParticipantes.setText("Participantes: "+String.valueOf(p.getParticipantes()));
+            lv.addFooterView(result);
+
     }
 
 
@@ -267,8 +377,8 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_salir) {
+            onBackPressed();
         } else if (id == R.id.solicitudes) {
             cambiarSolicitudes();
         }
@@ -320,11 +430,15 @@ public class MainActivity extends AppCompatActivity
                 // result = (TextView) getLayoutInflater().inflate(R.layout.text_item, parent, false);
                 // result.setTextColor(Color.WHITE);
                  result =inflater.inflate(R.layout.item, null,true);
-                TextView txtTitle = (TextView) result.findViewById(R.id.item);
+                TextView txtNombre = (TextView) result.findViewById(R.id.textNombre);
+                TextView txtLugar = (TextView) result.findViewById(R.id.textLugar);
                 ImageView imageView = (ImageView) result.findViewById(R.id.icon);
-                TextView extratxt = (TextView) result.findViewById(R.id.textView1);
+               TextView txtFecha = (TextView) result.findViewById(R.id.textFecha);
 
-                txtTitle.setText(partidos[position]);
+                if(partidos!=null) {
+                    //txtTitle.setText(partidos.get(position).getNombre());
+                }
+
 
             } else {
                  result =  convertView;
@@ -332,7 +446,7 @@ public class MainActivity extends AppCompatActivity
 
             final String cheese = getItem(position);
 
-           // result.setText(cheese);
+           //result.setText(cheese);
 
 
 
