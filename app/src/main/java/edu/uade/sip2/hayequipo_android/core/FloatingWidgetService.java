@@ -24,7 +24,7 @@ public class FloatingWidgetService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if (intent != null) {
-            activity_background = intent.getBooleanExtra("activity_background", false);
+            activity_background = intent.getBooleanExtra(getString(R.string.background), false);
 
         }
         return super.onStartCommand(intent, flags, startId);
