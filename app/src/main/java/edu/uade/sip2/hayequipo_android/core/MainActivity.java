@@ -75,23 +75,19 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         lv = (ListView) findViewById(android.R.id.list);
-
-
-
 
         mFancyAdapter = new FancyAdapter(nombre_partidos);
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
 
-        actualizarLista();
+//        actualizarLista();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -110,20 +106,13 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Log.e("click","partido pos:"+position);
-
+                Log.e("LOG","partido pos: "+position);
                 cambiarPartido(position);
-
-
-
             }
         });
-
-
     }
 
 
@@ -341,23 +330,21 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        if (id == R.id.accion_buscar_mapa) {
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Buscando...", Snackbar.LENGTH_SHORT);
+            snackbar.show();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, MapaPartidoActivity.class));
+
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
