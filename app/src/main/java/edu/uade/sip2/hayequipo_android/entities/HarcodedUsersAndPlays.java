@@ -13,14 +13,14 @@ import java.util.Map;
 
 public class HarcodedUsersAndPlays {
 
-    private static ArrayList<Usuario> usuarios = new ArrayList<Usuario>();;
-    private static ArrayList<Partido> partidos = new ArrayList<Partido>();;
-    private static Map<Integer,Integer> partidos_usuarios = new HashMap<Integer, Integer>();
+    private static ArrayList<Usuario> usuarios = new ArrayList<>();;
+    private static ArrayList<Partido> partidos = new ArrayList<>();;
+    private static Map<Integer,Integer> partidos_usuarios = new HashMap<>();
 
 
     public HarcodedUsersAndPlays(){
-        usuarios = new ArrayList<Usuario>();
-        partidos = new ArrayList<Partido>();
+        usuarios = new ArrayList<>();
+        partidos = new ArrayList<>();
 
 
     }
