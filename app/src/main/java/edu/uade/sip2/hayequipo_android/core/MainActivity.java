@@ -2,6 +2,8 @@ package edu.uade.sip2.hayequipo_android.core;
 
 import butterknife.Bind;
 import edu.uade.sip2.hayequipo_android.R;
+
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,20 +26,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 
+import edu.uade.sip2.hayequipo_android.conn.requestToBackend;
 import edu.uade.sip2.hayequipo_android.data.Menus;
 import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
 import edu.uade.sip2.hayequipo_android.entities.Partido;
+import edu.uade.sip2.hayequipo_android.entities.Usuario;
+import edu.uade.sip2.hayequipo_android.utils.DatePickerFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -51,10 +61,10 @@ public class MainActivity extends AppCompatActivity
     TextView _label_usuario;
     @Bind(R.id.btn_agregar_usuario)
     Button _agregar_usuario;
-    @Bind(R.id.input_nombre_partido)
-    EditText _nombre_partido;
+    @Bind(R.id.input_descripcion_partido)
+    EditText _descripcion_partido;
     @Bind(R.id.input_fecha_partido)
-    EditText _fecha_partido;
+    TextView _fecha_partido;
     @Bind(R.id.input_lugar_partido)
     EditText _lugar_partido;
     @Bind(R.id.btn_crear_partido)
@@ -64,6 +74,9 @@ public class MainActivity extends AppCompatActivity
     private ListView lv;
     private FancyAdapter mFancyAdapter;
     private int mMethod;
+    private String usuario = "german";
+    ArrayList<String> horas = new ArrayList<String>();
+    String hora = "";
     private ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
     public static final String nombre_partidos[] = {
             "prueba 1"
@@ -87,6 +100,7 @@ public class MainActivity extends AppCompatActivity
         lv.setAdapter(mFancyAdapter);
 
         actualizarLista();
+        setValuesHoras();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
@@ -111,6 +125,11 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+
+
+
+
+
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -129,27 +148,59 @@ public class MainActivity extends AppCompatActivity
 
     private void cambiarAmigos(){
 
+
         mFancyAdapter = new FancyAdapter(Menus.AMIGOS);
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
 
+        ArrayList<Usuario> usuarios = requestToBackend.obtenerUsuarios(usuario,getBaseContext());
+
+        if(usuarios==null){
+            Toast.makeText(getBaseContext(),"usuarios NULL",Toast.LENGTH_SHORT).show();
+        }
+
+        /*
+        for(Partido p : partidos) {
+
+            LayoutInflater inflater = getLayoutInflater();
+
+            View result;
+            int specialId = R.drawable.list_item_selector_special;
+
+            result = inflater.inflate(R.layout.item, null, true);
+            TextView txtTitle = (TextView) result.findViewById(R.id.textNombre);
+            TextView txtLugar = (TextView) result.findViewById(R.id.textLugar);
+            TextView txtParticipantes = (TextView) result.findViewById(R.id.textParticipantes);
+            // TextView extratxt = (TextView) result.findViewById(R.id.textView1);
+
+            result.setBackgroundResource(specialId);
+            txtTitle.setText(p.getDescripcion());
+            txtLugar.setText(p.getLugar());
+            txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()));
+
+        }
+*/
+
     }
 
 
     private void cambiarPartidos(){
-        mFancyAdapter = new FancyAdapter(Menus.PARTIDOS);
+        mFancyAdapter = new FancyAdapter(nombre_partidos);
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
+        actualizarLista();
     }
 
 
-    private void cambiarSolicitudes(){
-        mFancyAdapter = new FancyAdapter(Menus.SOLICITUDES);
-        lv.setSelector(R.drawable.list_selector);
-        lv.setDrawSelectorOnTop(false);
-        lv.setAdapter(mFancyAdapter);
+    private void cambiarSolicitudesAmigos(){
+       // mFancyAdapter = new FancyAdapter(Menus.SOLICITUDES);
+       // lv.setSelector(R.drawable.list_selector);
+       // lv.setDrawSelectorOnTop(false);
+       // lv.setAdapter(mFancyAdapter);
+        //TODO: hacer josue
+        Toast.makeText(getBaseContext(),"TODO JOSUE",Toast.LENGTH_SHORT).show();
     }
 
 
@@ -163,14 +214,41 @@ public class MainActivity extends AppCompatActivity
     private void cambiarPartido(int position){
         Intent intent = new Intent(this, PartidoActivity.class);
         intent.putExtra("id", position);
+        intent.putExtra("usuario",usuario);
         startActivity(intent);
         finish();
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
 
+    private void buscarPartidosPublicos(){
+        //TODO: hacer josue
+        Toast.makeText(getBaseContext(),"TODO JOSUE",Toast.LENGTH_SHORT).show();
+    }
+
+
+
+    private void showDatePickerDialog(final TextView fecha) {
+        DatePickerFragment newFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener(){
+
+
+
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                // +1 because january is zero
+                final String selectedDate = day + " / " + (month+1) + " / " + year;
+                Log.e("date picker:"," "+selectedDate.toString());
+                fecha.setText(selectedDate);
+                fecha.setHint(selectedDate.toString());
+            }
+        });
+        newFragment.show(getFragmentManager(), "datePicker");
+
+    }
+
+
     private void showPartidoDialog(final Context context){
         final Dialog dialog = new Dialog(context);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.crear_partido);
         dialog.setCanceledOnTouchOutside(false);
@@ -178,9 +256,11 @@ public class MainActivity extends AppCompatActivity
 
         ImageView view = (ImageView) dialog.findViewById(R.id.black_cross);
         Button crear = (Button) dialog.findViewById(R.id.btn_crear_partido);
-       final EditText nombre = (EditText) dialog.findViewById(R.id.input_nombre_partido);
-       final EditText fecha = (EditText) dialog.findViewById(R.id.input_fecha_partido);
+        Spinner spinner = dialog.findViewById(R.id.spinner_hora);
+       final EditText descripcion = (EditText) dialog.findViewById(R.id.input_descripcion_partido);
+       final TextView fecha = (TextView) dialog.findViewById(R.id.input_fecha_partido);
        final EditText lugar = (EditText) dialog.findViewById(R.id.input_lugar_partido);
+
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,30 +275,62 @@ public class MainActivity extends AppCompatActivity
         int dialogHeight = (int)(displayMetrics.heightPixels * 0.80);
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
 
+
+
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+               getApplication(), android.R.layout.simple_spinner_item, horas);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerArrayAdapter);
+
         dialog.show();
 
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View view, int i, long l) {
+
+
+                hora = arg0.getSelectedItem().toString();
+                Log.e("hora seleccionada:"," "+hora.toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        fecha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("fecha on click","on");
+                showDatePickerDialog(fecha);
+
+            }
+        });
 
         crear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                String nombre_partido = nombre.getText().toString();
+                String descripcion_partido = descripcion.getText().toString();
                 String fecha_partido = fecha.getText().toString();
                 String lugar_partido = lugar.getText().toString();
+                Log.e("hora seleccionada"," "+hora);
 
-                if(!nombre_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("")){
+                if(!descripcion_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("") && !hora.equals("")){
 
                    int id_random = HarcodedUsersAndPlays.getIdPartido(0);
-                    Partido partido = new Partido(id_random,nombre_partido,lugar_partido,fecha_partido);
+                    Partido partido = new Partido(id_random,lugar_partido,new Date(),hora,descripcion_partido);
                     HarcodedUsersAndPlays.agregarPartido(partido);
 
                     dialog.dismiss();
-                    Toast.makeText(getBaseContext(),"el partido se ha agregado exitostamente!",Toast.LENGTH_LONG);
+                    Toast.makeText(getBaseContext(),"el partido se ha agregado exitostamente!",Toast.LENGTH_LONG).show();
                     agregarPartido(partido);
 
                 }else{
-
-                    Toast.makeText(context,"los campos no pueden estar vacios!",Toast.LENGTH_LONG);
+                    Log.e("error","error no todos los datos estan");
+                    Toast.makeText(context,"los campos no pueden estar vacios!",Toast.LENGTH_LONG).show();
 
                 }
 
@@ -247,7 +359,7 @@ public class MainActivity extends AppCompatActivity
            // TextView extratxt = (TextView) result.findViewById(R.id.textView1);
 
             result.setBackgroundResource(specialId);
-            txtTitle.setText(p.getNombre());
+            txtTitle.setText(p.getDescripcion());
             txtLugar.setText(p.getLugar());
             txtParticipantes.setText("Participantes: "+String.valueOf(p.getParticipantes()));
 
@@ -291,9 +403,9 @@ public class MainActivity extends AppCompatActivity
 
             result.setBackgroundResource(specialId);
 
-        txtNombre.setText(p.getNombre());
+        txtNombre.setText(p.getDescripcion());
         txtLugar.setText(p.getLugar());
-        txtFecha.setText(p.getFecha());
+        txtFecha.setText(p.getFecha().toString());
         txtParticipantes.setText("Participantes: "+String.valueOf(p.getParticipantes()));
             lv.addFooterView(result);
 
@@ -379,8 +491,12 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_salir) {
             onBackPressed();
-        } else if (id == R.id.solicitudes) {
-            cambiarSolicitudes();
+        } else if (id == R.id.solicitudesAmigos) {
+            cambiarSolicitudesAmigos();
+        } else if (id == R.id.buscarPartidos) {
+            buscarPartidosPublicos();
+        } else if (id == R.id.solicitudesPartidos) {
+            buscarPartidosPublicos();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -388,6 +504,36 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
+    private void setValuesHoras(){
+
+        horas.add("");
+        horas.add("1");
+        horas.add("2");
+        horas.add("3");
+        horas.add("4");
+        horas.add("5");
+        horas.add("6");
+        horas.add("7");
+        horas.add("8");
+        horas.add("9");
+        horas.add("10");
+        horas.add("11");
+        horas.add("12");
+        horas.add("13");
+        horas.add("14");
+        horas.add("15");
+        horas.add("16");
+        horas.add("17");
+        horas.add("18");
+        horas.add("19");
+        horas.add("20");
+        horas.add("21");
+        horas.add("22");
+        horas.add("23");
+        horas.add("24");
+
+    }
 
 
     private class FancyAdapter extends BaseAdapter {

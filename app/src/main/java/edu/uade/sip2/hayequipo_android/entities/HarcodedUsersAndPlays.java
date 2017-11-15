@@ -3,6 +3,7 @@ package edu.uade.sip2.hayequipo_android.entities;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,7 +126,7 @@ public class HarcodedUsersAndPlays {
     }
 
 
-    public static boolean cambiarPartido(int mi_partido_actual,String nombre,String lugar,String fecha) {
+    public static boolean cambiarPartido(int mi_partido_actual, String desc, String lugar, Date fecha, String hora) {
 
 
         Partido partido = null;
@@ -137,9 +138,10 @@ public class HarcodedUsersAndPlays {
 
         if(partido==null) return false;
 
-        partido.setNombre(nombre);
+        partido.setDescripcion(desc);
         partido.setLugar(lugar);
         partido.setFecha(fecha);
+        partido.setHora(hora);
 
         return true;
     }

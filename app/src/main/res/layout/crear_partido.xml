@@ -44,21 +44,7 @@
                 android:src="@drawable/pelota"/>
 
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:textColorHint="@color/white">
 
-                <EditText
-                    android:id="@+id/input_nombre_partido"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nombre"
-                    android:inputType="text"
-                    android:textColor="@color/white"/>
-            </android.support.design.widget.TextInputLayout>
 
 
             <android.support.design.widget.TextInputLayout
@@ -78,6 +64,44 @@
             </android.support.design.widget.TextInputLayout>
 
 
+            <TextView
+                android:id="@+id/input_fecha_partido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:hint="Fecha"
+                android:inputType="text"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                />
+
+
+
+
+            <TextView
+                android:id="@+id/label_hora"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:hint="Hora"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                />
+
+            <Spinner
+                android:id="@+id/spinner_hora"
+                android:layout_width="175dp"
+                android:layout_height="38dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@android:drawable/btn_dropdown"
+                android:dropDownWidth="fill_parent"
+
+                />
+
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -86,10 +110,10 @@
                 android:textColorHint="@color/white">
 
                 <EditText
-                    android:id="@+id/input_fecha_partido"
+                    android:id="@+id/input_descripcion_partido"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Fecha (por ahora string)"
+                    android:hint="Descripcion"
                     android:inputType="text"
                     android:textColor="@color/white"/>
             </android.support.design.widget.TextInputLayout>

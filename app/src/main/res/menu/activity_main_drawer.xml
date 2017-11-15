@@ -17,9 +17,17 @@
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Canchas"/>
         <item
-            android:id="@+id/solicitudes"
+            android:id="@+id/solicitudesAmigos"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Solicitudes"/>
+            android:title="Solicitudes Amigos"/>
+        <item
+            android:id="@+id/solicitudesPartidos"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Solicitudes Partidos"/>
+        <item
+            android:id="@+id/buscarPartidos"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="buscar Partidos"/>
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
