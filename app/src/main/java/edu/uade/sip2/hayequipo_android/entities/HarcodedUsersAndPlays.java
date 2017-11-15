@@ -52,6 +52,7 @@ public class HarcodedUsersAndPlays {
 
         Log.e("lo que llego","partido id:"+idPartido+" "+"idUsr: "+idUsuario);
         Log.e("tamaño partidos","size:"+partidos_usuarios.size());
+
        if(idUsuario!=-1) {
 
            // si encuentro que ya esta en el partido no lo agrego

@@ -3,6 +3,7 @@ package edu.uade.sip2.hayequipo_android.core;
 import butterknife.Bind;
 import edu.uade.sip2.hayequipo_android.R;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -109,8 +111,6 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "TODO", Snackbar.LENGTH_LONG)
-                        .setAction("TODO", null).show();
                 showPartidoDialog(MainActivity.this);
             }
         });
@@ -324,7 +324,7 @@ public class MainActivity extends AppCompatActivity
 
                     int cant = Integer.parseInt(cantidad_participantes);
 
-                    if(cant>5) {
+                    if(cant>=5) {
 
                         int id_random = HarcodedUsersAndPlays.getIdPartido(0);
                         Partido partido = new Partido(id_random, lugar_partido, fecha_partido, hora, descripcion_partido, cantidad_participantes);
@@ -351,6 +351,11 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
     private void actualizarLista(){
 

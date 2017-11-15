@@ -107,4 +107,18 @@ public class CanchaActivity extends AppCompatActivity {
     private void errorToast() {
         Toast.makeText(this, getString(R.string.draw_error), Toast.LENGTH_LONG).show();
     }
+
+
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+
+
+    }
+
+
 }

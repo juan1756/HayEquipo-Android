@@ -1,5 +1,6 @@
 package edu.uade.sip2.hayequipo_android.core;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -65,6 +67,7 @@ public class PartidoActivity extends AppCompatActivity {
     private String usuario;
     private static String yo;
     String hora = "";
+    Partido p = null;
 
 
 
@@ -88,7 +91,7 @@ public class PartidoActivity extends AppCompatActivity {
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerArrayAdapter);
 
-        Partido p  = HarcodedUsersAndPlays.getPartido(id_partido);
+        p  = HarcodedUsersAndPlays.getPartido(id_partido);
         if(p==null){
             Toast.makeText(getBaseContext(),"error, no se encontro partido",Toast.LENGTH_LONG);
         }else{
@@ -218,6 +221,9 @@ public class PartidoActivity extends AppCompatActivity {
                         _label_usuario.setText("no se ha encontrado el usuario");
                         _label_usuario.setTextColor(getColor(R.color.white));
                     }
+
+                    hideKeyboard(view);
+
                 }
             }
         });
@@ -234,12 +240,18 @@ public class PartidoActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "agregado!", Toast.LENGTH_LONG).show();
                     _label_usuario.setText("Agregado!");
                     String participantes = _participantes.getText().toString();
-                    int p = Integer.parseInt(participantes);
-                    _participantes.setText(String.valueOf(p+1));
+                    if(p!=null){
+                        int cantidad = p.getParticipantes();
+                        _participantes.setText(String.valueOf(cantidad+1));
+                    }else{
+                        _participantes.setText("-");
+                    }
+
+
 
                 }else{
-                    Log.e("agregar usr a partido", "error! no se encontro partido ?");
-                    Toast.makeText(getBaseContext(), "error", Toast.LENGTH_LONG);
+                    Log.e("agregar usr a partido", "error! ");
+                    Toast.makeText(getBaseContext(), "error", Toast.LENGTH_LONG).show();
                     _label_usuario.setText("Error(?!");
                 }
 
@@ -250,6 +262,11 @@ public class PartidoActivity extends AppCompatActivity {
     }
 
 
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
     private void setValuesHoras(){
 
