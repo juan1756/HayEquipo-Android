@@ -16,25 +16,35 @@
         android:layout_height="fill_parent"
         android:fitsSystemWindows="true">
 
+
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             >
 
             <ImageView
                 android:id="@+id/black_cross"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_gravity="end|top"
+                android:layout_gravity="end|right"
                 android:layout_marginBottom="10dp"
-                android:adjustViewBounds="false"
-                android:cropToPadding="false"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true"
                 android:padding="5dp"
                 android:src="@drawable/cross"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            >
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -44,21 +54,7 @@
                 android:src="@drawable/pelota"/>
 
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:textColorHint="@color/white">
 
-                <EditText
-                    android:id="@+id/input_nombre_partido"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nombre"
-                    android:inputType="text"
-                    android:textColor="@color/white"/>
-            </android.support.design.widget.TextInputLayout>
 
 
             <android.support.design.widget.TextInputLayout
@@ -78,6 +74,47 @@
             </android.support.design.widget.TextInputLayout>
 
 
+            <TextView
+                android:id="@+id/input_fecha_partido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:hint="Fecha"
+                android:inputType="text"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                />
+
+
+
+
+            <TextView
+                android:id="@+id/label_hora"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:layout_marginTop="8dp"
+                android:hint="Hora"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                />
+
+            <Spinner
+                android:id="@+id/spinner_hora"
+                android:layout_width="125dp"
+                android:layout_height="38dp"
+                android:layout_gravity="left"
+                android:layout_marginTop="8dp"
+                android:background="@android:drawable/btn_dropdown"
+                android:dropDownWidth="fill_parent"
+
+                />
+
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -86,10 +123,27 @@
                 android:textColorHint="@color/white">
 
                 <EditText
-                    android:id="@+id/input_fecha_partido"
+                    android:id="@+id/input_cantidad_participantes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Fecha (por ahora string)"
+                    android:hint="Cantidad participantes"
+                    android:inputType="number"
+                    android:textColor="@color/white"/>
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:textColorHint="@color/white">
+
+                <EditText
+                    android:id="@+id/input_descripcion_partido"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Descripcion"
                     android:inputType="text"
                     android:textColor="@color/white"/>
             </android.support.design.widget.TextInputLayout>
@@ -109,7 +163,7 @@
 
 
         </LinearLayout>
-
+        </LinearLayout>
     </ScrollView>
 
 </android.support.design.widget.CoordinatorLayout>

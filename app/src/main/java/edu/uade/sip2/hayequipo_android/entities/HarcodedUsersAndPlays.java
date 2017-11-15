@@ -3,6 +3,7 @@ package edu.uade.sip2.hayequipo_android.entities;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,14 +13,14 @@ import java.util.Map;
 
 public class HarcodedUsersAndPlays {
 
-    private static ArrayList<Usuario> usuarios = new ArrayList<Usuario>();;
-    private static ArrayList<Partido> partidos = new ArrayList<Partido>();;
-    private static Map<Integer,Integer> partidos_usuarios = new HashMap<Integer, Integer>();
+    private static ArrayList<Usuario> usuarios = new ArrayList<>();;
+    private static ArrayList<Partido> partidos = new ArrayList<>();;
+    private static Map<Integer,Integer> partidos_usuarios = new HashMap<>();
 
 
     public HarcodedUsersAndPlays(){
-        usuarios = new ArrayList<Usuario>();
-        partidos = new ArrayList<Partido>();
+        usuarios = new ArrayList<>();
+        partidos = new ArrayList<>();
 
 
     }
@@ -51,6 +52,7 @@ public class HarcodedUsersAndPlays {
 
         Log.e("lo que llego","partido id:"+idPartido+" "+"idUsr: "+idUsuario);
         Log.e("tamaño partidos","size:"+partidos_usuarios.size());
+
        if(idUsuario!=-1) {
 
            // si encuentro que ya esta en el partido no lo agrego
@@ -125,7 +127,7 @@ public class HarcodedUsersAndPlays {
     }
 
 
-    public static boolean cambiarPartido(int mi_partido_actual,String nombre,String lugar,String fecha) {
+    public static boolean cambiarPartido(int mi_partido_actual, String desc, String lugar, String fecha, String hora) {
 
 
         Partido partido = null;
@@ -137,9 +139,10 @@ public class HarcodedUsersAndPlays {
 
         if(partido==null) return false;
 
-        partido.setNombre(nombre);
+        partido.setDescripcion(desc);
         partido.setLugar(lugar);
         partido.setFecha(fecha);
+        partido.setHora(hora);
 
         return true;
     }

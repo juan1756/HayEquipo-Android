@@ -31,21 +31,7 @@
                 android:src="@drawable/pelota"/>
 
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:textColorHint="@color/white">
 
-                <EditText
-                    android:id="@+id/input_nombre"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nombre"
-                    android:inputType="text"
-                    android:textColor="@color/white"/>
-            </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -64,6 +50,50 @@
         </android.support.design.widget.TextInputLayout>
 
 
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/tilPlannedDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/input_fecha_partido"
+                    android:hint="Fecha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="date"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:maxLines="1" />
+            </android.support.design.widget.TextInputLayout>
+
+
+            <TextView
+                android:id="@+id/label_hora"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:hint="Hora"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                />
+
+            <Spinner
+                android:id="@+id/spinner_hora"
+                android:layout_width="175dp"
+                android:layout_height="38dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@android:drawable/btn_dropdown"
+                android:dropDownWidth="fill_parent"
+
+                />
+
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -72,12 +102,12 @@
                 android:textColorHint="@color/white">
 
                 <EditText
-                    android:id="@+id/input_fecha"
+                    android:id="@+id/input_descripcion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Fecha"
-                    android:textColor="@color/white"
-                    android:inputType="text"/>
+                    android:hint="Descripcion"
+                    android:inputType="text"
+                    android:textColor="@color/white"/>
             </android.support.design.widget.TextInputLayout>
 
 
@@ -102,17 +132,25 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="10dp"
                 android:padding="12dp"
                 android:text="Guardar Cambios"/>
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/btn_invitar_amigos"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
                 android:padding="12dp"
                 android:text="Invitar amigos"/>
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_publicar_partido"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:padding="12dp"
+                android:text="Publicar partido"/>
 
 
         </LinearLayout>
