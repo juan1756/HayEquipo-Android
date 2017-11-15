@@ -126,7 +126,7 @@ public class HarcodedUsersAndPlays {
     }
 
 
-    public static boolean cambiarPartido(int mi_partido_actual, String desc, String lugar, Date fecha, String hora) {
+    public static boolean cambiarPartido(int mi_partido_actual, String desc, String lugar, String fecha, String hora) {
 
 
         Partido partido = null;

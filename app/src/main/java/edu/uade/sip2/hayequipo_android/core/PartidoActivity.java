@@ -97,7 +97,7 @@ public class PartidoActivity extends AppCompatActivity {
             _lugar.setText(p.getLugar().toString());
             _fecha.setText(p.getFecha().toString());
 
-            _participantes.setText(String.valueOf(p.getParticipantes()));
+            _participantes.setText(String.valueOf(p.getParticipantes())+"/"+p.getCantidad_participantes());
         }
 
 
@@ -118,7 +118,7 @@ public class PartidoActivity extends AppCompatActivity {
                 if(nueva_descripcion.equals("") || nuevo_lugar.equals("") || nueva_fecha.equals("") || nueva_hora.equals("")){
                     //TODO: error
                 }else{
-                    boolean resultado = HarcodedUsersAndPlays.cambiarPartido(mi_partido_actual,nueva_descripcion,nuevo_lugar,new Date(),nueva_hora);
+                    boolean resultado = HarcodedUsersAndPlays.cambiarPartido(mi_partido_actual,nueva_descripcion,nuevo_lugar,nueva_fecha,nueva_hora);
                     if(resultado){
                         Toast.makeText(getBaseContext(),"cambios guardados!",Toast.LENGTH_LONG).show();
                     }else{

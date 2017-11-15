@@ -13,21 +13,26 @@ public class Partido {
 
     private String lugar;
 
-    private Date fecha;
+    private String fecha;
 
     private String hora;
 
     private String descripcion;
 
+    private String cantidad_participantes;
+
     private int participantes = 0;
 
 
-    public Partido(int id,String lugar, Date fecha, String hora, String desc) {
+
+    public Partido(int id,String lugar, String fecha, String hora, String desc,String cantidad) {
         this.id = id;
         this.lugar = lugar;
         this.fecha = fecha;
         this.hora = hora;
         this.descripcion = desc;
+        this.cantidad_participantes = cantidad;
+        this.participantes = participantes+1; // AGREGO AL CREADOR COMO PARTICIPANTE
 
 
 
@@ -51,11 +56,11 @@ public class Partido {
         this.lugar = lugar;
     }
 
-    public Date getFecha() {
+    public String getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(String fecha) {
         this.fecha = fecha;
     }
 
@@ -81,5 +86,13 @@ public class Partido {
 
     public void setParticipantes(int participantes) {
         this.participantes = participantes;
+    }
+
+    public String getCantidad_participantes() {
+        return cantidad_participantes;
+    }
+
+    public void setCantidad_participantes(String cantidad_participantes) {
+        this.cantidad_participantes = cantidad_participantes;
     }
 }

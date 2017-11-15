@@ -70,6 +70,8 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:hint="Fecha"
@@ -94,12 +96,29 @@
                 android:id="@+id/spinner_hora"
                 android:layout_width="175dp"
                 android:layout_height="38dp"
-                android:layout_gravity="center"
+                android:layout_gravity="left"
                 android:layout_marginTop="15dp"
                 android:background="@android:drawable/btn_dropdown"
                 android:dropDownWidth="fill_parent"
 
                 />
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:textColorHint="@color/white">
+
+                <EditText
+                    android:id="@+id/input_cantidad_participantes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Cantidad participantes"
+                    android:inputType="number"
+                    android:textColor="@color/white"/>
+            </android.support.design.widget.TextInputLayout>
 
 
             <android.support.design.widget.TextInputLayout

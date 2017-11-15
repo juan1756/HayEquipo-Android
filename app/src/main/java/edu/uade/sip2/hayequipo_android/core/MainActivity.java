@@ -260,6 +260,7 @@ public class MainActivity extends AppCompatActivity
        final EditText descripcion = (EditText) dialog.findViewById(R.id.input_descripcion_partido);
        final TextView fecha = (TextView) dialog.findViewById(R.id.input_fecha_partido);
        final EditText lugar = (EditText) dialog.findViewById(R.id.input_lugar_partido);
+        final EditText cantidad = (EditText) dialog.findViewById(R.id.input_cantidad_participantes);
 
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -316,17 +317,27 @@ public class MainActivity extends AppCompatActivity
                 String descripcion_partido = descripcion.getText().toString();
                 String fecha_partido = fecha.getText().toString();
                 String lugar_partido = lugar.getText().toString();
+                String cantidad_participantes = cantidad.getText().toString();
                 Log.e("hora seleccionada"," "+hora);
 
-                if(!descripcion_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("") && !hora.equals("")){
+                if(!descripcion_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("") && !hora.equals("") && !cantidad_participantes.equals("")){
 
-                   int id_random = HarcodedUsersAndPlays.getIdPartido(0);
-                    Partido partido = new Partido(id_random,lugar_partido,new Date(),hora,descripcion_partido);
-                    HarcodedUsersAndPlays.agregarPartido(partido);
+                    int cant = Integer.parseInt(cantidad_participantes);
 
-                    dialog.dismiss();
-                    Toast.makeText(getBaseContext(),"el partido se ha agregado exitostamente!",Toast.LENGTH_LONG).show();
-                    agregarPartido(partido);
+                    if(cant>5) {
+
+                        int id_random = HarcodedUsersAndPlays.getIdPartido(0);
+                        Partido partido = new Partido(id_random, lugar_partido, fecha_partido, hora, descripcion_partido, cantidad_participantes);
+                        HarcodedUsersAndPlays.agregarPartido(partido);
+
+                        dialog.dismiss();
+                        Toast.makeText(getBaseContext(), "el partido se ha agregado exitostamente!", Toast.LENGTH_LONG).show();
+                        agregarPartido(partido);
+
+                    }else{
+                        Log.e("error","cantidad participantes");
+                        Toast.makeText(context,"no puede crearse un partido con menos de 5 participantes!!",Toast.LENGTH_LONG).show();
+                    }
 
                 }else{
                     Log.e("error","error no todos los datos estan");
@@ -361,7 +372,7 @@ public class MainActivity extends AppCompatActivity
             result.setBackgroundResource(specialId);
             txtTitle.setText(p.getDescripcion());
             txtLugar.setText(p.getLugar());
-            txtParticipantes.setText("Participantes: "+String.valueOf(p.getParticipantes()));
+            txtParticipantes.setText("Participantes: "+String.valueOf(p.getParticipantes())+"/"+p.getCantidad_participantes());
 
             lv.addFooterView(result);
 
@@ -406,7 +417,7 @@ public class MainActivity extends AppCompatActivity
         txtNombre.setText(p.getDescripcion());
         txtLugar.setText(p.getLugar());
         txtFecha.setText(p.getFecha().toString());
-        txtParticipantes.setText("Participantes: "+String.valueOf(p.getParticipantes()));
+        txtParticipantes.setText("Participantes: "+String.valueOf(p.getParticipantes())+"/"+p.getCantidad_participantes());
             lv.addFooterView(result);
 
     }
