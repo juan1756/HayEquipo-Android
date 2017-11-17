@@ -837,7 +837,6 @@ public class SignupActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Disable going back to the MainActivity
        // moveTaskToBack(true);
         flag = false;
        // Intent intent = new Intent(getApplicationContext(),LoginActivity.class);

@@ -25,7 +25,7 @@
             android:padding="2dp"
             android:text="Partido X"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"/>
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/textLugar"

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 /*
 ** Copyright (C) 2011 Cyril Mottier (http://www.cyrilmottier.com)
 **
@@ -17,13 +16,9 @@
 */
 -->
 
-<shape
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <gradient
-        android:startColor="#185E9C"
-        android:endColor="#94BAD2"
-        android:angle="90" />
-
+    <corners android:radius="4dp"></corners>
+    <solid android:color="@color/monsoon"></solid>
 </shape>
