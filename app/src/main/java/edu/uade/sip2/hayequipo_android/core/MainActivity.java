@@ -6,9 +6,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,22 +29,39 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.maps.model.LatLng;
 
-import butterknife.Bind;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import edu.uade.sip2.hayequipo_android.R;
+import edu.uade.sip2.hayequipo_android.adapter.DireccionAutoCompleteAdapter;
+import edu.uade.sip2.hayequipo_android.conn.VolleySingleton;
 import edu.uade.sip2.hayequipo_android.conn.requestToBackend;
 import edu.uade.sip2.hayequipo_android.data.Menus;
+import edu.uade.sip2.hayequipo_android.dto.ModalidadDTO;
 import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
 import edu.uade.sip2.hayequipo_android.entities.Partido;
 import edu.uade.sip2.hayequipo_android.entities.Usuario;
@@ -51,29 +70,22 @@ import edu.uade.sip2.hayequipo_android.utils.DatePickerFragment;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-
-    @Bind(R.id.btn_buscar_usuario)
-    Button _buscar_usuario;
-    @Bind(R.id.input_usr)
-    EditText _usuario;
-    @Bind(R.id.label_usuario)
-    TextView _label_usuario;
-    @Bind(R.id.btn_agregar_usuario)
-    Button _agregar_usuario;
-    @Bind(R.id.input_descripcion_partido)
-    EditText _descripcion_partido;
-    @Bind(R.id.input_fecha_partido)
-    TextView _fecha_partido;
-    @Bind(R.id.input_lugar_partido)
-    EditText _lugar_partido;
-    @Bind(R.id.btn_crear_partido)
-    Button _crear_partido;
+    private static final int ACTIVIDAD_MAPA = 100;
+    private static int menus = 1;
 
     private ListView lv;
     private FancyAdapter mFancyAdapter;
+    private int mMethod;
     private String usuario = "german";
-    String hora = "";
+    private ArrayList<String> horas = new ArrayList<>();
+    private String hora = "";
     private ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
+
+    // CAMPOS PARA EL DIALOGO
+    private AutoCompleteTextView campoLugar;
+    private Spinner campoModalidad;
+    private List<ModalidadDTO> modalidades = new ArrayList<>();
+    private LatLng posicionMarcada;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,13 +93,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         lv = findViewById(android.R.id.list);
-
         mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
 
         actualizarLista();
+        setValuesHoras();
+
         Toolbar toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
@@ -111,17 +124,46 @@ public class MainActivity extends AppCompatActivity
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Log.e("click", "partido pos:" + position);
-
+                Log.e("LOG","partido pos: "+position);
                 cambiarPartido(position);
-
             }
         });
 
+        // TODO hacer un progress o algo para indicar que debe cargar
+
+        // Obtengo las modalidades
+        VolleySingleton
+            .getInstance(getApplicationContext())
+            .addToRequestQueue(
+                    new JsonArrayRequest(
+                            getString(R.string.servicio_url) + getString(R.string.servicio_obtener_modalidad),
+                            new Response.Listener<JSONArray>() {
+
+                                @Override
+                                public void onResponse(JSONArray response) {
+                                    try {
+                                        ObjectMapper mapper = new ObjectMapper();
+                                        ModalidadDTO[] m = mapper.readValue(response.toString(), ModalidadDTO[].class);
+                                        modalidades = Arrays.asList(m);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            },
+                            new Response.ErrorListener() {
+
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    error.printStackTrace();
+                                }
+                            }
+                    )
+            )
+        ;
     }
 
 
-    private void cambiarAmigos() {
+    private void cambiarAmigos(){
 
 
         mFancyAdapter = new FancyAdapter(Menus.AMIGOS);
@@ -227,16 +269,59 @@ public class MainActivity extends AppCompatActivity
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);
 
-        ImageView view = dialog.findViewById(R.id.black_cross);
-        Button crear = dialog.findViewById(R.id.btn_crear_partido);
-        Spinner spinner = dialog.findViewById(R.id.spinner_hora);
-        final EditText descripcion = dialog.findViewById(R.id.input_descripcion_partido);
-        final TextView fecha = dialog.findViewById(R.id.input_fecha_partido);
-        final EditText lugar = dialog.findViewById(R.id.input_lugar_partido);
-        final EditText cantidad = dialog.findViewById(R.id.input_cantidad_participantes);
+        ImageView botonCerrarDialogo = dialog.findViewById(R.id.black_cross);
+        Button botonCrearPartido = dialog.findViewById(R.id.btn_crear_partido);
+        Spinner campoHora = dialog.findViewById(R.id.spinner_hora);
+        final EditText campoDescripcion = dialog.findViewById(R.id.input_descripcion_partido);
+        final TextView campoFecha = dialog.findViewById(R.id.input_fecha_partido);
 
+        // Configuro el campo de modalidad
+        campoModalidad = dialog.findViewById(R.id.campo_modalidad);
+        ArrayAdapter<ModalidadDTO> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_dropdown_item_1line, modalidades);
+        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        campoModalidad.setAdapter(adapter);
 
-        view.setOnClickListener(new View.OnClickListener() {
+        // Configuro el boton del mapa
+        ImageButton botonSeleccionarMapa = dialog.findViewById(R.id.boton_seleccionar_mapa);
+        botonSeleccionarMapa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, MapaPartidoActivity.class);
+                intent.putExtra(MapaPartidoActivity.ACCION_MAPA, MapaPartidoActivity.SELECCIONAR);
+                if (posicionMarcada != null){
+                    intent.putExtra(MapaPartidoActivity.POSICION_MAPA, posicionMarcada);
+                }
+                startActivityForResult(intent, ACTIVIDAD_MAPA);
+            }
+        });
+        botonSeleccionarMapa.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(context, R.string.titulo_seleccionar_partido_mapa, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        // Configuro el campo lugar para que se pueda buscar una direccion, cuando es 5 letras
+        campoLugar = dialog.findViewById(R.id.input_lugar_partido);
+        campoLugar.setThreshold(5);
+        campoLugar.setAdapter(new DireccionAutoCompleteAdapter(context));
+        campoLugar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Address direccion = (Address) adapterView.getItemAtPosition(position);
+                StringBuilder direccionCompleta = new StringBuilder()
+                        .append(direccion.getThoroughfare())
+                        .append(direccion.getSubThoroughfare() == null ? "" : " " + direccion.getSubThoroughfare() )
+                        .append(", ")
+                        .append(direccion.getLocality());
+
+                posicionMarcada = new LatLng(direccion.getLatitude(), direccion.getLongitude());
+                campoLugar.setText(direccionCompleta);
+            }
+        });
+
+        botonCerrarDialogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -245,20 +330,20 @@ public class MainActivity extends AppCompatActivity
 
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int dialogWidth = (int) (displayMetrics.widthPixels * 0.80);
-        int dialogHeight = (int) (displayMetrics.heightPixels * 0.80);
+        int dialogWidth = (int) (displayMetrics.widthPixels * 0.85);
+        int dialogHeight = (int) (displayMetrics.heightPixels * 0.85);
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
 
 
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(
                 getApplication(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.horas));
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerArrayAdapter);
+        campoHora.setAdapter(spinnerArrayAdapter);
 
         dialog.show();
 
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        campoHora.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View view, int i, long l) {
 
@@ -273,56 +358,76 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        fecha.setOnClickListener(new View.OnClickListener() {
+        campoFecha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.e("fecha on click", "on");
-                showDatePickerDialog(fecha);
-
+                showDatePickerDialog(campoFecha);
             }
         });
 
-        crear.setOnClickListener(new View.OnClickListener() {
+        botonCrearPartido.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                String descripcion_partido = descripcion.getText().toString();
-                String fecha_partido = fecha.getText().toString();
-                String lugar_partido = lugar.getText().toString();
-                String cantidad_participantes = cantidad.getText().toString();
-                Log.e("hora seleccionada", " " + hora);
+                String descripcion_partido = campoDescripcion.getText().toString();
+                String fecha_partido = campoFecha.getText().toString();
+                String lugar_partido = campoLugar.getText().toString();
+//                String cantidad_participantes = cantidad.getText().toString();
+//                Log.e("hora seleccionada", " " + hora);
 
-                if (!descripcion_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("") && !hora.equals("") && !cantidad_participantes.equals("")) {
-
-                    int cant = Integer.parseInt(cantidad_participantes);
-
-                    if (cant >= 5) {
-
-                        int id_random = HarcodedUsersAndPlays.getIdPartido(0);
-                        Partido partido = new Partido(id_random, lugar_partido, fecha_partido, hora, descripcion_partido, cantidad_participantes);
-                        HarcodedUsersAndPlays.agregarPartido(partido);
-
-                        dialog.dismiss();
-                        Toast.makeText(getBaseContext(), "el partido se ha agregado exitostamente!", Toast.LENGTH_LONG).show();
-                        agregarPartido(partido);
-
-                    } else {
-                        Log.e("error", "cantidad participantes");
-                        Toast.makeText(context, "no puede crearse un partido con menos de 5 participantes!!", Toast.LENGTH_LONG).show();
-                    }
-
-                } else {
-                    Log.e("error", "error no todos los datos estan");
-                    Toast.makeText(context, "los campos no pueden estar vacios!", Toast.LENGTH_LONG).show();
-
-                }
+//                if (!descripcion_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("") && !hora.equals("") && !cantidad_participantes.equals("")) {
+//
+//                    int cant = Integer.parseInt(cantidad_participantes);
+//
+//                    if (cant >= 5) {
+//
+//                        int id_random = HarcodedUsersAndPlays.getIdPartido(0);
+//                        Partido partido = new Partido(id_random, lugar_partido, fecha_partido, hora, descripcion_partido, cantidad_participantes);
+//                        HarcodedUsersAndPlays.agregarPartido(partido);
+//
+//                        dialog.dismiss();
+//                        Toast.makeText(getBaseContext(), "el partido se ha agregado exitostamente!", Toast.LENGTH_LONG).show();
+//                        agregarPartido(partido);
+//
+//                    } else {
+//                        Log.e("error", "cantidad participantes");
+//                        Toast.makeText(context, "no puede crearse un partido con menos de 5 participantes!!", Toast.LENGTH_LONG).show();
+//                    }
+//
+//                } else {
+//                    Log.e("error", "error no todos los datos estan");
+//                    Toast.makeText(context, "los campos no pueden estar vacios!", Toast.LENGTH_LONG).show();
+//
+//                }
 
 
             }
         });
     }
 
-    private void actualizarLista() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case ACTIVIDAD_MAPA:
+                switch (resultCode){
+                    case RESULT_OK:
+                        posicionMarcada = data.getExtras().getParcelable(MapaPartidoActivity.LOCALIZACION_MARCADA);
+                        String posicionTitulo = data.getExtras().getString(MapaPartidoActivity.LOCALIZACION_TITULO);
+                        campoLugar.setText(posicionTitulo);
+                        break;
+                }
+                break;
+            default:
+        }
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void actualizarLista(){
 
         ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
 
@@ -428,28 +533,27 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        //  if (id == R.id.action_settings) {
-        //     return true;
-        //  }
-
+//        if (id == R.id.accion_buscar_mapa) {
+//            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Buscando...", Snackbar.LENGTH_SHORT);
+//            snackbar.show();
+//
+//            startActivity(new Intent(this, MapaPartidoActivity.class));
+//
+//            return true;
+//        }
         return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
@@ -460,22 +564,35 @@ public class MainActivity extends AppCompatActivity
             cambiarCancha();
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_salir) {
-            onBackPressed();
         } else if (id == R.id.solicitudesAmigos) {
             cambiarSolicitudesAmigos();
         } else if (id == R.id.buscarPartidos) {
-            buscarPartidosPublicos();
+            //buscarPartidosPublicos();
         } else if (id == R.id.solicitudesPartidos) {
-            buscarPartidosPublicos();
+            //buscarPartidosPublicos();
+        } else if (id == R.id.menu_buscar_mapa){
+            // Busca los partidos cercanos
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Buscando...", Snackbar.LENGTH_SHORT);
+            snackbar.show();
+
+            Intent intent = new Intent(this, MapaPartidoActivity.class);
+            intent.putExtra(MapaPartidoActivity.ACCION_MAPA, MapaPartidoActivity.BUSCAR);
+            startActivity(intent);
+            return true;
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    private void setValuesHoras(){
+        for (int i = 0; i < 24; i++){
+            horas.add(""+i);
+        }
+    }
+
 
     private class FancyAdapter extends BaseAdapter {
 

@@ -28,10 +28,14 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife:7.0.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.android.volley:volley:1.0.0'
-    compile 'com.android.support:design:26.0.2'
+    compile 'com.android.support:design:26.1..0'
+
+    // SERIALIZADOR JSON
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
 
     // PARA LOS MAPAS
-    compile 'com.google.android.gms:play-services-maps:11.4.0'
+    compile 'com.google.android.gms:play-services-maps:11.6.0'
+    compile 'com.google.android.gms:play-services-location:11.6.0'
 
     testCompile 'junit:junit:4.12'
 }

@@ -35,16 +35,12 @@
             android:title="Estadisticas"/>
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/menu_partido">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Algo"/>
-            <item
-                android:id="@+id/nav_salir"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Salir"/>
+                android:id="@+id/menu_buscar_mapa"
+                android:icon="@android:drawable/ic_dialog_map"
+                android:title="@string/titulo_buscar_partido_mapa" />
         </menu>
     </item>
 

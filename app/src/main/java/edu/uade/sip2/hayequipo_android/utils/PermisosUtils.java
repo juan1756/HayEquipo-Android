@@ -1,15 +1,20 @@
-package edu.uade.sip2.hayequipo_android.util;
+package edu.uade.sip2.hayequipo_android.utils;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import edu.uade.sip2.hayequipo_android.R;
 
@@ -18,6 +23,8 @@ import edu.uade.sip2.hayequipo_android.R;
  */
 
 public class PermisosUtils {
+
+    private final static int PLAY_SERVICES_REQUEST = 1000;
 
     /**
      * Requests the fine location permission. If a rationale with an additional explanation should
@@ -56,7 +63,22 @@ public class PermisosUtils {
         return false;
     }
 
+    public static boolean checkPlayServices(Activity activity) {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = googleApiAvailability.isGooglePlayServicesAvailable(activity);
 
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(resultCode)) {
+                googleApiAvailability.getErrorDialog(activity, resultCode, PLAY_SERVICES_REQUEST)
+                        .show();
+            } else {
+                Snackbar snackbar = Snackbar.make(activity.findViewById(android.R.id.content), R.string.error_servicio_google, Snackbar.LENGTH_SHORT);
+                snackbar.show();
+            }
+            return false;
+        }
+        return true;
+    }
 
     /**
      * A dialog that displays a permission denied message.
