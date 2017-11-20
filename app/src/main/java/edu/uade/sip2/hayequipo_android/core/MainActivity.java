@@ -3,12 +3,14 @@ package edu.uade.sip2.hayequipo_android.core;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -35,6 +37,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -46,10 +49,13 @@ import edu.uade.sip2.hayequipo_android.data.Menus;
 import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
 import edu.uade.sip2.hayequipo_android.entities.Partido;
 import edu.uade.sip2.hayequipo_android.entities.Usuario;
+import edu.uade.sip2.hayequipo_android.utils.AvatarPickerDialogFragment;
+import edu.uade.sip2.hayequipo_android.utils.Avatars;
 import edu.uade.sip2.hayequipo_android.utils.DatePickerFragment;
+import edu.uade.sip2.hayequipo_android.utils.TimePickerFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AvatarPickerDialogFragment.AvatarPickerDialogListener {
 
 
     @Bind(R.id.btn_buscar_usuario)
@@ -68,10 +74,14 @@ public class MainActivity extends AppCompatActivity
     EditText _lugar_partido;
     @Bind(R.id.btn_crear_partido)
     Button _crear_partido;
+    @Bind(R.id.input_hora_partido)
+    TextView _hora_partido;
+
 
     private ListView lv;
     private FancyAdapter mFancyAdapter;
     private String usuario = "german";
+    private String avatar = "";
     String hora = "";
     private ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
 
@@ -89,7 +99,7 @@ public class MainActivity extends AppCompatActivity
 
         actualizarLista();
         Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -165,6 +175,7 @@ public class MainActivity extends AppCompatActivity
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
+        getSupportActionBar().setTitle("Mis Partidos");
         actualizarLista();
     }
 
@@ -202,6 +213,22 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void showTimePickerDialog(final TextView hora) {
+        TimePickerFragment newFragment = TimePickerFragment.newInstance(new TimePickerDialog.OnTimeSetListener() {
+
+
+            public void onTimeSet(TimePicker timePicker, int hour, int minutes) {
+                // +1 because january is zero
+                final String selectedTime = String.valueOf(hour)+":"+String.valueOf(minutes);
+                Log.e("date picker:", " " + selectedTime.toString());
+                hora.setText(selectedTime);
+                hora.setHint(selectedTime.toString());
+            }
+        });
+        newFragment.show(getFragmentManager(), "timePicker");
+
+    }
+
     private void showDatePickerDialog(final TextView fecha) {
         DatePickerFragment newFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
 
@@ -229,11 +256,14 @@ public class MainActivity extends AppCompatActivity
 
         ImageView view = dialog.findViewById(R.id.black_cross);
         Button crear = dialog.findViewById(R.id.btn_crear_partido);
-        Spinner spinner = dialog.findViewById(R.id.spinner_hora);
+        final EditText nombre = dialog.findViewById(R.id.input_nombre_partido);
         final EditText descripcion = dialog.findViewById(R.id.input_descripcion_partido);
         final TextView fecha = dialog.findViewById(R.id.input_fecha_partido);
+        final EditText precio = dialog.findViewById(R.id.input_precio);
+        final TextView hora = dialog.findViewById(R.id.input_hora_partido);
         final EditText lugar = dialog.findViewById(R.id.input_lugar_partido);
         final EditText cantidad = dialog.findViewById(R.id.input_cantidad_participantes);
+        final TextView avatarView = dialog.findViewById(R.id.input_avatar_partido);
 
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -245,11 +275,13 @@ public class MainActivity extends AppCompatActivity
 
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int dialogWidth = (int) (displayMetrics.widthPixels * 0.80);
-        int dialogHeight = (int) (displayMetrics.heightPixels * 0.80);
+        int dialogWidth = (int) (displayMetrics.widthPixels * 0.85);
+        int dialogHeight = (int) (displayMetrics.heightPixels * 0.85);
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
 
+        dialog.show();
 
+/*
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
                 getApplication(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.horas));
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -272,6 +304,24 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+*/
+
+        avatarView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createAvatarSelectDialog();
+
+            }
+        });
+
+
+        hora.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("hora on click", "on");
+                showTimePickerDialog(hora);
+            }
+        });
 
         fecha.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,21 +336,29 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
+                String nombre_partido = nombre.getText().toString();
                 String descripcion_partido = descripcion.getText().toString();
                 String fecha_partido = fecha.getText().toString();
                 String lugar_partido = lugar.getText().toString();
                 String cantidad_participantes = cantidad.getText().toString();
+                String precio_partido = precio.getText().toString();
+                String hora_partido = hora.getText().toString();
                 Log.e("hora seleccionada", " " + hora);
 
-                if (!descripcion_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("") && !hora.equals("") && !cantidad_participantes.equals("")) {
+                if (!nombre_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("") && !hora_partido.equals("") && !cantidad_participantes.equals("")) {
 
                     int cant = Integer.parseInt(cantidad_participantes);
+                    int precio = 0;
+                    if(!precio_partido.equals("")){
+                        precio = Integer.parseInt(precio_partido);
+                    }
 
                     if (cant >= 5) {
 
                         int id_random = HarcodedUsersAndPlays.getIdPartido(0);
-                        Partido partido = new Partido(id_random, lugar_partido, fecha_partido, hora, descripcion_partido, cantidad_participantes);
+                        Partido partido = new Partido(id_random,nombre_partido, lugar_partido, fecha_partido, hora_partido,precio, descripcion_partido, cantidad_participantes,avatar);
                         HarcodedUsersAndPlays.agregarPartido(partido);
+                        avatar = "";
 
                         dialog.dismiss();
                         Toast.makeText(getBaseContext(), "el partido se ha agregado exitostamente!", Toast.LENGTH_LONG).show();
@@ -337,10 +395,15 @@ public class MainActivity extends AppCompatActivity
             TextView txtTitle = result.findViewById(R.id.textNombre);
             TextView txtLugar = result.findViewById(R.id.textLugar);
             TextView txtParticipantes = result.findViewById(R.id.textParticipantes);
-            // TextView extratxt = (TextView) result.findViewById(R.id.textView1);
-
+            ImageView imgAvatar = result.findViewById(R.id.icon);
+            if(!p.getAvatar().equals("")) {
+                Context context = imgAvatar.getContext();
+                int id = context.getResources().getIdentifier(p.getAvatar(), "drawable", context.getPackageName());
+                imgAvatar.setImageResource(id);
+            }
             result.setBackgroundResource(specialId);
-            txtTitle.setText(p.getDescripcion());
+
+            txtTitle.setText(p.getNombre());
             txtLugar.setText(p.getLugar());
             txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
 
@@ -348,6 +411,13 @@ public class MainActivity extends AppCompatActivity
 
         }
 
+    }
+
+
+    private void createAvatarSelectDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        AvatarPickerDialogFragment avatarPickerDialog = new AvatarPickerDialogFragment();
+        avatarPickerDialog.show(fm, "avatar_picker");
     }
 
     private void agregarPartido(Partido p) {
@@ -380,17 +450,41 @@ public class MainActivity extends AppCompatActivity
         TextView txtLugar = result.findViewById(R.id.textLugar);
         TextView txtParticipantes = result.findViewById(R.id.textParticipantes);
         TextView txtFecha = result.findViewById(R.id.textFecha);
+        ImageView imgAvatar = result.findViewById(R.id.icon);
 
         result.setBackgroundResource(specialId);
 
         txtNombre.setText(p.getDescripcion());
         txtLugar.setText(p.getLugar());
-        txtFecha.setText(p.getFecha().toString());
+        txtFecha.setText(p.getFecha().toString()+", "+p.getHora());
         txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
+        if(!p.getAvatar().equals("")){
+            Context context = imgAvatar.getContext();
+            int id = context.getResources().getIdentifier(p.getAvatar(), "drawable", context.getPackageName());
+            imgAvatar.setImageResource(id);
+
+        }
         lv.addFooterView(result);
 
     }
 
+
+
+
+
+    @Override
+    public void onAvatarSelected(AvatarPickerDialogFragment dialog, String avatarResourceName) {
+       // TextView input = (TextView) findViewById(R.id.input_username);
+        Toast.makeText(getBaseContext(),"avatar: "+avatarResourceName,Toast.LENGTH_SHORT).show();
+        avatar = avatarResourceName;
+    }
+
+
+    @Override
+    public void onCancelled(AvatarPickerDialogFragment dialog) {
+       // TextView input = (TextView) findViewById(R.id.input_username);
+        Toast.makeText(getBaseContext(),"cancel!",Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onBackPressed() {

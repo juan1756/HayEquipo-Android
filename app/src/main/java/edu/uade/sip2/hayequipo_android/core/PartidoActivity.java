@@ -43,16 +43,22 @@ public class PartidoActivity extends AppCompatActivity {
     EditText _descripcion;
     @Bind(R.id.input_fecha_partido)
     EditText _fecha;
+    @Bind(R.id.input_hora_partido)
+    EditText _hora;
     @Bind(R.id.input_lugar)
     EditText _lugar;
     @Bind(R.id.cantidad)
     EditText _participantes;
+    @Bind(R.id.input_precio)
+    EditText _precio;
     @Bind(R.id.btn_invitar_amigos)
     Button _invitar_amigos;
     @Bind(R.id.btn_guardar_cambios)
     Button  _guardar_cambios;
     @Bind(R.id.btn_publicar_partido)
     Button  _publicar_partido;
+    @Bind(R.id.img_partido)
+    ImageView  _img_partido;
 
 
     Button _agregar_usuario;
@@ -78,18 +84,15 @@ public class PartidoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_partido);
         ButterKnife.bind(this);
         _participantes.setEnabled(false);
+        _hora.setEnabled(false);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Intent intent = getIntent();
        final int id_partido = intent.getIntExtra("id",0);
        final String yo = intent.getStringExtra("usuario");
-       setValuesHoras();
+
         mi_partido_actual = id_partido;
         this.yo = yo;
-        Spinner spinner = (Spinner) findViewById(R.id.spinner_hora);
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-                getBaseContext(), android.R.layout.simple_spinner_item, horas);
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerArrayAdapter);
+
 
         p  = HarcodedUsersAndPlays.getPartido(id_partido);
         if(p==null){
@@ -99,8 +102,20 @@ public class PartidoActivity extends AppCompatActivity {
             _descripcion.setText(p.getDescripcion().toString());
             _lugar.setText(p.getLugar().toString());
             _fecha.setText(p.getFecha().toString());
-
+            _hora.setText(p.getHora().toString());
+            if(p.getPrecio()==0) {
+                _precio.setText("0");
+            }else{
+                _precio.setText(String.valueOf(p.getPrecio()));
+            }
             _participantes.setText(String.valueOf(p.getParticipantes())+"/"+p.getCantidad_participantes());
+        }
+
+
+        if(!p.getAvatar().equals("")){
+            Context context = _img_partido.getContext();
+            int id = context.getResources().getIdentifier(p.getAvatar(), "drawable", context.getPackageName());
+            _img_partido.setImageResource(id);
         }
 
 
@@ -132,19 +147,7 @@ public class PartidoActivity extends AppCompatActivity {
         });
 
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                              @Override
-                                              public void onItemSelected(AdapterView<?> arg0, View view, int i, long l) {
 
-
-                                                  hora = arg0.getSelectedItem().toString();
-                                                  Log.e("hora seleccionada:", " " + hora.toString());
-                                              }
-
-                                              public void onNothingSelected(AdapterView<?> arg0){
-                                                  Log.e("nada seleccionado:", " " + "nada");
-                                              }
-                                          });
 
 
 
@@ -191,8 +194,8 @@ public class PartidoActivity extends AppCompatActivity {
 
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int dialogWidth = (int)(displayMetrics.widthPixels * 0.80);
-        int dialogHeight = (int)(displayMetrics.heightPixels * 0.80);
+        int dialogWidth = (int)(displayMetrics.widthPixels * 0.85);
+        int dialogHeight = (int)(displayMetrics.heightPixels * 0.85);
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
 
         dialog.show();
@@ -213,13 +216,13 @@ public class PartidoActivity extends AppCompatActivity {
                     if(id_usr!=-1){
                         usuario = _usuario.getText().toString();
                         _label_usuario.setText("se encontro el usuario");
-                        _label_usuario.setTextColor(getColor(R.color.white));
+                        _label_usuario.setTextColor(getColor(R.color.black));
                         _agregar_usuario.setEnabled(true);
 
 
                     }else{
                         _label_usuario.setText("no se ha encontrado el usuario");
-                        _label_usuario.setTextColor(getColor(R.color.white));
+                        _label_usuario.setTextColor(getColor(R.color.black));
                     }
 
                     hideKeyboard(view);
@@ -268,35 +271,7 @@ public class PartidoActivity extends AppCompatActivity {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private void setValuesHoras(){
 
-        horas.add("");
-        horas.add("1");
-        horas.add("2");
-        horas.add("3");
-        horas.add("4");
-        horas.add("5");
-        horas.add("6");
-        horas.add("7");
-        horas.add("8");
-        horas.add("9");
-        horas.add("10");
-        horas.add("11");
-        horas.add("12");
-        horas.add("13");
-        horas.add("14");
-        horas.add("15");
-        horas.add("16");
-        horas.add("17");
-        horas.add("18");
-        horas.add("19");
-        horas.add("20");
-        horas.add("21");
-        horas.add("22");
-        horas.add("23");
-        horas.add("24");
-
-    }
 
 
     @Override
