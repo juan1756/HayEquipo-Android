@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinatorLayout"
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/accent"
@@ -20,8 +20,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            >
+            android:paddingRight="5dp">
 
             <ImageView
                 android:id="@+id/black_cross"
@@ -32,15 +31,15 @@
                 android:adjustViewBounds="true"
                 android:cropToPadding="true"
                 android:padding="5dp"
-                android:src="@drawable/cross"/>
+                android:src="@drawable/cross"
+                tools:ignore="RtlHardcoded"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                >
+                android:paddingRight="20dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -75,7 +74,7 @@
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentStart="true"
                         android:layout_toStartOf="@+id/boton_seleccionar_mapa"
-                        android:textColorHint="@color/white">
+                        android:textColorHint="@color/black">
 
                         <AutoCompleteTextView
                             android:id="@+id/input_lugar_partido"
@@ -85,11 +84,9 @@
                             android:layout_toStartOf="@+id/boton_seleccionar_mapa"
                             android:hint="Lugar"
                             android:inputType="text"
-                            android:textColor="@color/white"
                             android:maxLines="1"
                             android:singleLine="true"
-                            />
-
+                            android:textColor="@color/black" />
                     </android.support.design.widget.TextInputLayout>
 
                     <ImageButton
@@ -104,110 +101,73 @@
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/titulo_buscar_partido_mapa"
                         android:longClickable="true"
-                        android:src="@android:drawable/ic_dialog_map"
-                        />
-
+                        android:src="@drawable/ic_accion_mapa" />
                 </RelativeLayout>
-
 
                 <TextView
                     android:id="@+id/input_fecha_partido"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_weight="8"
+                    android:drawableLeft="@android:drawable/ic_search_category_default"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:gravity="left|center"
                     android:hint="Fecha"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/black"
                     tools:ignore="RtlHardcoded" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/input_hora_partido"
                     android:layout_width="match_parent"
-                    android:layout_height="90dp"
-                    android:layout_weight="10"
-                    android:orientation="vertical">
+                    android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
+                    android:drawableStart="@android:drawable/ic_search_category_default"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:gravity="left|center"
+                    android:hint="Hora"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/black"
+                    tools:ignore="RtlHardcoded" />
 
-                    <TextView
-                        android:id="@+id/label_hora"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="left|center"
-                        android:hint="Hora"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/white"
-                        tools:ignore="RtlHardcoded" />
-
-                    <Spinner
-                        android:id="@+id/spinner_hora"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_weight="1"
-                        android:background="@android:drawable/btn_dropdown"
-                        android:spinnerMode="dialog"
-                        tools:ignore="RtlHardcoded" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:textColorHint="@color/black">
-
-                <EditText
-                    android:id="@+id/input_precio"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Precio (opcional)"
-                    android:inputType="number"
-                    android:textColor="@color/black"/>
-            </android.support.design.widget.TextInputLayout>
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textColorHint="@color/black">
 
+                    <EditText
+                        android:id="@+id/input_precio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Precio (opcional)"
+                        android:inputType="number"
+                        android:textColor="@color/black"/>
+                </android.support.design.widget.TextInputLayout>
 
-            <TextView
-                android:id="@+id/label_modalidad"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="left|center"
-                android:hint="Modalidad"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
-                android:textColor="@color/white"
-                android:textColorHint="@color/white"
-                tools:ignore="RtlHardcoded" />
+                <TextView
+                    android:id="@+id/label_modalidad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left|center"
+                    android:hint="Modalidad"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/black"
+                    tools:ignore="RtlHardcoded" />
 
-            <Spinner
-                android:id="@+id/campo_modalidad"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@android:drawable/btn_dropdown"
-                android:spinnerMode="dialog"
-                tools:ignore="RtlHardcoded" />
-
-            <!--<android.support.design.widget.TextInputLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginBottom="8dp"-->
-                <!--android:layout_marginTop="8dp"-->
-                <!--android:textColorHint="@color/white">-->
-
-                <!--<EditText-->
-                    <!--android:id="@+id/input_cantidad_participantes"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:hint="Cantidad participantes"-->
-                    <!--android:inputType="number"-->
-                    <!--android:textColor="@color/white"/>-->
-            <!--</android.support.design.widget.TextInputLayout>-->
-
+                <Spinner
+                    android:id="@+id/campo_modalidad"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@android:drawable/btn_dropdown"
+                    android:spinnerMode="dialog"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
                     android:id="@+id/input_avatar_partido"
@@ -215,17 +175,13 @@
                     android:layout_height="35dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="8dp"
-                    android:drawableLeft="@android:drawable/ic_search_category_default"
+                    android:drawableStart="@android:drawable/ic_search_category_default"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:hint="Avatar"
-                    android:inputType="text"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
                     android:textColor="@color/black"
-
-                    android:textColorHint="@color/black"
-                    />
-
+                    android:textColorHint="@color/black" />
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -243,7 +199,6 @@
                         android:textColor="@color/black"/>
                 </android.support.design.widget.TextInputLayout>
 
-
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/btn_crear_partido"
                     android:layout_width="fill_parent"
@@ -255,9 +210,7 @@
                     android:text="CREAR PARTIDO"
                     android:textColor="@color/white"/>
 
-
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
 </android.support.design.widget.CoordinatorLayout>

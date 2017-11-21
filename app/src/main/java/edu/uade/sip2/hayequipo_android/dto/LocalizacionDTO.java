@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class LocalizacionDTO implements Serializable {
 
     private String direccion;
-    private Float latitud;
-    private Float longitud;
+    private Double latitud;
+    private Double longitud;
 
     public String getDireccion() {
         return direccion;
@@ -15,17 +15,17 @@ public class LocalizacionDTO implements Serializable {
         this.direccion = direccion;
     }
 
-    public Float getLatitud() {
+    public Double getLatitud() {
         return latitud;
     }
-    public void setLatitud(Float latitud) {
+    public void setLatitud(Double latitud) {
         this.latitud = latitud;
     }
 
-    public Float getLongitud() {
+    public Double getLongitud() {
         return longitud;
     }
-    public void setLongitud(Float longitud) {
+    public void setLongitud(Double longitud) {
         this.longitud = longitud;
     }
 

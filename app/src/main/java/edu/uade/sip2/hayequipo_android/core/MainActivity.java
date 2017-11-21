@@ -1,6 +1,6 @@
 package edu.uade.sip2.hayequipo_android.core;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -47,28 +47,32 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import edu.uade.sip2.hayequipo_android.R;
 import edu.uade.sip2.hayequipo_android.adapter.DireccionAutoCompleteAdapter;
 import edu.uade.sip2.hayequipo_android.conn.VolleySingleton;
-import edu.uade.sip2.hayequipo_android.conn.requestToBackend;
-import edu.uade.sip2.hayequipo_android.data.Menus;
+import edu.uade.sip2.hayequipo_android.dto.LocalizacionDTO;
 import edu.uade.sip2.hayequipo_android.dto.ModalidadDTO;
+import edu.uade.sip2.hayequipo_android.dto.PartidoDTO;
 import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
 import edu.uade.sip2.hayequipo_android.entities.Partido;
-import edu.uade.sip2.hayequipo_android.entities.Usuario;
 import edu.uade.sip2.hayequipo_android.utils.AvatarPickerDialogFragment;
 import edu.uade.sip2.hayequipo_android.utils.Avatars;
+import edu.uade.sip2.hayequipo_android.utils.CalendarUtil;
 import edu.uade.sip2.hayequipo_android.utils.DatePickerFragment;
 import edu.uade.sip2.hayequipo_android.utils.TimePickerFragment;
 
@@ -76,15 +80,12 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AvatarPickerDialogFragment.AvatarPickerDialogListener {
 
     private static final int ACTIVIDAD_MAPA = 100;
-    private static int menus = 1;
 
     private ListView lv;
     private FancyAdapter mFancyAdapter;
     private int mMethod;
     private String usuario = "german";
-    private String avatar = "";
-    String hora = "";
-    private ArrayList<String> horas = new ArrayList<>();
+    private String avatarSeleccionado = "";
     private String hora = "";
     private ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
 
@@ -100,13 +101,12 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         lv = findViewById(android.R.id.list);
-        mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
+        mFancyAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
 
         actualizarLista();
-        setValuesHoras();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -167,50 +167,55 @@ public class MainActivity extends AppCompatActivity
                     )
             )
         ;
-    }
 
+        // Obtengo los partidos
+        VolleySingleton
+                .getInstance(getApplicationContext())
+                .addToRequestQueue(
+                        new JsonArrayRequest(
+                                getString(R.string.servicio_url) + getString(R.string.servicio_obtener_partidos),
+                                new Response.Listener<JSONArray>() {
+
+                                    @Override
+                                    public void onResponse(JSONArray response) {
+                                        try {
+                                            ObjectMapper mapper = new ObjectMapper();
+                                            PartidoDTO[] m = mapper.readValue(response.toString(), PartidoDTO[].class);
+                                            mFancyAdapter.agregarPartido(Arrays.asList(m));
+
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                },
+                                new Response.ErrorListener() {
+
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        error.printStackTrace();
+                                    }
+                                }
+                        )
+                )
+        ;
+    }
 
     private void cambiarAmigos(){
-
-
-        mFancyAdapter = new FancyAdapter(Menus.AMIGOS);
-        lv.setSelector(R.drawable.list_selector);
-        lv.setDrawSelectorOnTop(false);
-        lv.setAdapter(mFancyAdapter);
-
-        ArrayList<Usuario> usuarios = requestToBackend.obtenerUsuarios(usuario, getBaseContext());
-
-        if (usuarios == null) {
-            Toast.makeText(getBaseContext(), "usuarios NULL", Toast.LENGTH_SHORT).show();
-        }
-
-        /*
-        for(Partido p : partidos) {
-
-            LayoutInflater inflater = getLayoutInflater();
-
-            View result;
-            int specialId = R.drawable.list_item_selector_special;
-
-            result = inflater.inflate(R.layout.item, null, true);
-            TextView txtTitle = (TextView) result.findViewById(R.id.textNombre);
-            TextView txtLugar = (TextView) result.findViewById(R.id.textLugar);
-            TextView txtParticipantes = (TextView) result.findViewById(R.id.textParticipantes);
-            // TextView extratxt = (TextView) result.findViewById(R.id.textView1);
-
-            result.setBackgroundResource(specialId);
-            txtTitle.setText(p.getDescripcion());
-            txtLugar.setText(p.getLugar());
-            txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()));
-
-        }
-*/
-
+//        mFancyAdapter = new FancyAdapter(Menus.AMIGOS);
+//        lv.setSelector(R.drawable.list_selector);
+//        lv.setDrawSelectorOnTop(false);
+//        lv.setAdapter(mFancyAdapter);
+//
+//        ArrayList<Usuario> usuarios = requestToBackend.obtenerUsuarios(usuario, getBaseContext());
+//
+//        if (usuarios == null) {
+//            Toast.makeText(getBaseContext(), "usuarios NULL", Toast.LENGTH_SHORT).show();
+//        }
     }
 
-
     private void cambiarPartidos() {
-        mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
+//        mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
+        mFancyAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
@@ -218,16 +223,9 @@ public class MainActivity extends AppCompatActivity
         actualizarLista();
     }
 
-
     private void cambiarSolicitudesAmigos() {
-        // mFancyAdapter = new FancyAdapter(Menus.SOLICITUDES);
-        // lv.setSelector(R.drawable.list_selector);
-        // lv.setDrawSelectorOnTop(false);
-        // lv.setAdapter(mFancyAdapter);
-        //TODO: hacer josue
         Toast.makeText(getBaseContext(), "TODO JOSUE", Toast.LENGTH_SHORT).show();
     }
-
 
     private void cambiarCancha() {
         Intent intent = new Intent(this, CanchaActivity.class);
@@ -245,43 +243,43 @@ public class MainActivity extends AppCompatActivity
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
-
-    private void buscarPartidosPublicos() {
-        //TODO: hacer josue
-        Toast.makeText(getBaseContext(), "TODO JOSUE", Toast.LENGTH_SHORT).show();
-    }
-
-
-    private void showTimePickerDialog(final TextView hora) {
+    private void showTimePickerDialog(final TextView horaView) {
         TimePickerFragment newFragment = TimePickerFragment.newInstance(new TimePickerDialog.OnTimeSetListener() {
 
+            @SuppressLint("SimpleDateFormat")
+            public void onTimeSet(TimePicker timePicker, int hora, int minutos) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, hora);
+                calendar.set(Calendar.MINUTE, minutos);
 
-            public void onTimeSet(TimePicker timePicker, int hour, int minutes) {
-                // +1 because january is zero
-                final String selectedTime = String.valueOf(hour)+":"+String.valueOf(minutes);
-                Log.e("date picker:", " " + selectedTime.toString());
-                hora.setText(selectedTime);
-                hora.setHint(selectedTime.toString());
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+                String horaFormateada = sdf.format(calendar.getTime());
+
+                horaView.setText(horaFormateada);
+                horaView.setHint(horaFormateada);
             }
         });
         newFragment.show(getFragmentManager(), "timePicker");
-
     }
 
-    private void showDatePickerDialog(final TextView fecha) {
+    private void showDatePickerDialog(final TextView fechaView) {
         DatePickerFragment newFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
 
+            @SuppressLint("SimpleDateFormat")
+            public void onDateSet(DatePicker datePicker, int anno, int mes, int day) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.YEAR, anno);
+                calendar.set(Calendar.MONTH, mes);
+                calendar.set(Calendar.DAY_OF_MONTH, day);
 
-            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                // +1 because january is zero
-                final String selectedDate = day + " / " + (month + 1) + " / " + year;
-                Log.e("date picker:", " " + selectedDate.toString());
-                fecha.setText(selectedDate);
-                fecha.setHint(selectedDate.toString());
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                String fechaFormateada = sdf.format(calendar.getTime());
+
+                fechaView.setText(fechaFormateada);
+                fechaView.setHint(fechaFormateada);
             }
         });
         newFragment.show(getFragmentManager(), "datePicker");
-
     }
 
 
@@ -295,7 +293,7 @@ public class MainActivity extends AppCompatActivity
 
         ImageView botonCerrarDialogo = dialog.findViewById(R.id.black_cross);
         Button botonCrearPartido = dialog.findViewById(R.id.btn_crear_partido);
-        Spinner campoHora = dialog.findViewById(R.id.spinner_hora);
+
         final EditText campoNombre = dialog.findViewById(R.id.input_nombre_partido);
         final EditText campoDescripcion = dialog.findViewById(R.id.input_descripcion_partido);
         final TextView campoFecha = dialog.findViewById(R.id.input_fecha_partido);
@@ -361,48 +359,24 @@ public class MainActivity extends AppCompatActivity
         int dialogWidth = (int) (displayMetrics.widthPixels * 0.85);
         int dialogHeight = (int) (displayMetrics.heightPixels * 0.85);
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
-
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(
-                getApplication(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.horas));
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        campoHora.setAdapter(spinnerArrayAdapter);
-
         dialog.show();
-
-
-        campoHora.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View view, int i, long l) {
-
-
-                hora = arg0.getSelectedItem().toString();
-                Log.e("hora seleccionada:", " " + hora.toString());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-*/
 
         avatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createAvatarSelectDialog();
-
             }
         });
 
-
-        hora.setOnClickListener(new View.OnClickListener() {
+        // CONFIGURACION DE LA HORA
+        campoHora.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("hora on click", "on");
-                showTimePickerDialog(hora);
+                showTimePickerDialog(campoHora);
             }
         });
 
+        // CONFIGURACION DE LA FECHA
         campoFecha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -415,40 +389,66 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                String descripcion_partido = campoDescripcion.getText().toString();
-                String fecha_partido = campoFecha.getText().toString();
-                String lugar_partido = campoLugar.getText().toString();
-//                String cantidad_participantes = cantidad.getText().toString();
-//                Log.e("hora seleccionada", " " + hora);
+                if (partidoValido()){
+                    try {
+                        final PartidoDTO partido = new PartidoDTO();
 
-//                if (!descripcion_partido.equals("") && !fecha_partido.equals("") && !lugar_partido.equals("") && !hora.equals("") && !cantidad_participantes.equals("")) {
-//
-//                    int cant = Integer.parseInt(cantidad_participantes);
-//
-//                    if (cant >= 5) {
-//
-//                        int id_random = HarcodedUsersAndPlays.getIdPartido(0);
-//                        Partido partido = new Partido(id_random, lugar_partido, fecha_partido, hora, descripcion_partido, cantidad_participantes);
-//                        HarcodedUsersAndPlays.agregarPartido(partido);
-//
-//                        dialog.dismiss();
-//                        Toast.makeText(getBaseContext(), "el partido se ha agregado exitostamente!", Toast.LENGTH_LONG).show();
-//                        agregarPartido(partido);
-//
-//                    } else {
-//                        Log.e("error", "cantidad participantes");
-//                        Toast.makeText(context, "no puede crearse un partido con menos de 5 participantes!!", Toast.LENGTH_LONG).show();
-//                    }
-//
-//                } else {
-//                    Log.e("error", "error no todos los datos estan");
-//                    Toast.makeText(context, "los campos no pueden estar vacios!", Toast.LENGTH_LONG).show();
-//
-//                }
+                        LocalizacionDTO localizacion = new LocalizacionDTO();
+                        localizacion.setDireccion(campoLugar.getText().toString());
+                        localizacion.setLatitud(posicionMarcada.latitude);
+                        localizacion.setLongitud(posicionMarcada.longitude);
 
+                        ModalidadDTO modalidad = (ModalidadDTO) campoModalidad.getSelectedItem();
 
+                        partido.setFecha(CalendarUtil.formatearFechaHora(campoFecha.getText().toString(), campoHora.getText().toString()));
+                        partido.setApodo(campoNombre.getText().toString());
+                        partido.setComentario(campoDescripcion.getText().toString());
+                        partido.setPrecio(Double.valueOf(campoPrecio.getText().toString()));
+                        partido.setAvatar(avatarSeleccionado);
+                        partido.setModalidad(modalidad);
+                        partido.setLocalizacion(localizacion);
+
+                        // Obtengo las modalidades
+                        VolleySingleton
+                                .getInstance(getApplicationContext())
+                                .addToRequestQueue(
+                                        new JsonObjectRequest(
+                                                getString(R.string.servicio_url) + getString(R.string.servicio_crear_partido),
+                                                partido.toJsonObject(),
+                                                new Response.Listener<JSONObject>() {
+
+                                                    @Override
+                                                    public void onResponse(JSONObject response) {
+                                                        try {
+                                                            ObjectMapper mapper = new ObjectMapper();
+                                                            PartidoDTO partidoCreado = mapper.readValue(response.toString(), PartidoDTO.class);
+
+                                                            mFancyAdapter.agregarPartido(partidoCreado);
+                                                            dialog.dismiss();
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                },
+                                                new Response.ErrorListener() {
+
+                                                    @Override
+                                                    public void onErrorResponse(VolleyError error) {
+                                                        error.printStackTrace();
+                                                    }
+                                                }
+                                ));
+                    } catch (JsonProcessingException | JSONException | ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
+    }
+
+    private boolean partidoValido() {
+        // TODO Hacer la validacion de los campos
+        return true;
     }
 
     @Override
@@ -467,44 +467,36 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
     private void actualizarLista(){
 
-        ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
-
-        for (Partido p : partidos) {
-
-            LayoutInflater inflater = getLayoutInflater();
-
-            View result;
-            int specialId = R.drawable.list_item_selector_special;
-
-            result = inflater.inflate(R.layout.item, null, true);
-            TextView txtTitle = result.findViewById(R.id.textNombre);
-            TextView txtLugar = result.findViewById(R.id.textLugar);
-            TextView txtParticipantes = result.findViewById(R.id.textParticipantes);
-            ImageView imgAvatar = result.findViewById(R.id.icon);
-            if(!p.getAvatar().equals("")) {
-                Context context = imgAvatar.getContext();
-                int id = context.getResources().getIdentifier(p.getAvatar(), "drawable", context.getPackageName());
-                imgAvatar.setImageResource(id);
-            }
-            result.setBackgroundResource(specialId);
-
-            txtTitle.setText(p.getNombre());
-            txtLugar.setText(p.getLugar());
-            txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
-
-            lv.addFooterView(result);
-
-        }
-
+//        ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
+//
+//        for (Partido p : partidos) {
+//
+//            LayoutInflater inflater = getLayoutInflater();
+//
+//            View result;
+//            int specialId = R.drawable.list_item_selector_special;
+//
+//            result = inflater.inflate(R.layout.item_partido, null, true);
+//            TextView txtTitle = result.findViewById(R.id.textNombre);
+//            TextView txtLugar = result.findViewById(R.id.textLugar);
+//            TextView txtParticipantes = result.findViewById(R.id.textParticipantes);
+//            ImageView imgAvatar = result.findViewById(R.id.icon);
+//            if(!p.getAvatar().equals("")) {
+//                Context context = imgAvatar.getContext();
+//                int id = context.getResources().getIdentifier(p.getAvatar(), "drawable", context.getPackageName());
+//                imgAvatar.setImageResource(id);
+//            }
+//            result.setBackgroundResource(specialId);
+//
+//            txtTitle.setText(p.getNombre());
+//            txtLugar.setText(p.getLugar());
+//            txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
+//
+//            lv.addFooterView(result);
+//        }
     }
-
 
     private void createAvatarSelectDialog() {
         FragmentManager fm = getSupportFragmentManager();
@@ -514,61 +506,56 @@ public class MainActivity extends AppCompatActivity
 
     private void agregarPartido(Partido p) {
 
-        Log.e("actualizando lista", "actualizando..");
-        /*
-        partidos = HarcodedUsers.obtenerPartidos();
-        if(partidos!=null) {
-            for (Partido p : partidos) {
-                int i = p.getId();
-                nombre_partidos[i] = p.getNombre();
-            }
-        }
+//        Log.e("actualizando lista", "actualizando..");
+//
+//        partidos = HarcodedUsers.obtenerPartidos();
+//        if(partidos!=null) {
+//            for (Partido p : partidos) {
+//                int i = p.getId();
+//                nombre_partidos[i] = p.getNombre();
+//            }
+//        }
+//
+//
+//        mFancyAdapter = new FancyAdapter(nombre_partidos);
+//
+//         lv.setSelector(R.drawable.list_selector);
+//        lv.setDrawSelectorOnTop(false);
+//         lv.setAdapter(mFancyAdapter);
 
-
-        mFancyAdapter = new FancyAdapter(nombre_partidos);
-        */
-        // lv.setSelector(R.drawable.list_selector);
-        //lv.setDrawSelectorOnTop(false);
-        // lv.setAdapter(mFancyAdapter);
-
-        LayoutInflater inflater = getLayoutInflater();
-
-
-        View result;
-        int specialId = R.drawable.list_item_selector_special;
-
-        result = inflater.inflate(R.layout.item, null, true);
-        TextView txtNombre = result.findViewById(R.id.textNombre);
-        TextView txtLugar = result.findViewById(R.id.textLugar);
-        TextView txtParticipantes = result.findViewById(R.id.textParticipantes);
-        TextView txtFecha = result.findViewById(R.id.textFecha);
-        ImageView imgAvatar = result.findViewById(R.id.icon);
-
-        result.setBackgroundResource(specialId);
-
-        txtNombre.setText(p.getDescripcion());
-        txtLugar.setText(p.getLugar());
-        txtFecha.setText(p.getFecha().toString()+", "+p.getHora());
-        txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
-        if(!p.getAvatar().equals("")){
-            Context context = imgAvatar.getContext();
-            int id = context.getResources().getIdentifier(p.getAvatar(), "drawable", context.getPackageName());
-            imgAvatar.setImageResource(id);
-
-        }
-        lv.addFooterView(result);
-
+//        LayoutInflater inflater = getLayoutInflater();
+//
+//
+//        View result;
+//        int specialId = R.drawable.list_item_selector_special;
+//
+//        result = inflater.inflate(R.layout.item_partido, null, true);
+//        TextView txtNombre = result.findViewById(R.id.textNombre);
+//        TextView txtLugar = result.findViewById(R.id.textLugar);
+//        TextView txtParticipantes = result.findViewById(R.id.textParticipantes);
+//        TextView txtFecha = result.findViewById(R.id.textFecha);
+//        ImageView imgAvatar = result.findViewById(R.id.icon);
+//
+//        result.setBackgroundResource(specialId);
+//
+//        txtNombre.setText(p.getDescripcion());
+//        txtLugar.setText(p.getLugar());
+//        txtFecha.setText(p.getFecha().toString()+", "+p.getHora());
+//        txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
+//        if(!p.getAvatar().equals("")){
+//            Context context = imgAvatar.getContext();
+//            int id = context.getResources().getIdentifier(p.getAvatar(), "drawable", context.getPackageName());
+//            imgAvatar.setImageResource(id);
+//
+//        }
+//        lv.addFooterView(result);
     }
-
-
-
-
 
     @Override
     public void onAvatarSelected(AvatarPickerDialogFragment dialog, String avatarResourceName) {
        // TextView input = (TextView) findViewById(R.id.input_username);
-        Toast.makeText(getBaseContext(),"avatar: "+avatarResourceName,Toast.LENGTH_SHORT).show();
-        avatar = avatarResourceName;
+        Toast.makeText(getBaseContext(),"Avatar Seleccionado: "+avatarResourceName,Toast.LENGTH_SHORT).show();
+        avatarSeleccionado = avatarResourceName;
     }
 
 
@@ -594,20 +581,10 @@ public class MainActivity extends AppCompatActivity
                     })
                     .setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            return;
                         }
                     });
-
-
             AlertDialog alert = builder.create();
             alert.show();
-
-
-        /* Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);*/
-            //finish();
-            // finishAffinity();
-            // System.exit(0);
         }
     }
 
@@ -620,15 +597,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-//        if (id == R.id.accion_buscar_mapa) {
-//            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Buscando...", Snackbar.LENGTH_SHORT);
-//            snackbar.show();
-//
-//            startActivity(new Intent(this, MapaPartidoActivity.class));
-//
-//            return true;
-//        }
+//        int id = item_partido.getItemId();
         return super.onOptionsItemSelected(item);
     }
 
@@ -667,84 +636,69 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
-    private void setValuesHoras(){
-        for (int i = 0; i < 24; i++){
-            horas.add(""+i);
-        }
-    }
-
-
     private class FancyAdapter extends BaseAdapter {
 
-        private String[] mData;
+        private List<PartidoDTO> partidos;
 
-        public FancyAdapter(String[] data) {
-            mData = data;
+        FancyAdapter(ArrayList<PartidoDTO> partidos) {
+            this.partidos = partidos;
         }
-
 
         @Override
         public int getCount() {
-            return mData.length;
+            return partidos.size();
         }
 
         @Override
-        public String getItem(int position) {
-            return mData[position];
+        public Object getItem(int posicion) {
+            return partidos.get(posicion);
         }
 
         @Override
-        public long getItemId(int position) {
-            return position;
+        public long getItemId(int posicion) {
+            return posicion;
         }
 
+
+        void agregarPartido(List<PartidoDTO> lista) {
+            partidos.addAll(lista);
+            notifyDataSetChanged();
+        }
+
+        void agregarPartido(PartidoDTO partido){
+            partidos.add(partido);
+            notifyDataSetChanged();
+        }
+
+        @SuppressLint({"SimpleDateFormat", "InflateParams", "ViewHolder"})
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-
-            LayoutInflater inflater = getLayoutInflater();
-
-
-            View result = convertView;
-            int normalId;
-            int specialId;
-
-            if (convertView == null) {
-                // result = (TextView) getLayoutInflater().inflate(R.layout.text_item, parent, false);
-                // result.setTextColor(Color.WHITE);
-                result = inflater.inflate(R.layout.item, null, true);
-                TextView txtNombre = (TextView) result.findViewById(R.id.textNombre);
-                TextView txtLugar = (TextView) result.findViewById(R.id.textLugar);
-                ImageView imageView = (ImageView) result.findViewById(R.id.icon);
-                TextView txtFecha = (TextView) result.findViewById(R.id.textFecha);
-
-                if (partidos != null) {
-                    //txtTitle.setText(partidos.get(position).getNombre());
-                }
-
-
-            } else {
-                result = convertView;
+        public View getView(int posicion, View view, ViewGroup parent) {
+            if (view == null) {
+                view = getLayoutInflater().inflate(R.layout.item_partido, parent, false);
             }
 
-            final String cheese = getItem(position);
+            TextView apodoPartido = view.findViewById(R.id.item_partido_apodo);
+            TextView direccionPartido = view.findViewById(R.id.item_partido_direccion);
+            TextView descripcionPartido = view.findViewById(R.id.item_partido_descripcion);
+            TextView fechaPartido = view.findViewById(R.id.item_partido_fecha);
+            ImageView imagenAvatar = view.findViewById(R.id.item_partido_avatar);
 
-            //result.setText(cheese);
+            if (partidos != null) {
+                PartidoDTO partido = (PartidoDTO) getItem(posicion);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
+                apodoPartido.setText(partido.getApodo());
+                direccionPartido.setText(partido.getLocalizacion().getDireccion());
+                descripcionPartido.setText(partido.getComentario());
+                fechaPartido.setText(sdf.format(partido.getFecha()));
 
-            normalId = R.drawable.list_item_selector_normal;
-            specialId = R.drawable.list_item_selector_special;
+                imagenAvatar.setImageResource(R.drawable.pelota);
+                if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
+                    imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));
+                }
+            }
 
-
-            result.setBackgroundResource(specialId);
-
-
-            return result;
+            return view;
         }
-
-
     }
-
-
 }

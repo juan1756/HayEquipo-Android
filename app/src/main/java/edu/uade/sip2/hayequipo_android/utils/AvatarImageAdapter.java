@@ -42,7 +42,7 @@ public class AvatarImageAdapter extends BaseAdapter {
     /**
      * Get an object at the position
      *
-     * @param position Position of the item
+     * @param position Position of the item_partido
      * @return Object at the position
      */
     public Object getItem(int position) {
@@ -50,9 +50,9 @@ public class AvatarImageAdapter extends BaseAdapter {
     }
 
     /**
-     * Get the id of an item
+     * Get the id of an item_partido
      *
-     * @param position Position of the item
+     * @param position Position of the item_partido
      * @return 0
      */
     public long getItemId(int position) {
@@ -60,7 +60,7 @@ public class AvatarImageAdapter extends BaseAdapter {
     }
 
     /**
-     * Create a new ImageView for each item referenced by the Adapter
+     * Create a new ImageView for each item_partido referenced by the Adapter
      */
     public View getView(int position, View convertView, ViewGroup parent) {
         RoundedImageView imageView;

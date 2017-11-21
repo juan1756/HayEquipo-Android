@@ -335,8 +335,8 @@ public class MapaPartidoActivity extends AppCompatActivity
         modalidadDTO.setDescripcion("asdasd");
         partido.setModalidad(modalidadDTO);
         LocalizacionDTO localizacionDTO = new LocalizacionDTO();
-        localizacionDTO.setLatitud(-31.90f);
-        localizacionDTO.setLongitud(115.86f);
+        localizacionDTO.setLatitud(-31.90d);
+        localizacionDTO.setLongitud(115.86d);
         localizacionDTO.setDireccion("AUSTRALIA");
         partido.setLocalizacion(localizacionDTO);
 

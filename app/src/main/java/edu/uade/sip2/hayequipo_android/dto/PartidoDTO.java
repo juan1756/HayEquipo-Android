@@ -8,6 +8,8 @@ public class PartidoDTO extends BaseDTO {
 
     private String apodo;
     private Date fecha;
+    private Double precio;
+    private String avatar;
     private String comentario;
     private ModalidadDTO modalidad;
     private LocalizacionDTO localizacion;
@@ -24,6 +26,20 @@ public class PartidoDTO extends BaseDTO {
     }
     public void setFecha(Date fecha) {
         this.fecha = fecha;
+    }
+
+    public Double getPrecio() {
+        return precio;
+    }
+    public void setPrecio(Double precio) {
+        this.precio = precio;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getComentario() {
@@ -46,4 +62,5 @@ public class PartidoDTO extends BaseDTO {
     public void setLocalizacion(LocalizacionDTO localizacion) {
         this.localizacion = localizacion;
     }
+
 }

@@ -22,6 +22,7 @@
     <string name="uno_s">uno</string>
     <string name="dos_s">dos</string>
 
+    <!-- MENSAJES MAPA -->
     <string name="menu_partido">Partidos</string>
     <string name="titulo_buscar_partido_mapa">Buscar cercanos</string>
     <string name="titulo_seleccionar_partido_mapa">Seleccionar en el Mapa</string>
@@ -30,16 +31,13 @@
     <string name="location_permission_denied">Se requiere el servicio de Localizacion para mostrar la ubicacion actual. Por favor intente mas tarde y acepte los permisos.\nEn caso de que se haya denegado, puede aceptarlo en Configuracion del Sistema &gt; Aplicaciones &gt; \'HayEquipO!\'.</string>
     <string name="permission_required_toast">El permiso de la localizacion es requerida para mostrar la ubicacion.</string>
 
-    <string name="servicio_url">"http://192.168.0.10:8080/HayEquipo</string>
+    <!-- SERVICIOS -->
+    <string name="servicio_url">http://acarrea2.ddns.net/HayEquipo</string>
     <string name="servicio_crear_partido">/api/partido/crear</string>
     <string name="servicio_obtener_modalidad">/api/modalidad/obtenerTodos</string>
+    <string name="servicio_obtener_partidos">/api/partido/obtenerTodos</string>
 
     <!-- Arrays -->
-
-    <string-array name="partidos_mock">
-        <item>Partido X</item>
-
-    </string-array>
 
     <string-array name="amigos_mock">
         <item>Amigo 1</item>
@@ -56,33 +54,6 @@
         <item>Solicitud 2</item>
         <item>Solicitud 3</item>
         <item>Solicitud X</item>
-    </string-array>
-
-    <string-array name="horas">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-        <item>17</item>
-        <item>18</item>
-        <item>19</item>
-        <item>20</item>
-        <item>21</item>
-        <item>22</item>
-        <item>23</item>
-        <item>24</item>
     </string-array>
 
 </resources>

@@ -26,7 +26,7 @@ import edu.uade.sip2.hayequipo_android.R;
 public class AvatarPickerDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
     // Use this interface to deliver action events
     AvatarPickerDialogListener mListener;
-    // References to currently selected item
+    // References to currently selected item_partido
     private String mSelectedAvatarResourceEntryName;
     private RoundedImageView mSelectedAvatarImageView = null;
     // Reference to the created AlertDialog instance
