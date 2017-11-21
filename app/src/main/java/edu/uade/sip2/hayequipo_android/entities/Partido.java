@@ -11,11 +11,15 @@ public class Partido {
 
     private int id;
 
+    private String nombre;
+
     private String lugar;
 
     private String fecha;
 
     private String hora;
+
+    private int precio = 0;
 
     private String descripcion;
 
@@ -23,16 +27,21 @@ public class Partido {
 
     private int participantes = 0;
 
+    private String avatar = "";
 
 
-    public Partido(int id,String lugar, String fecha, String hora, String desc,String cantidad) {
+
+    public Partido(int id,String nombre, String lugar, String fecha, String hora,int precio, String desc,String cantidad,String avatar) {
         this.id = id;
+        this.nombre = nombre;
         this.lugar = lugar;
         this.fecha = fecha;
         this.hora = hora;
         this.descripcion = desc;
+        this.precio = precio;
         this.cantidad_participantes = cantidad;
         this.participantes = participantes+1; // AGREGO AL CREADOR COMO PARTICIPANTE
+        this.avatar = avatar;
 
 
 
@@ -94,5 +103,29 @@ public class Partido {
 
     public void setCantidad_participantes(String cantidad_participantes) {
         this.cantidad_participantes = cantidad_participantes;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public int getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(int precio) {
+        this.precio = precio;
     }
 }

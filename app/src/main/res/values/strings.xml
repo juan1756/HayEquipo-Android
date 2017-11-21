@@ -1,7 +1,12 @@
 <resources>
 
+    <!-- avatars -->
+    <string name="dialog_pick_avatar">Elige tu avatar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="select">Seleccionar</string>
+
     <!-- Titles -->
-    <string name="app_name">HayEquipo-Android</string>
+    <string name="app_name">HayEquipo</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -32,17 +37,8 @@
     <!-- Arrays -->
 
     <string-array name="partidos_mock">
-        <item>Partido 1</item>
-        <item>Partido 2</item>
-        <item>Partido 3</item>
-        <item>Partido 4</item>
-        <item>Partido 5</item>
-        <item>Partido 6</item>
-        <item>Partido 7</item>
-        <item>Partido 8</item>
-        <item>Partido 9</item>
-        <item>Partido 10</item>
         <item>Partido X</item>
+
     </string-array>
 
     <string-array name="amigos_mock">

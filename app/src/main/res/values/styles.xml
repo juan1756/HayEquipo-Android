@@ -45,4 +45,15 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="AppCompatAlertDialogStyle" parent="android:Theme.Dialog">
+        <item name="android:windowBackground">@drawable/background_shadow</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorBlueLogo</item>
+        <item name="colorControlNormal">@color/colorPrimary</item>
+    </style>
+
+
 </resources>

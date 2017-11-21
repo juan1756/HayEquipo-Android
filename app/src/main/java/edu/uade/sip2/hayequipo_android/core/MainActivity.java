@@ -3,6 +3,7 @@ package edu.uade.sip2.hayequipo_android.core;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,6 +40,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -65,10 +67,13 @@ import edu.uade.sip2.hayequipo_android.dto.ModalidadDTO;
 import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
 import edu.uade.sip2.hayequipo_android.entities.Partido;
 import edu.uade.sip2.hayequipo_android.entities.Usuario;
+import edu.uade.sip2.hayequipo_android.utils.AvatarPickerDialogFragment;
+import edu.uade.sip2.hayequipo_android.utils.Avatars;
 import edu.uade.sip2.hayequipo_android.utils.DatePickerFragment;
+import edu.uade.sip2.hayequipo_android.utils.TimePickerFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AvatarPickerDialogFragment.AvatarPickerDialogListener {
 
     private static final int ACTIVIDAD_MAPA = 100;
     private static int menus = 1;
@@ -77,6 +82,8 @@ public class MainActivity extends AppCompatActivity
     private FancyAdapter mFancyAdapter;
     private int mMethod;
     private String usuario = "german";
+    private String avatar = "";
+    String hora = "";
     private ArrayList<String> horas = new ArrayList<>();
     private String hora = "";
     private ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
@@ -102,7 +109,7 @@ public class MainActivity extends AppCompatActivity
         setValuesHoras();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -207,6 +214,7 @@ public class MainActivity extends AppCompatActivity
         lv.setSelector(R.drawable.list_selector);
         lv.setDrawSelectorOnTop(false);
         lv.setAdapter(mFancyAdapter);
+        getSupportActionBar().setTitle("Mis Partidos");
         actualizarLista();
     }
 
@@ -244,6 +252,22 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void showTimePickerDialog(final TextView hora) {
+        TimePickerFragment newFragment = TimePickerFragment.newInstance(new TimePickerDialog.OnTimeSetListener() {
+
+
+            public void onTimeSet(TimePicker timePicker, int hour, int minutes) {
+                // +1 because january is zero
+                final String selectedTime = String.valueOf(hour)+":"+String.valueOf(minutes);
+                Log.e("date picker:", " " + selectedTime.toString());
+                hora.setText(selectedTime);
+                hora.setHint(selectedTime.toString());
+            }
+        });
+        newFragment.show(getFragmentManager(), "timePicker");
+
+    }
+
     private void showDatePickerDialog(final TextView fecha) {
         DatePickerFragment newFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
 
@@ -272,8 +296,12 @@ public class MainActivity extends AppCompatActivity
         ImageView botonCerrarDialogo = dialog.findViewById(R.id.black_cross);
         Button botonCrearPartido = dialog.findViewById(R.id.btn_crear_partido);
         Spinner campoHora = dialog.findViewById(R.id.spinner_hora);
+        final EditText campoNombre = dialog.findViewById(R.id.input_nombre_partido);
         final EditText campoDescripcion = dialog.findViewById(R.id.input_descripcion_partido);
         final TextView campoFecha = dialog.findViewById(R.id.input_fecha_partido);
+        final TextView campoHora = dialog.findViewById(R.id.input_hora_partido);
+        final EditText campoPrecio = dialog.findViewById(R.id.input_precio);
+        final TextView avatarView = dialog.findViewById(R.id.input_avatar_partido);
 
         // Configuro el campo de modalidad
         campoModalidad = dialog.findViewById(R.id.campo_modalidad);
@@ -334,7 +362,6 @@ public class MainActivity extends AppCompatActivity
         int dialogHeight = (int) (displayMetrics.heightPixels * 0.85);
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
 
-
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(
                 getApplication(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.horas));
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -355,6 +382,24 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+*/
+
+        avatarView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createAvatarSelectDialog();
+
+            }
+        });
+
+
+        hora.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("hora on click", "on");
+                showTimePickerDialog(hora);
             }
         });
 
@@ -442,10 +487,15 @@ public class MainActivity extends AppCompatActivity
             TextView txtTitle = result.findViewById(R.id.textNombre);
             TextView txtLugar = result.findViewById(R.id.textLugar);
             TextView txtParticipantes = result.findViewById(R.id.textParticipantes);
-            // TextView extratxt = (TextView) result.findViewById(R.id.textView1);
-
+            ImageView imgAvatar = result.findViewById(R.id.icon);
+            if(!p.getAvatar().equals("")) {
+                Context context = imgAvatar.getContext();
+                int id = context.getResources().getIdentifier(p.getAvatar(), "drawable", context.getPackageName());
+                imgAvatar.setImageResource(id);
+            }
             result.setBackgroundResource(specialId);
-            txtTitle.setText(p.getDescripcion());
+
+            txtTitle.setText(p.getNombre());
             txtLugar.setText(p.getLugar());
             txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
 
@@ -453,6 +503,13 @@ public class MainActivity extends AppCompatActivity
 
         }
 
+    }
+
+
+    private void createAvatarSelectDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        AvatarPickerDialogFragment avatarPickerDialog = new AvatarPickerDialogFragment();
+        avatarPickerDialog.show(fm, "avatar_picker");
     }
 
     private void agregarPartido(Partido p) {
@@ -485,17 +542,41 @@ public class MainActivity extends AppCompatActivity
         TextView txtLugar = result.findViewById(R.id.textLugar);
         TextView txtParticipantes = result.findViewById(R.id.textParticipantes);
         TextView txtFecha = result.findViewById(R.id.textFecha);
+        ImageView imgAvatar = result.findViewById(R.id.icon);
 
         result.setBackgroundResource(specialId);
 
         txtNombre.setText(p.getDescripcion());
         txtLugar.setText(p.getLugar());
-        txtFecha.setText(p.getFecha().toString());
+        txtFecha.setText(p.getFecha().toString()+", "+p.getHora());
         txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
+        if(!p.getAvatar().equals("")){
+            Context context = imgAvatar.getContext();
+            int id = context.getResources().getIdentifier(p.getAvatar(), "drawable", context.getPackageName());
+            imgAvatar.setImageResource(id);
+
+        }
         lv.addFooterView(result);
 
     }
 
+
+
+
+
+    @Override
+    public void onAvatarSelected(AvatarPickerDialogFragment dialog, String avatarResourceName) {
+       // TextView input = (TextView) findViewById(R.id.input_username);
+        Toast.makeText(getBaseContext(),"avatar: "+avatarResourceName,Toast.LENGTH_SHORT).show();
+        avatar = avatarResourceName;
+    }
+
+
+    @Override
+    public void onCancelled(AvatarPickerDialogFragment dialog) {
+       // TextView input = (TextView) findViewById(R.id.input_username);
+        Toast.makeText(getBaseContext(),"cancel!",Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onBackPressed() {
