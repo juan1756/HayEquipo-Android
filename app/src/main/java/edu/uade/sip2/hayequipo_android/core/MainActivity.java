@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,7 +48,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -55,7 +55,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -69,6 +68,7 @@ import edu.uade.sip2.hayequipo_android.conn.VolleySingleton;
 import edu.uade.sip2.hayequipo_android.dto.LocalizacionDTO;
 import edu.uade.sip2.hayequipo_android.dto.ModalidadDTO;
 import edu.uade.sip2.hayequipo_android.dto.PartidoDTO;
+import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
 import edu.uade.sip2.hayequipo_android.entities.Partido;
 import edu.uade.sip2.hayequipo_android.utils.AvatarPickerDialogFragment;
 import edu.uade.sip2.hayequipo_android.utils.Avatars;
@@ -81,9 +81,13 @@ public class MainActivity extends AppCompatActivity
 
     private static final int ACTIVIDAD_MAPA = 100;
 
-    private ObjectMapper mapper;
-    private FancyAdapter listaAdapter;
+    private ListView lv;
+    private FancyAdapter mFancyAdapter;
+    private int mMethod;
+    private String usuario = "german";
     private String avatarSeleccionado = "";
+    private String hora = "";
+    private ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
 
     // CAMPOS PARA EL DIALOGO
     private AutoCompleteTextView campoLugar;
@@ -96,13 +100,11 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        ListView listaView = findViewById(android.R.id.list);
-        listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
-        listaView.setSelector(R.drawable.list_selector);
-        listaView.setDrawSelectorOnTop(false);
-        listaView.setAdapter(listaAdapter);
+        lv = findViewById(android.R.id.list);
+        mFancyAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
+        lv.setSelector(R.drawable.list_selector);
+        lv.setDrawSelectorOnTop(false);
+        lv.setAdapter(mFancyAdapter);
 
         actualizarLista();
 
@@ -126,10 +128,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        listaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int posicion, long id) {
-                cambiarPartido((PartidoDTO) listaAdapter.getItem(posicion));
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Log.e("LOG","partido pos: "+position);
+                cambiarPartido(position);
             }
         });
 
@@ -137,31 +140,32 @@ public class MainActivity extends AppCompatActivity
 
         // Obtengo las modalidades
         VolleySingleton
-            .getInstance(getApplicationContext())
-            .addToRequestQueue(
-                    new JsonArrayRequest(
-                            getString(R.string.servicio_url) + getString(R.string.servicio_obtener_modalidad),
-                            new Response.Listener<JSONArray>() {
+                .getInstance(getApplicationContext())
+                .addToRequestQueue(
+                        new JsonArrayRequest(
+                                getString(R.string.servicio_url) + getString(R.string.servicio_obtener_modalidad),
+                                new Response.Listener<JSONArray>() {
 
-                                @Override
-                                public void onResponse(JSONArray response) {
-                                    try {
-                                        ModalidadDTO[] m = mapper.readValue(response.toString(), ModalidadDTO[].class);
-                                        modalidades = Arrays.asList(m);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                    @Override
+                                    public void onResponse(JSONArray response) {
+                                        try {
+                                            ObjectMapper mapper = new ObjectMapper();
+                                            ModalidadDTO[] m = mapper.readValue(response.toString(), ModalidadDTO[].class);
+                                            modalidades = Arrays.asList(m);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                },
+                                new Response.ErrorListener() {
+
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        error.printStackTrace();
                                     }
                                 }
-                            },
-                            new Response.ErrorListener() {
-
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    error.printStackTrace();
-                                }
-                            }
-                    )
-            )
+                        )
+                )
         ;
 
         // Obtengo los partidos
@@ -175,8 +179,9 @@ public class MainActivity extends AppCompatActivity
                                     @Override
                                     public void onResponse(JSONArray response) {
                                         try {
+                                            ObjectMapper mapper = new ObjectMapper();
                                             PartidoDTO[] m = mapper.readValue(response.toString(), PartidoDTO[].class);
-                                            listaAdapter.agregarPartido(Arrays.asList(m));
+                                            mFancyAdapter.agregarPartido(Arrays.asList(m));
 
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -196,10 +201,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void cambiarAmigos(){
-//        listaAdapter = new FancyAdapter(Menus.AMIGOS);
-//        listaView.setSelector(R.drawable.list_selector);
-//        listaView.setDrawSelectorOnTop(false);
-//        listaView.setAdapter(listaAdapter);
+//        mFancyAdapter = new FancyAdapter(Menus.AMIGOS);
+//        lv.setSelector(R.drawable.list_selector);
+//        lv.setDrawSelectorOnTop(false);
+//        lv.setAdapter(mFancyAdapter);
 //
 //        ArrayList<Usuario> usuarios = requestToBackend.obtenerUsuarios(usuario, getBaseContext());
 //
@@ -209,30 +214,32 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void cambiarPartidos() {
-//        listaAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
-//        listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
-//        listaView.setSelector(R.drawable.list_selector);
-//        listaView.setDrawSelectorOnTop(false);
-//        listaView.setAdapter(listaAdapter);
-//        getSupportActionBar().setTitle("Mis Partidos");
-//        actualizarLista();
+//        mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
+        mFancyAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
+        lv.setSelector(R.drawable.list_selector);
+        lv.setDrawSelectorOnTop(false);
+        lv.setAdapter(mFancyAdapter);
+        getSupportActionBar().setTitle("Mis Partidos");
+        actualizarLista();
     }
 
     private void cambiarSolicitudesAmigos() {
-//        Toast.makeText(getBaseContext(), "TODO JOSUE", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), "TODO JOSUE", Toast.LENGTH_SHORT).show();
     }
 
     private void cambiarCancha() {
         Intent intent = new Intent(this, CanchaActivity.class);
         startActivity(intent);
+        finish();
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
-    private void cambiarPartido(PartidoDTO partido) {
+    private void cambiarPartido(int position) {
         Intent intent = new Intent(this, PartidoActivity.class);
-        intent.putExtra(PartidoActivity.EXTRA_PARTIDO, partido);
-        intent.putExtra(PartidoActivity.EXTRA_MODALIDADES, (Serializable) modalidades);
+        intent.putExtra("id", position);
+        intent.putExtra("usuario", usuario);
         startActivity(intent);
+        finish();
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
@@ -306,9 +313,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, MapaPartidoActivity.class);
-                intent.putExtra(MapaPartidoActivity.EXTRA_ACCION, MapaPartidoActivity.SELECCIONAR);
+                intent.putExtra(MapaPartidoActivity.ACCION_MAPA, MapaPartidoActivity.SELECCIONAR);
                 if (posicionMarcada != null){
-                    intent.putExtra(MapaPartidoActivity.EXTRA_POSICION, posicionMarcada);
+                    intent.putExtra(MapaPartidoActivity.POSICION_MAPA, posicionMarcada);
                 }
                 startActivityForResult(intent, ACTIVIDAD_MAPA);
             }
@@ -401,7 +408,7 @@ public class MainActivity extends AppCompatActivity
                         partido.setModalidad(modalidad);
                         partido.setLocalizacion(localizacion);
 
-                        // Creo el partido
+                        // Obtengo las modalidades
                         VolleySingleton
                                 .getInstance(getApplicationContext())
                                 .addToRequestQueue(
@@ -413,9 +420,10 @@ public class MainActivity extends AppCompatActivity
                                                     @Override
                                                     public void onResponse(JSONObject response) {
                                                         try {
+                                                            ObjectMapper mapper = new ObjectMapper();
                                                             PartidoDTO partidoCreado = mapper.readValue(response.toString(), PartidoDTO.class);
 
-                                                            listaAdapter.agregarPartido(partidoCreado);
+                                                            mFancyAdapter.agregarPartido(partidoCreado);
                                                             dialog.dismiss();
                                                         } catch (Exception e) {
                                                             e.printStackTrace();
@@ -429,7 +437,7 @@ public class MainActivity extends AppCompatActivity
                                                         error.printStackTrace();
                                                     }
                                                 }
-                                ));
+                                        ));
                     } catch (JsonProcessingException | JSONException | ParseException e) {
                         e.printStackTrace();
                     }
@@ -449,8 +457,8 @@ public class MainActivity extends AppCompatActivity
             case ACTIVIDAD_MAPA:
                 switch (resultCode){
                     case RESULT_OK:
-                        posicionMarcada = data.getExtras().getParcelable(MapaPartidoActivity.EXTRA_LOCALIZACION_MARCADA);
-                        String posicionTitulo = data.getExtras().getString(MapaPartidoActivity.EXTRA_LOCALIZACION_TITULO);
+                        posicionMarcada = data.getExtras().getParcelable(MapaPartidoActivity.LOCALIZACION_MARCADA);
+                        String posicionTitulo = data.getExtras().getString(MapaPartidoActivity.LOCALIZACION_TITULO);
                         campoLugar.setText(posicionTitulo);
                         break;
                 }
@@ -486,7 +494,7 @@ public class MainActivity extends AppCompatActivity
 //            txtLugar.setText(p.getLugar());
 //            txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
 //
-//            listaView.addFooterView(result);
+//            lv.addFooterView(result);
 //        }
     }
 
@@ -509,11 +517,11 @@ public class MainActivity extends AppCompatActivity
 //        }
 //
 //
-//        listaAdapter = new FancyAdapter(nombre_partidos);
+//        mFancyAdapter = new FancyAdapter(nombre_partidos);
 //
-//         listaView.setSelector(R.drawable.list_selector);
-//        listaView.setDrawSelectorOnTop(false);
-//         listaView.setAdapter(listaAdapter);
+//         lv.setSelector(R.drawable.list_selector);
+//        lv.setDrawSelectorOnTop(false);
+//         lv.setAdapter(mFancyAdapter);
 
 //        LayoutInflater inflater = getLayoutInflater();
 //
@@ -540,12 +548,12 @@ public class MainActivity extends AppCompatActivity
 //            imgAvatar.setImageResource(id);
 //
 //        }
-//        listaView.addFooterView(result);
+//        lv.addFooterView(result);
     }
 
     @Override
     public void onAvatarSelected(AvatarPickerDialogFragment dialog, String avatarResourceName) {
-       // TextView input = (TextView) findViewById(R.id.input_username);
+        // TextView input = (TextView) findViewById(R.id.input_username);
         Toast.makeText(getBaseContext(),"Avatar Seleccionado: "+avatarResourceName,Toast.LENGTH_SHORT).show();
         avatarSeleccionado = avatarResourceName;
     }
@@ -553,7 +561,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCancelled(AvatarPickerDialogFragment dialog) {
-       // TextView input = (TextView) findViewById(R.id.input_username);
+        // TextView input = (TextView) findViewById(R.id.input_username);
         Toast.makeText(getBaseContext(),"cancel!",Toast.LENGTH_SHORT).show();
     }
 
@@ -618,7 +626,7 @@ public class MainActivity extends AppCompatActivity
             snackbar.show();
 
             Intent intent = new Intent(this, MapaPartidoActivity.class);
-            intent.putExtra(MapaPartidoActivity.EXTRA_ACCION, MapaPartidoActivity.BUSCAR);
+            intent.putExtra(MapaPartidoActivity.ACCION_MAPA, MapaPartidoActivity.BUSCAR);
             startActivity(intent);
             return true;
         }
@@ -689,6 +697,7 @@ public class MainActivity extends AppCompatActivity
                     imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));
                 }
             }
+
             return view;
         }
     }

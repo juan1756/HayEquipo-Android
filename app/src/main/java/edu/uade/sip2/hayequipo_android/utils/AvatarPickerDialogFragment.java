@@ -1,11 +1,15 @@
 package edu.uade.sip2.hayequipo_android.utils;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -16,11 +20,12 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import edu.uade.sip2.hayequipo_android.R;
-
+import edu.uade.sip2.hayequipo_android.core.MainActivity;
 
 
 public class AvatarPickerDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
@@ -61,6 +66,11 @@ public class AvatarPickerDialogFragment extends DialogFragment implements Adapte
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
+
+       // ActivityCompat.requestPermissions(getActivity(),
+       //         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         // Get the layout inflater
@@ -135,6 +145,30 @@ public class AvatarPickerDialogFragment extends DialogFragment implements Adapte
         mSelectedAvatarResourceEntryName = Avatars.getAvatarResourceName(getContext(), avatarResourceId);
         mSelectedAvatarImageView = imageView;
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission granted and now can proceed
+                    Toast.makeText(getActivity(), "ok", Toast.LENGTH_SHORT).show(); //a sample method called
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getActivity(), "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+            // add other cases for more permissions
+        }
+    }
+
 
     /**
      * The activity that creates an instance of this dialog fragment must

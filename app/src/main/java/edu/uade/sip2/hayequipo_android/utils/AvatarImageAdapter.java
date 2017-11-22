@@ -9,11 +9,7 @@ import android.widget.GridView;
 
 import com.makeramen.roundedimageview.RoundedImageView;
 
-/**
- * Created by funkv on 13.02.2016, adapted from http://developer.android.com/guide/topics/ui/layout/gridview.html
- * <p/>
- * Creates RoundedImages for each Avatar from the AvatarPickerDialogFragment.
- */
+
 public class AvatarImageAdapter extends BaseAdapter {
     private Context mContext;
     // references to our images

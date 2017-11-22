@@ -10,12 +10,11 @@ import edu.uade.sip2.hayequipo_android.R;
 public class Avatars {
     // List of all available avatars
     private static final Integer[] AVATARS = {
-            R.drawable.anonymous, R.drawable.anonymous2_girl,
-            R.drawable.astronaut, R.drawable.basketball_man,
-            R.drawable.bomberman, R.drawable.bomberman2,
-            R.drawable.boxer_hispanic, R.drawable.bride_hispanic_material,
-            R.drawable.budist, R.drawable.call_center_operator_man,
-            R.drawable.cashier_woman, R.drawable.cook2_man
+            R.drawable.amigos, R.drawable.ciudad,
+            R.drawable.desconocidos, R.drawable.dreamteam,
+            R.drawable.oficina, R.drawable.parque,
+            R.drawable.random, R.drawable.rapido,
+            R.drawable.torneo
     };
 
     /**
