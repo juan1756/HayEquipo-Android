@@ -36,6 +36,7 @@
     <string name="servicio_crear_partido">/api/partido/crear</string>
     <string name="servicio_obtener_modalidad">/api/modalidad/obtenerTodos</string>
     <string name="servicio_obtener_partidos">/api/partido/obtenerTodos</string>
+    <string name="servicio_publicar_partido">/api/partido/publicar</string>
 
     <!-- Arrays -->
 

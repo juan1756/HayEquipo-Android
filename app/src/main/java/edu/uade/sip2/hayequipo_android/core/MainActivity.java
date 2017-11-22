@@ -21,7 +21,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +47,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -55,6 +55,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,7 +69,6 @@ import edu.uade.sip2.hayequipo_android.conn.VolleySingleton;
 import edu.uade.sip2.hayequipo_android.dto.LocalizacionDTO;
 import edu.uade.sip2.hayequipo_android.dto.ModalidadDTO;
 import edu.uade.sip2.hayequipo_android.dto.PartidoDTO;
-import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
 import edu.uade.sip2.hayequipo_android.entities.Partido;
 import edu.uade.sip2.hayequipo_android.utils.AvatarPickerDialogFragment;
 import edu.uade.sip2.hayequipo_android.utils.Avatars;
@@ -81,13 +81,9 @@ public class MainActivity extends AppCompatActivity
 
     private static final int ACTIVIDAD_MAPA = 100;
 
-    private ListView lv;
-    private FancyAdapter mFancyAdapter;
-    private int mMethod;
-    private String usuario = "german";
+    private ObjectMapper mapper;
+    private FancyAdapter listaAdapter;
     private String avatarSeleccionado = "";
-    private String hora = "";
-    private ArrayList<Partido> partidos = HarcodedUsersAndPlays.obtenerPartidos();
 
     // CAMPOS PARA EL DIALOGO
     private AutoCompleteTextView campoLugar;
@@ -100,11 +96,13 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        lv = findViewById(android.R.id.list);
-        mFancyAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
-        lv.setSelector(R.drawable.list_selector);
-        lv.setDrawSelectorOnTop(false);
-        lv.setAdapter(mFancyAdapter);
+        mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        ListView listaView = findViewById(android.R.id.list);
+        listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
+        listaView.setSelector(R.drawable.list_selector);
+        listaView.setDrawSelectorOnTop(false);
+        listaView.setAdapter(listaAdapter);
 
         actualizarLista();
 
@@ -128,11 +126,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Log.e("LOG","partido pos: "+position);
-                cambiarPartido(position);
+            public void onItemClick(AdapterView<?> adapterView, View view, int posicion, long id) {
+                cambiarPartido((PartidoDTO) listaAdapter.getItem(posicion));
             }
         });
 
@@ -149,7 +146,6 @@ public class MainActivity extends AppCompatActivity
                                 @Override
                                 public void onResponse(JSONArray response) {
                                     try {
-                                        ObjectMapper mapper = new ObjectMapper();
                                         ModalidadDTO[] m = mapper.readValue(response.toString(), ModalidadDTO[].class);
                                         modalidades = Arrays.asList(m);
                                     } catch (Exception e) {
@@ -179,9 +175,8 @@ public class MainActivity extends AppCompatActivity
                                     @Override
                                     public void onResponse(JSONArray response) {
                                         try {
-                                            ObjectMapper mapper = new ObjectMapper();
                                             PartidoDTO[] m = mapper.readValue(response.toString(), PartidoDTO[].class);
-                                            mFancyAdapter.agregarPartido(Arrays.asList(m));
+                                            listaAdapter.agregarPartido(Arrays.asList(m));
 
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -201,10 +196,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void cambiarAmigos(){
-//        mFancyAdapter = new FancyAdapter(Menus.AMIGOS);
-//        lv.setSelector(R.drawable.list_selector);
-//        lv.setDrawSelectorOnTop(false);
-//        lv.setAdapter(mFancyAdapter);
+//        listaAdapter = new FancyAdapter(Menus.AMIGOS);
+//        listaView.setSelector(R.drawable.list_selector);
+//        listaView.setDrawSelectorOnTop(false);
+//        listaView.setAdapter(listaAdapter);
 //
 //        ArrayList<Usuario> usuarios = requestToBackend.obtenerUsuarios(usuario, getBaseContext());
 //
@@ -214,32 +209,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void cambiarPartidos() {
-//        mFancyAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
-        mFancyAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
-        lv.setSelector(R.drawable.list_selector);
-        lv.setDrawSelectorOnTop(false);
-        lv.setAdapter(mFancyAdapter);
-        getSupportActionBar().setTitle("Mis Partidos");
-        actualizarLista();
+//        listaAdapter = new FancyAdapter(getResources().getStringArray(R.array.partidos_mock));
+//        listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
+//        listaView.setSelector(R.drawable.list_selector);
+//        listaView.setDrawSelectorOnTop(false);
+//        listaView.setAdapter(listaAdapter);
+//        getSupportActionBar().setTitle("Mis Partidos");
+//        actualizarLista();
     }
 
     private void cambiarSolicitudesAmigos() {
-        Toast.makeText(getBaseContext(), "TODO JOSUE", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getBaseContext(), "TODO JOSUE", Toast.LENGTH_SHORT).show();
     }
 
     private void cambiarCancha() {
         Intent intent = new Intent(this, CanchaActivity.class);
         startActivity(intent);
-        finish();
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
-    private void cambiarPartido(int position) {
+    private void cambiarPartido(PartidoDTO partido) {
         Intent intent = new Intent(this, PartidoActivity.class);
-        intent.putExtra("id", position);
-        intent.putExtra("usuario", usuario);
+        intent.putExtra(PartidoActivity.EXTRA_PARTIDO, partido);
+        intent.putExtra(PartidoActivity.EXTRA_MODALIDADES, (Serializable) modalidades);
         startActivity(intent);
-        finish();
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
@@ -313,9 +306,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, MapaPartidoActivity.class);
-                intent.putExtra(MapaPartidoActivity.ACCION_MAPA, MapaPartidoActivity.SELECCIONAR);
+                intent.putExtra(MapaPartidoActivity.EXTRA_ACCION, MapaPartidoActivity.SELECCIONAR);
                 if (posicionMarcada != null){
-                    intent.putExtra(MapaPartidoActivity.POSICION_MAPA, posicionMarcada);
+                    intent.putExtra(MapaPartidoActivity.EXTRA_POSICION, posicionMarcada);
                 }
                 startActivityForResult(intent, ACTIVIDAD_MAPA);
             }
@@ -408,7 +401,7 @@ public class MainActivity extends AppCompatActivity
                         partido.setModalidad(modalidad);
                         partido.setLocalizacion(localizacion);
 
-                        // Obtengo las modalidades
+                        // Creo el partido
                         VolleySingleton
                                 .getInstance(getApplicationContext())
                                 .addToRequestQueue(
@@ -420,10 +413,9 @@ public class MainActivity extends AppCompatActivity
                                                     @Override
                                                     public void onResponse(JSONObject response) {
                                                         try {
-                                                            ObjectMapper mapper = new ObjectMapper();
                                                             PartidoDTO partidoCreado = mapper.readValue(response.toString(), PartidoDTO.class);
 
-                                                            mFancyAdapter.agregarPartido(partidoCreado);
+                                                            listaAdapter.agregarPartido(partidoCreado);
                                                             dialog.dismiss();
                                                         } catch (Exception e) {
                                                             e.printStackTrace();
@@ -457,8 +449,8 @@ public class MainActivity extends AppCompatActivity
             case ACTIVIDAD_MAPA:
                 switch (resultCode){
                     case RESULT_OK:
-                        posicionMarcada = data.getExtras().getParcelable(MapaPartidoActivity.LOCALIZACION_MARCADA);
-                        String posicionTitulo = data.getExtras().getString(MapaPartidoActivity.LOCALIZACION_TITULO);
+                        posicionMarcada = data.getExtras().getParcelable(MapaPartidoActivity.EXTRA_LOCALIZACION_MARCADA);
+                        String posicionTitulo = data.getExtras().getString(MapaPartidoActivity.EXTRA_LOCALIZACION_TITULO);
                         campoLugar.setText(posicionTitulo);
                         break;
                 }
@@ -494,7 +486,7 @@ public class MainActivity extends AppCompatActivity
 //            txtLugar.setText(p.getLugar());
 //            txtParticipantes.setText("Participantes: " + String.valueOf(p.getParticipantes()) + "/" + p.getCantidad_participantes());
 //
-//            lv.addFooterView(result);
+//            listaView.addFooterView(result);
 //        }
     }
 
@@ -517,11 +509,11 @@ public class MainActivity extends AppCompatActivity
 //        }
 //
 //
-//        mFancyAdapter = new FancyAdapter(nombre_partidos);
+//        listaAdapter = new FancyAdapter(nombre_partidos);
 //
-//         lv.setSelector(R.drawable.list_selector);
-//        lv.setDrawSelectorOnTop(false);
-//         lv.setAdapter(mFancyAdapter);
+//         listaView.setSelector(R.drawable.list_selector);
+//        listaView.setDrawSelectorOnTop(false);
+//         listaView.setAdapter(listaAdapter);
 
 //        LayoutInflater inflater = getLayoutInflater();
 //
@@ -548,7 +540,7 @@ public class MainActivity extends AppCompatActivity
 //            imgAvatar.setImageResource(id);
 //
 //        }
-//        lv.addFooterView(result);
+//        listaView.addFooterView(result);
     }
 
     @Override
@@ -626,7 +618,7 @@ public class MainActivity extends AppCompatActivity
             snackbar.show();
 
             Intent intent = new Intent(this, MapaPartidoActivity.class);
-            intent.putExtra(MapaPartidoActivity.ACCION_MAPA, MapaPartidoActivity.BUSCAR);
+            intent.putExtra(MapaPartidoActivity.EXTRA_ACCION, MapaPartidoActivity.BUSCAR);
             startActivity(intent);
             return true;
         }
@@ -697,7 +689,6 @@ public class MainActivity extends AppCompatActivity
                     imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));
                 }
             }
-
             return view;
         }
     }

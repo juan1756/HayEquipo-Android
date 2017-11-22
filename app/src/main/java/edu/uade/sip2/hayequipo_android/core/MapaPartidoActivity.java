@@ -10,7 +10,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -79,10 +78,10 @@ public class MapaPartidoActivity extends AppCompatActivity
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int LOCATION_GOOGLE_REQUEST_CODE = 100;
 
-    public static final String LOCALIZACION_MARCADA = "LOCALIZACION_MARCADA";
-    public static final String LOCALIZACION_TITULO = "LOCALIZACION_TITULO";
-    public static final String ACCION_MAPA = "ACCION";
-    public static final String POSICION_MAPA = "POSICION";
+    public static final String EXTRA_LOCALIZACION_MARCADA = "EXTRA_LOCALIZACION_MARCADA";
+    public static final String EXTRA_LOCALIZACION_TITULO = "EXTRA_LOCALIZACION_TITULO";
+    public static final String EXTRA_ACCION = "ACCION";
+    public static final String EXTRA_POSICION = "POSICION";
     public static final int BUSCAR = 1;
     public static final int SELECCIONAR = 2;
 
@@ -114,8 +113,8 @@ public class MapaPartidoActivity extends AppCompatActivity
         @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        accion = getIntent().getIntExtra(ACCION_MAPA, BUSCAR);
-        posicionMarcada = getIntent().getParcelableExtra(POSICION_MAPA);
+        accion = getIntent().getIntExtra(EXTRA_ACCION, BUSCAR);
+        posicionMarcada = getIntent().getParcelableExtra(EXTRA_POSICION);
 
         setContentView(R.layout.activity_mapa_partido);
         ButterKnife.bind(this);
@@ -225,8 +224,8 @@ public class MapaPartidoActivity extends AppCompatActivity
                         break;
                     case SELECCIONAR:
                         Intent intent = new Intent();
-                        intent.putExtra(LOCALIZACION_MARCADA, posicionMarcada);
-                        intent.putExtra(LOCALIZACION_TITULO, textoDetalleTitulo.getText());
+                        intent.putExtra(EXTRA_LOCALIZACION_MARCADA, posicionMarcada);
+                        intent.putExtra(EXTRA_LOCALIZACION_TITULO, textoDetalleTitulo.getText());
 
                         setResult(Activity.RESULT_OK, intent);
                         finish();
