@@ -1,8 +1,14 @@
 package edu.uade.sip2.hayequipo_android.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.util.Date;
 
 import edu.uade.sip2.hayequipo_android.dto.base.BaseDTO;
+import edu.uade.sip2.hayequipo_android.dto.enumerado.TipoPrivacidadEnum;
+import edu.uade.sip2.hayequipo_android.dto.serializador.TipoPrivacidadEnumDeserializer;
+import edu.uade.sip2.hayequipo_android.dto.serializador.TipoPrivacidadEnumSerializer;
 
 public class PartidoDTO extends BaseDTO {
 
@@ -13,6 +19,10 @@ public class PartidoDTO extends BaseDTO {
     private String comentario;
     private ModalidadDTO modalidad;
     private LocalizacionDTO localizacion;
+
+    @JsonSerialize(using = TipoPrivacidadEnumSerializer.class)
+    @JsonDeserialize(using = TipoPrivacidadEnumDeserializer.class)
+    private TipoPrivacidadEnum tipoPrivacidad;
 
     public String getApodo() {
         return apodo;
@@ -63,4 +73,10 @@ public class PartidoDTO extends BaseDTO {
         this.localizacion = localizacion;
     }
 
+    public TipoPrivacidadEnum getTipoPrivacidad() {
+        return tipoPrivacidad;
+    }
+    public void setTipoPrivacidad(TipoPrivacidadEnum tipoPrivacidad) {
+        this.tipoPrivacidad = tipoPrivacidad;
+    }
 }

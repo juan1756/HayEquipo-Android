@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -42,6 +43,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,18 +64,15 @@ import edu.uade.sip2.hayequipo_android.utils.PermisosUtils;
  * Created by josue on 13/11/17.
  */
 
-public class MapaPartidoActivity extends AppCompatActivity
-    implements
-//                    GoogleMap.OnMyLocationButtonClickListener,
-//                    GoogleMap.OnMyLocationClickListener,
-                    GoogleMap.OnMarkerClickListener,
-                    GoogleMap.OnMapClickListener,
-                    GoogleMap.OnMapLongClickListener,
-                    OnMapReadyCallback,
-                    ActivityCompat.OnRequestPermissionsResultCallback,
-                    GoogleApiClient.ConnectionCallbacks,
-                    GoogleApiClient.OnConnectionFailedListener
-    {
+public class MapaPartidoActivity extends AppCompatActivity implements
+        GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
+        OnMapReadyCallback,
+        ActivityCompat.OnRequestPermissionsResultCallback,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        GoogleMap.OnCameraIdleListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int LOCATION_GOOGLE_REQUEST_CODE = 100;
@@ -109,8 +108,7 @@ public class MapaPartidoActivity extends AppCompatActivity
     @Bind(R.id.texto_mapa_detalle_descripcion)
     TextView textoDetalleDescripcion;
 
-
-        @Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         accion = getIntent().getIntExtra(EXTRA_ACCION, BUSCAR);
@@ -167,6 +165,7 @@ public class MapaPartidoActivity extends AppCompatActivity
 
                 mMap.setContentDescription("Mapa de Partidos a Jugar");
                 mMap.setOnMapClickListener(MapaPartidoActivity.this);
+                mMap.setOnCameraIdleListener(MapaPartidoActivity.this);
 
                 // OCULTO LOS BOTONES DE LOCALIZACION
                 mMap.setMyLocationEnabled(false);
@@ -202,6 +201,39 @@ public class MapaPartidoActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    /**
+     * Funcionalidad que dado un RegionVisible muestra el radio del mismo
+     * @param visibleRegion
+     * @return Valor del radio en Metros
+     */
+    private double calcularRadioVisible(VisibleRegion visibleRegion) {
+        float[] distanceWidth = new float[1];
+        float[] distanceHeight = new float[1];
+
+        LatLng farRight = visibleRegion.farRight;
+        LatLng farLeft = visibleRegion.farLeft;
+        LatLng nearRight = visibleRegion.nearRight;
+        LatLng nearLeft = visibleRegion.nearLeft;
+
+        Location.distanceBetween(
+                (farLeft.latitude + nearLeft.latitude) / 2,
+                farLeft.longitude,
+                (farRight.latitude + nearRight.latitude) / 2,
+                farRight.longitude,
+                distanceWidth
+        );
+
+        Location.distanceBetween(
+                farRight.latitude,
+                (farRight.longitude + farLeft.longitude) / 2,
+                nearRight.latitude,
+                (nearRight.longitude + nearLeft.longitude) / 2,
+                distanceHeight
+        );
+
+        return (distanceWidth[0] < distanceHeight[0]) ? distanceWidth[0] / 2 : distanceHeight[0] / 2;
     }
 
     private void configurarSeleccionar() {
@@ -505,5 +537,12 @@ public class MapaPartidoActivity extends AppCompatActivity
         }
 
         return false;
+    }
+
+    @Override
+    public void onCameraIdle() {
+        // SE ACTIVA CUANDO DEJA DE MOVERSE LA CAMARA DE LA VISTA
+        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
+        double radio = calcularRadioVisible(visibleRegion);
     }
 }

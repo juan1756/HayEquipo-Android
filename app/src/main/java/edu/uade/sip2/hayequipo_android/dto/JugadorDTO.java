@@ -1,7 +1,12 @@
 package edu.uade.sip2.hayequipo_android.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import edu.uade.sip2.hayequipo_android.dto.base.BaseDTO;
 import edu.uade.sip2.hayequipo_android.dto.enumerado.SexoEnum;
+import edu.uade.sip2.hayequipo_android.dto.serializador.SexoEnumDeserializer;
+import edu.uade.sip2.hayequipo_android.dto.serializador.SexoEnumSerializer;
 
 public class JugadorDTO extends BaseDTO {
 
@@ -9,6 +14,9 @@ public class JugadorDTO extends BaseDTO {
     private String apellido;
     private String email;
     private String celular;
+
+    @JsonSerialize(using = SexoEnumSerializer.class)
+    @JsonDeserialize(using = SexoEnumDeserializer.class)
     private SexoEnum sexo;
 
     public JugadorDTO() {

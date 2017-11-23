@@ -45,20 +45,16 @@
     </item>
 
     <item android:title="Opciones">
-
         <menu>
-        <item
-            android:id="@+id/ayuda"
-            android:icon="@android:drawable/ic_menu_manage"
-            android:title="Ayuda" />
+            <item
+                android:id="@+id/ayuda"
+                android:icon="@android:drawable/ic_menu_manage"
+                android:title="Ayuda" />
 
-
-        <item
-                    android:id="@+id/salir"
-                    android:icon="@android:drawable/ic_media_play"
-                    android:title="Salir" />
-
-
+            <item
+                android:id="@+id/salir"
+                android:icon="@android:drawable/ic_media_play"
+                android:title="Salir" />
         </menu>
     </item>
 </menu>
