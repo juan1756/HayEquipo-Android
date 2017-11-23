@@ -194,7 +194,7 @@
                         android:id="@+id/input_descripcion_partido"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Comentarios"
+                        android:hint="Comentarios (Opcional)"
                         android:inputType="text"
                         android:textColor="@color/black"/>
                 </android.support.design.widget.TextInputLayout>

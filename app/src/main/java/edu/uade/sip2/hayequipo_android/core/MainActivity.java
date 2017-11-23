@@ -104,21 +104,11 @@ public class MainActivity extends AppCompatActivity
 
         ListView listaView = findViewById(android.R.id.list);
         listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
-        listaView.setSelector(R.drawable.list_selector);
-        listaView.setDrawSelectorOnTop(false);
-        listaView.setAdapter(listaAdapter);
-
-        // PROGRESS DIALOG MUY SIMPLE
-        try {
-            ProgressDialog mDialog = new ProgressDialog(this);
-            WaitTime wait = new WaitTime(mDialog);
-            wait.execute();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+           listaView.setSelector(R.drawable.list_selector);
+           listaView.setDrawSelectorOnTop(false);
+           listaView.setAdapter(listaAdapter);
 
 
-        actualizarLista();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -146,6 +136,35 @@ public class MainActivity extends AppCompatActivity
                 cambiarPartido((PartidoDTO) listaAdapter.getItem(posicion));
             }
         });
+
+
+       todosLosPartidos(1);
+    }
+
+
+
+    private void todosLosPartidos(int refresh){
+
+        // PROGRESS DIALOG MUY SIMPLE
+        try {
+            ProgressDialog mDialog = new ProgressDialog(this);
+            WaitTime wait = new WaitTime(mDialog);
+            wait.execute();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+
+       //Para cuando entro a travès del drawertoogle
+      if(refresh==0){
+          ListView listaView = findViewById(android.R.id.list);
+          listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
+          listaView.setSelector(R.drawable.list_selector);
+          listaView.setDrawSelectorOnTop(false);
+          listaView.setAdapter(listaAdapter);
+
+      }
+
 
 
         // Obtengo las modalidades
@@ -206,22 +225,20 @@ public class MainActivity extends AppCompatActivity
                         )
                 )
         ;
+
+
     }
 
 
-
-
     private void cambiarAmigos(){
-//        listaAdapter = new FancyAdapter(Menus.AMIGOS);
-//        listaView.setSelector(R.drawable.list_selector);
-//        listaView.setDrawSelectorOnTop(false);
-//        listaView.setAdapter(listaAdapter);
-//
-//        ArrayList<Usuario> usuarios = requestToBackend.obtenerUsuarios(usuario, getBaseContext());
-//
-//        if (usuarios == null) {
-//            Toast.makeText(getBaseContext(), "usuarios NULL", Toast.LENGTH_SHORT).show();
-//        }
+        //TODO: ESTO ES PARA UN TEST,(REFRESCO EL LISTADAPTER) BORRAR
+        ListView listaView = findViewById(android.R.id.list);
+        listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
+        listaView.setSelector(R.drawable.list_selector);
+        listaView.setDrawSelectorOnTop(false);
+        listaView.setAdapter(listaAdapter);
+
+
     }
 
     private void cambiarPartidos() {
@@ -243,6 +260,9 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
+
+
+
 
     private void cambiarPartido(PartidoDTO partido) {
         Intent intent = new Intent(this, PartidoActivity.class);
@@ -398,7 +418,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                if (partidoValido()){
+                if (partidoValido(campoNombre.getText().toString(),campoFecha.getText().toString(),campoHora.getText().toString(),campoLugar.getText().toString())){
                     try {
                         final PartidoDTO partido = new PartidoDTO();
 
@@ -449,13 +469,16 @@ public class MainActivity extends AppCompatActivity
                     } catch (JsonProcessingException | JSONException | ParseException e) {
                         e.printStackTrace();
                     }
+                }else{
+                    Toast.makeText(getBaseContext(),"por favor complete todos los campos",Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
-    private boolean partidoValido() {
-        // TODO Hacer la validacion de los campos
+    private boolean partidoValido(String nombre,String fecha,String hora,String lugar) {
+        if(nombre.equals("") || fecha.equals("") || hora.equals("") || lugar.equals(""))
+        return false;
         return true;
     }
 
@@ -618,7 +641,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             cambiarAmigos();
         } else if (id == R.id.nav_gallery) {
-            cambiarPartidos();
+            todosLosPartidos(0);
         } else if (id == R.id.nav_slideshow) {
             cambiarCancha();
         } else if (id == R.id.salir) {

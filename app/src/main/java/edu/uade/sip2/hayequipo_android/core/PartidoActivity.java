@@ -64,6 +64,8 @@ public class PartidoActivity extends AppCompatActivity {
     Spinner campoModalidad;
     @Bind(R.id.input_precio)
     EditText campoPrecio;
+    @Bind(R.id.campo_jugadores)
+    EditText campoJugadores;
     @Bind(R.id.btn_invitar_amigos)
     Button botonInvitar;
     @Bind(R.id.btn_guardar_cambios)
@@ -209,6 +211,8 @@ public class PartidoActivity extends AppCompatActivity {
         campoHora.setEnabled(edita);
         campoLugar.setEnabled(edita);
         campoPrecio.setEnabled(edita);
+        campoJugadores.setEnabled(edita);
+
     }
 
 
