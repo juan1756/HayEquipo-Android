@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -119,11 +120,17 @@ public class MapaPartidoActivity extends AppCompatActivity implements
     @Bind(R.id.boton_mi_localizacion)
     FloatingActionButton botonMiLocalizacion;
     @Bind(R.id.boton_seleccionar_localizacion)
-    Button botonSeleccionarLocalizacion;
+    FloatingActionButton botonSeleccionarLocalizacion;
     @Bind(R.id.layout_mapa_detalle)
     LinearLayout layoutMapaDetalle;
+    @Bind(R.id.layout_mapa_detalle_1)
+    RelativeLayout layoutMapaDetalle1;
     @Bind(R.id.texto_mapa_detalle_titulo)
     TextView textoDetalleTitulo;
+    @Bind(R.id.texto_mapa_detalle_precio)
+    TextView textoDetallePrecio;
+    @Bind(R.id.texto_mapa_detalle_faltantes)
+    TextView textoDetalleFaltantes;
     @Bind(R.id.texto_mapa_detalle_descripcion)
     TextView textoDetalleDescripcion;
 
@@ -145,7 +152,9 @@ public class MapaPartidoActivity extends AppCompatActivity implements
         layoutMapaDetalleBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_DRAGGING && accion.equals(SELECCIONAR)) {
+                if ( (newState == BottomSheetBehavior.STATE_DRAGGING && accion.equals(SELECCIONAR)) ||
+                     (newState == BottomSheetBehavior.STATE_DRAGGING && accion.equals(BUSCAR) && partidoMarcado == null)
+                ){
                     layoutMapaDetalleBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             }
@@ -154,7 +163,7 @@ public class MapaPartidoActivity extends AppCompatActivity implements
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
-        layoutMapaDetalle.setVisibility(View.INVISIBLE);
+//        layoutMapaDetalle.setVisibility(View.INVISIBLE);
 
         geocoder = new Geocoder(this, Locale.getDefault());
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.layout_mapa);
@@ -190,6 +199,7 @@ public class MapaPartidoActivity extends AppCompatActivity implements
                 mMap.setContentDescription("Mapa de Partidos a Jugar");
                 mMap.setOnMapClickListener(MapaPartidoActivity.this);
                 mMap.setOnCameraIdleListener(MapaPartidoActivity.this);
+                mMap.setOnMarkerClickListener(MapaPartidoActivity.this);
 
                 // OCULTO LOS BOTONES DE LOCALIZACION
                 mMap.setMyLocationEnabled(false);
@@ -207,15 +217,11 @@ public class MapaPartidoActivity extends AppCompatActivity implements
 
                     switch (accion){
                         case BUSCAR:
-                            mMap.setOnMarkerClickListener(MapaPartidoActivity.this);
                             partidoPublicoEncontrado = new ArrayList<>();
-
                             break;
                         case SELECCIONAR:
                             mMap.setOnMapLongClickListener(MapaPartidoActivity.this);
-
-                            layoutMapaDetalle.setVisibility(View.VISIBLE);
-
+//                            layoutMapaDetalle.setVisibility(View.VISIBLE);
                             if (posicionMarcada != null){
                                 agregarMarcador(posicionMarcada, "Localizacion Escrita", true);
                                 actualizarDetalleMapa();
@@ -424,17 +430,43 @@ public class MapaPartidoActivity extends AppCompatActivity implements
     @Override
     public boolean onMarkerClick(Marker marker) {
         // CUANDO REALIZO UNA SELECCION DE UN PARTIDO
-        layoutMapaDetalle.setVisibility(View.VISIBLE);
+//        layoutMapaDetalle.setVisibility(View.VISIBLE);
         Object data = marker.getTag();
 
         if (data != null && data instanceof PartidoDTO){
             PartidoDTO partidoDTO = (PartidoDTO) data;
             partidoMarcado = partidoDTO.getCodigo();
-            StringBuilder direccionCompleta = new StringBuilder()
-                    .append(partidoDTO.getLocalizacion().getDireccion())
-                    ;
 
-            textoDetalleTitulo.setText(direccionCompleta);
+            StringBuilder texto;
+
+            texto = new StringBuilder().append(partidoDTO.getLocalizacion().getDireccion());
+            textoDetalleTitulo.setText(texto);
+
+            texto = new StringBuilder().append("FALTAN: ");
+            texto.append(partidoDTO.getCantidadFaltante());
+            textoDetalleFaltantes.setText(texto);
+
+            if (partidoDTO.getComentario() != null){
+                texto = new StringBuilder().append(partidoDTO.getComentario());
+                textoDetalleDescripcion.setText(texto);
+            }
+
+            if (partidoDTO.getPrecio() != null){
+                texto = new StringBuilder().append("PRECIO: ");
+                texto.append(partidoDTO.getPrecio());
+                textoDetallePrecio.setText(texto);
+            }
+
+            layoutMapaDetalle1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (layoutMapaDetalleBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+                        layoutMapaDetalleBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    } else {
+                        layoutMapaDetalleBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    }
+                }
+            });
         }
 
         return false;

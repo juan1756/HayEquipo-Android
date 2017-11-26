@@ -13,6 +13,19 @@
         android:background="@color/white">
 
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/boton_seleccionar_localizacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:translationY="-50dp"
+            app:backgroundTint="@color/white"
+            app:layout_anchor="@+id/boton_mi_localizacion"
+            app:layout_anchorGravity="top|right"
+            app:srcCompat="@drawable/ic_accion_seleccionar" />
+
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/boton_mi_localizacion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,30 +49,63 @@
             android:id="@+id/layout_mapa_detalle"
             android:layout_width="match_parent"
             android:layout_height="340dp"
-            android:background="@android:color/darker_gray"
+            android:background="#ffffff"
+            android:elevation="20dp"
             android:orientation="vertical"
             app:behavior_hideable="false"
             app:behavior_peekHeight="80dp"
             app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-            <TextView
-                android:id="@+id/texto_mapa_detalle_titulo"
+            <RelativeLayout
+                android:id="@+id/layout_mapa_detalle_1"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:background="@color/colorAccent"
-                android:padding="10dp"
-                android:text=""
-                android:textColor="@android:color/white" />
+                android:padding="10dp">
 
-            <TextView
-                android:id="@+id/texto_mapa_detalle_descripcion"
+                <TextView
+                    android:id="@+id/texto_mapa_detalle_titulo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:padding="0dp"
+                    android:singleLine="true"
+                    android:text="Seleccione un punto"
+                    android:textColor="#212121"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/texto_mapa_detalle_precio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/texto_mapa_detalle_titulo"
+                    android:layout_marginTop="10dp" />
+
+                <TextView
+                    android:id="@+id/texto_mapa_detalle_faltantes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@+id/texto_mapa_detalle_titulo"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_mapa_detalle_2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="10dp"
-                android:background="@color/colorBlueLogo"
-                android:text=""
-                android:textColor="@android:color/white" />
+                android:padding="10dp">
 
+                <TextView
+                    android:id="@+id/texto_mapa_detalle_descripcion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="0dp"
+                    android:text=""
+                    android:textColor="#212121" />
+            </RelativeLayout>
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
 
@@ -68,10 +114,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <Button
-            android:id="@+id/boton_seleccionar_localizacion"
+            android:id="@+id/boton_seleccionar_localizacion_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
