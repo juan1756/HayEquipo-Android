@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -44,6 +45,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -66,6 +68,7 @@ import java.util.List;
 
 import edu.uade.sip2.hayequipo_android.R;
 import edu.uade.sip2.hayequipo_android.adapter.DireccionAutoCompleteAdapter;
+import edu.uade.sip2.hayequipo_android.adapter.JugadorAdapter;
 import edu.uade.sip2.hayequipo_android.conn.VolleySingleton;
 import edu.uade.sip2.hayequipo_android.dto.JugadorDTO;
 import edu.uade.sip2.hayequipo_android.dto.LocalizacionDTO;
@@ -94,6 +97,7 @@ public class MainActivity extends AppCompatActivity
     private AutoCompleteTextView campoLugar;
     private Spinner campoModalidad;
     private List<ModalidadDTO> modalidades = new ArrayList<>();
+    private List<JugadorDTO> jugadores = new ArrayList<>();
     private LatLng posicionMarcada;
 
     @Override
@@ -272,13 +276,57 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void cambiarAmigos(){
-        //TODO: ESTO ES PARA UN TEST,(REFRESCO EL LISTADAPTER) BORRAR
-        ListView listaView = findViewById(android.R.id.list);
-        listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
-        listaView.setSelector(R.drawable.list_selector);
-        listaView.setDrawSelectorOnTop(false);
-        listaView.setAdapter(listaAdapter);
 
+        //ListView listaView = findViewById(android.R.id.list);
+      //  listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
+      //  listaView.setSelector(R.drawable.list_selector);
+      //  listaView.setDrawSelectorOnTop(false);
+       // listaView.setAdapter(listaAdapter);
+        try {
+
+            //JugadorDTO ejemplo = new JugadorDTO();
+           // ejemplo.setNombre("josue");
+//        ejemplo.setNombre("pepe");
+
+            VolleySingleton
+                    .getInstance(getApplicationContext())
+                    .addToRequestQueue(
+                            new JsonArrayRequest(
+                                    getString(R.string.servicio_url) + getString(R.string.servicio_obtener_jugadores),
+                                    new Response.Listener<JSONArray>() {
+
+                                        @Override
+                                        public void onResponse(JSONArray response) {
+                                            try {
+                                                JugadorDTO[] j = mapper.readValue(response.toString(), JugadorDTO[].class);
+                                              //  modalidades = Arrays.asList(m);
+                                                //Log.e("jug",j.toString());
+                                                JugadorAdapter jugadorAdapter = new JugadorAdapter(new ArrayList<JugadorDTO>(),getBaseContext());
+                                                ListView listaView = findViewById(android.R.id.list);
+                                                listaView.setSelector(R.drawable.list_selector);
+                                                  listaView.setDrawSelectorOnTop(false);
+
+                                                jugadorAdapter.agregarJugador(Arrays.asList(j));
+                                                listaView.setAdapter(jugadorAdapter);
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            error.printStackTrace();
+                                        }
+                                    }
+                            )
+                    )
+            ;
+        }catch(Exception e){
+        e.printStackTrace();
+        }
 
     }
 
