@@ -33,11 +33,22 @@
 
     <!-- SERVICIOS -->
     <string name="servicio_url">http://acarrea2.ddns.net/HayEquipo</string>
-    <string name="servicio_crear_partido">/api/partido/crear</string>
+
+    <string name="servicio_buscar_jugador">/api/jugador/buscarPorNombre</string>
+    <string name="servicio_obtener_jugadores">/api/jugador/obtenerTodos</string>
+
     <string name="servicio_obtener_modalidad">/api/modalidad/obtenerTodos</string>
-    <string name="servicio_obtener_partidos">/api/partido/obtenerTodos</string>
-    <string name="servicio_obtener_por_localizacion">/api/partido/buscarPorLocalizacion</string>
+
+    <string name="servicio_crear_partido">/api/partido/crear</string>
+    <string name="servicio_obtener_partidos_por_jugador">/api/partido/obtenerPorJugador</string>
+    <string name="servicio_obtener_partidos_por_localizacion">/api/partido/buscarPorLocalizacion</string>
     <string name="servicio_publicar_partido">/api/partido/publicar</string>
+
+    <string name="servicio_solicitud_pendiente">/api/solicitud/obtenerPendiente</string>
+    <string name="servicio_solicitud_agregar_jugador">/api/solicitud/agregarJugador</string>
+    <string name="servicio_solicitud_aceptar_jugador">/api/solicitud/aceptarJugador</string>
+    <string name="servicio_solicitud_rechazar_jugador">/api/solicitud/rechazarJugador</string>
+
 
     <!-- Arrays -->
 

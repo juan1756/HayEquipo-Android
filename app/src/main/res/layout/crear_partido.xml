@@ -196,8 +196,17 @@
                         android:layout_height="wrap_content"
                         android:hint="Comentarios (Opcional)"
                         android:inputType="text"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black" />
+
                 </android.support.design.widget.TextInputLayout>
+
+                <CheckBox
+                    android:id="@+id/campo_es_publico"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="Hacer publico" />
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/btn_crear_partido"
@@ -213,4 +222,5 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
 </android.support.design.widget.CoordinatorLayout>

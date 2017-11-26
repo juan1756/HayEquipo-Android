@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Date;
+import java.util.List;
 
 import edu.uade.sip2.hayequipo_android.dto.base.BaseDTO;
 import edu.uade.sip2.hayequipo_android.dto.enumerado.TipoPrivacidadEnum;
@@ -23,6 +24,15 @@ public class PartidoDTO extends BaseDTO {
     @JsonSerialize(using = TipoPrivacidadEnumSerializer.class)
     @JsonDeserialize(using = TipoPrivacidadEnumDeserializer.class)
     private TipoPrivacidadEnum tipoPrivacidad;
+    private JugadorDTO creador;
+
+    private Integer cantidadFaltante;
+    private Integer cantidadPendiente;
+    private Integer cantidadAceptado;
+    private Integer cantidadRechado;
+    private List<JugadorDTO> jugadoresPendiente;
+    private List<JugadorDTO> jugadoresAceptado;
+    private List<JugadorDTO> jugadoresRechazado;
 
     public String getApodo() {
         return apodo;
@@ -78,5 +88,61 @@ public class PartidoDTO extends BaseDTO {
     }
     public void setTipoPrivacidad(TipoPrivacidadEnum tipoPrivacidad) {
         this.tipoPrivacidad = tipoPrivacidad;
+    }
+
+    public JugadorDTO getCreador() {
+        return creador;
+    }
+    public void setCreador(JugadorDTO creador) {
+        this.creador = creador;
+    }
+
+    public Integer getCantidadFaltante() {
+        return cantidadFaltante;
+    }
+    public void setCantidadFaltante(Integer cantidadFaltante) {
+        this.cantidadFaltante = cantidadFaltante;
+    }
+
+    public Integer getCantidadPendiente() {
+        return cantidadPendiente;
+    }
+    public void setCantidadPendiente(Integer cantidadPendiente) {
+        this.cantidadPendiente = cantidadPendiente;
+    }
+
+    public Integer getCantidadAceptado() {
+        return cantidadAceptado;
+    }
+    public void setCantidadAceptado(Integer cantidadAceptado) {
+        this.cantidadAceptado = cantidadAceptado;
+    }
+
+    public Integer getCantidadRechado() {
+        return cantidadRechado;
+    }
+    public void setCantidadRechado(Integer cantidadRechado) {
+        this.cantidadRechado = cantidadRechado;
+    }
+
+    public List<JugadorDTO> getJugadoresPendiente() {
+        return jugadoresPendiente;
+    }
+    public void setJugadoresPendiente(List<JugadorDTO> jugadoresPendiente) {
+        this.jugadoresPendiente = jugadoresPendiente;
+    }
+
+    public List<JugadorDTO> getJugadoresAceptado() {
+        return jugadoresAceptado;
+    }
+    public void setJugadoresAceptado(List<JugadorDTO> jugadoresAceptado) {
+        this.jugadoresAceptado = jugadoresAceptado;
+    }
+
+    public List<JugadorDTO> getJugadoresRechazado() {
+        return jugadoresRechazado;
+    }
+    public void setJugadoresRechazado(List<JugadorDTO> jugadoresRechazado) {
+        this.jugadoresRechazado = jugadoresRechazado;
     }
 }

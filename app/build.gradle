@@ -27,7 +27,7 @@ dependencies {
     compile 'com.github.andremion:counterfab:1.0.1'
     annotationProcessor 'com.jakewharton:butterknife:7.0.1'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.android.volley:volley:1.0.0'
+    compile 'com.android.volley:volley:1.1.0-rc2'
     compile 'com.android.support:design:26.1.0'
     compile 'com.makeramen:roundedimageview:2.2.1'
     annotationProcessor 'com.makeramen:roundedimageview:2.2.1'
