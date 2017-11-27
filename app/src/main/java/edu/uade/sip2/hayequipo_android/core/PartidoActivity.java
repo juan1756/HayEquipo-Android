@@ -22,10 +22,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONException;
@@ -39,6 +41,7 @@ import butterknife.ButterKnife;
 import edu.uade.sip2.hayequipo_android.R;
 import edu.uade.sip2.hayequipo_android.conn.VolleySingleton;
 import edu.uade.sip2.hayequipo_android.conn.requestToBackend;
+import edu.uade.sip2.hayequipo_android.dto.JugadorDTO;
 import edu.uade.sip2.hayequipo_android.dto.ModalidadDTO;
 import edu.uade.sip2.hayequipo_android.dto.PartidoDTO;
 import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
@@ -80,10 +83,13 @@ public class PartidoActivity extends AppCompatActivity {
     EditText _usuario;
     TextView _label_usuario;
 
+    private ObjectMapper mapper;
     // Objecto a modificar
     private PartidoDTO partido;
     // Modalidades
     private List<ModalidadDTO> modalidades;
+    //JUGADOR AL QUE LE QUIERO ENVIAR SOLICITUD
+    private JugadorDTO elegido;
 
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
     @Override
@@ -218,98 +224,172 @@ public class PartidoActivity extends AppCompatActivity {
 
     private void showDialogAmigos(Context context) {
 
-//        //TODO: CAMBIAR HARCODEO DE ACA
-//        HarcodedUsersAndPlays.agregarUsuariosHarcodeados();
-//
-//        final Dialog dialog = new Dialog(context);
-//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        dialog.setContentView(R.layout.busqueda);
-//        dialog.setCanceledOnTouchOutside(false);
-//        dialog.setCancelable(true);
-//
-//        _agregar_usuario = (Button) dialog.findViewById(R.id.btn_agregar_usuario);
-//        _buscar_usuario = (Button) dialog.findViewById(R.id.btn_buscar_usuario);
-//        _label_usuario = (TextView) dialog.findViewById(R.id.label_usuario);
-//        _usuario = (EditText) dialog.findViewById(R.id.input_usr);
-//
-//        ImageView view = (ImageView) dialog.findViewById(R.id.black_cross);
-//
-//
-//        view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                dialog.dismiss();
-//            }
-//        });
-//
-//
-//        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-//        int dialogWidth = (int)(displayMetrics.widthPixels * 0.85);
-//        int dialogHeight = (int)(displayMetrics.heightPixels * 0.85);
-//        dialog.getWindow().setLayout(dialogWidth, dialogHeight);
-//
-//        dialog.show();
-//        _agregar_usuario.setEnabled(false);
-//
-//
-//
-//
-//        _buscar_usuario.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                id_usr = HarcodedUsersAndPlays.buscarUsuario(_usuario.getText().toString());
-//
-//                if(!_usuario.equals("")){
-//
-//
-//                    if(id_usr!=-1){
-//                        usuario = _usuario.getText().toString();
-//                        _label_usuario.setText("se encontro el usuario");
-//                        _label_usuario.setTextColor(getColor(R.color.black));
-//                        _agregar_usuario.setEnabled(true);
-//
-//
-//                    }else{
-//                        _label_usuario.setText("no se ha encontrado el usuario");
-//                        _label_usuario.setTextColor(getColor(R.color.black));
-//                    }
-//
-//                    hideKeyboard(view);
-//
-//                }
-//            }
-//        });
-//
-//
-//        _agregar_usuario.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Log.e("mi partido actual:  "," "+mi_partido_actual);
-//                boolean resultado = HarcodedUsersAndPlays.agregarUsuario(mi_partido_actual,id_usr);
-//                if(resultado) {
-//                    Log.e("agregar usr a partido", "agregado!");
-//                    requestToBackend.enviarPeticion(mi_partido_actual,yo,usuario,getBaseContext());
-//                    Toast.makeText(getBaseContext(), "agregado!", Toast.LENGTH_LONG).show();
-//                    _label_usuario.setText("Agregado!");
-//                    String participantes = _participantes.getText().toString();
-//                    if(p!=null){
-//                        int cantidad = p.getParticipantes();
-//                        _participantes.setText(String.valueOf(cantidad+1));
-//                    }else{
-//                        _participantes.setText("-");
-//                    }
-//
-//
-//
-//                }else{
-//                    Log.e("agregar usr a partido", "error! ");
-//                    Toast.makeText(getBaseContext(), "error", Toast.LENGTH_LONG).show();
-//                    _label_usuario.setText("Error(?!");
-//                }
-//
-//            }
-//        });
+
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.busqueda);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(true);
+
+        _agregar_usuario = (Button) dialog.findViewById(R.id.btn_agregar_usuario);
+        _buscar_usuario = (Button) dialog.findViewById(R.id.btn_buscar_usuario);
+        _label_usuario = (TextView) dialog.findViewById(R.id.label_usuario);
+        _usuario = (EditText) dialog.findViewById(R.id.input_usr);
+
+        ImageView view = (ImageView) dialog.findViewById(R.id.black_cross);
+
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int dialogWidth = (int)(displayMetrics.widthPixels * 0.85);
+        int dialogHeight = (int)(displayMetrics.heightPixels * 0.85);
+        dialog.getWindow().setLayout(dialogWidth, dialogHeight);
+
+        dialog.show();
+        _agregar_usuario.setEnabled(false);
+
+
+
+
+        _buscar_usuario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String apodo = _usuario.getText().toString();
+
+                mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+
+               if(!apodo.equals("")){
+
+
+                   try {
+                       JugadorDTO j = new JugadorDTO();
+                       j.setNombre(apodo);
+
+                       VolleySingleton
+                               .getInstance(getApplicationContext())
+                               .addToRequestQueue(
+                                       new JsonObjectRequest(
+                                               Request.Method.POST,
+                                               getString(R.string.servicio_url) + getString(R.string.servicio_buscar_jugador),
+                                               j.toJsonObject(),
+                                               new Response.Listener<JSONObject>() {
+
+                                                   @Override
+                                                   public void onResponse(JSONObject response) {
+                                                       try {
+                                                         JugadorDTO encontrado = mapper.readValue(response.toString(), JugadorDTO.class);
+                                                         Log.e("response",response.toString());
+                                                         if(encontrado!=null && encontrado.getCodigo()>0){
+                                                             elegido = encontrado;
+                                                             _label_usuario.setText("se encontro el usuario");
+                                                              _label_usuario.setTextColor(getColor(R.color.black));
+                                                            _agregar_usuario.setEnabled(true);
+                                                         }else{
+                                                             _label_usuario.setText("no se ha encontrado el jugador");
+                                                             _label_usuario.setTextColor(getColor(R.color.black));
+                                                             elegido = null;
+                                                         }
+
+
+                                                       } catch (Exception e) {
+                                                           e.printStackTrace();
+                                                           Toast.makeText(getBaseContext(),"error",Toast.LENGTH_SHORT).show();
+                                                           elegido = null;
+                                                       }
+                                                   }
+                                               },
+                                               new Response.ErrorListener() {
+
+                                                   @Override
+                                                   public void onErrorResponse(VolleyError error) {
+                                                       error.printStackTrace();
+                                                       elegido = null;
+                                                   }
+                                               }
+                                       )
+                               )
+                       ;
+
+                   }catch(Exception e){
+                       e.printStackTrace();
+                       elegido = null;
+                   }
+
+
+                   hideKeyboard(view);
+
+                }else{
+                   Toast.makeText(getBaseContext(),"por favor ingrese un nombre",Toast.LENGTH_SHORT).show();
+               }
+            }
+        });
+
+
+        _agregar_usuario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(elegido!=null){
+                    try {
+
+
+                        VolleySingleton
+                                .getInstance(getApplicationContext())
+                                .addToRequestQueue(
+                                        new JsonObjectRequest(
+                                                getString(R.string.servicio_url) + getString(R.string.servicio_solicitud_agregar_jugador),
+                                                elegido.toJsonObject(),
+                                                new Response.Listener<JSONObject>() {
+
+                                                    @Override
+                                                    public void onResponse(JSONObject response) {
+                                                        try {
+                                                            Log.e("reta: ",response.toString());
+                                                            Toast.makeText(getBaseContext(),"se ha enviado la peticion al usuario!",Toast.LENGTH_LONG).show();
+
+
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                            Toast.makeText(getBaseContext(),"error",Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+                                                },
+                                                new Response.ErrorListener() {
+
+                                                    @Override
+                                                    public void onErrorResponse(VolleyError error) {
+                                                        error.printStackTrace();
+                                                    }
+                                                }
+                                        )
+                                )
+                        ;
+
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+
+                    hideKeyboard(view);
+
+
+                }else{
+                    Log.e("agregar usr a partido", "error! ");
+                    Toast.makeText(getBaseContext(), "error, no hay jugador seleccionado", Toast.LENGTH_LONG).show();
+
+                }
+
+            }
+        });
     }
 
     private void hideKeyboard(View view) {

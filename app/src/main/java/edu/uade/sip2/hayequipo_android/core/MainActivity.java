@@ -69,11 +69,13 @@ import java.util.List;
 import edu.uade.sip2.hayequipo_android.R;
 import edu.uade.sip2.hayequipo_android.adapter.DireccionAutoCompleteAdapter;
 import edu.uade.sip2.hayequipo_android.adapter.JugadorAdapter;
+import edu.uade.sip2.hayequipo_android.adapter.SolicitudPartidoAdapter;
 import edu.uade.sip2.hayequipo_android.conn.VolleySingleton;
 import edu.uade.sip2.hayequipo_android.dto.JugadorDTO;
 import edu.uade.sip2.hayequipo_android.dto.LocalizacionDTO;
 import edu.uade.sip2.hayequipo_android.dto.ModalidadDTO;
 import edu.uade.sip2.hayequipo_android.dto.PartidoDTO;
+import edu.uade.sip2.hayequipo_android.dto.SolicitudDTO;
 import edu.uade.sip2.hayequipo_android.dto.enumerado.TipoPrivacidadEnum;
 import edu.uade.sip2.hayequipo_android.utils.AvatarPickerDialogFragment;
 import edu.uade.sip2.hayequipo_android.utils.Avatars;
@@ -192,6 +194,7 @@ public class MainActivity extends AppCompatActivity
 
     private void todosLosPartidos(int refresh) {
 
+        getSupportActionBar().setTitle("Mis Partidos");
         // PROGRESS DIALOG MUY SIMPLE
         try {
             ProgressDialog mDialog = new ProgressDialog(this);
@@ -282,6 +285,17 @@ public class MainActivity extends AppCompatActivity
       //  listaView.setSelector(R.drawable.list_selector);
       //  listaView.setDrawSelectorOnTop(false);
        // listaView.setAdapter(listaAdapter);
+
+        getSupportActionBar().setTitle("Mis Amigos");
+
+        try {
+            ProgressDialog mDialog = new ProgressDialog(this);
+            WaitTime wait = new WaitTime(mDialog);
+            wait.execute();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         try {
 
             //JugadorDTO ejemplo = new JugadorDTO();
@@ -330,7 +344,54 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void cambiarSolicitudesAmigos() {
+    private void cambiarSolicitudesPartidos() {
+
+        try {
+
+
+
+            VolleySingleton
+                    .getInstance(getApplicationContext())
+                    .addToRequestQueue(
+                            new JsonArrayRequest(
+                                    getString(R.string.servicio_url) + getString(R.string.servicio_solicitud_pendiente),
+                                    new Response.Listener<JSONArray>() {
+
+                                        @Override
+                                        public void onResponse(JSONArray response) {
+                                            try {
+                                                SolicitudDTO[] j = mapper.readValue(response.toString(), SolicitudDTO[].class);
+                                                Log.e("solicitud partido",j.toString());
+                                                //  modalidades = Arrays.asList(m);
+                                                //Log.e("jug",j.toString());
+                                                SolicitudPartidoAdapter solicitud = new SolicitudPartidoAdapter(new ArrayList<SolicitudDTO>(),getBaseContext());
+                                                ListView listaView = findViewById(android.R.id.list);
+                                                listaView.setSelector(R.drawable.list_selector);
+                                                listaView.setDrawSelectorOnTop(false);
+
+                                                solicitud.agregarSolicitud(Arrays.asList(j));
+                                                listaView.setAdapter(solicitud);
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            error.printStackTrace();
+                                        }
+                                    }
+                            )
+                    )
+            ;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+
 
     }
 
@@ -652,11 +713,11 @@ public class MainActivity extends AppCompatActivity
             cambiarCancha();
         } else if (id == R.id.salir) {
             cerrarApp();
-        } else if (id == R.id.solicitudesAmigos) {
-            cambiarSolicitudesAmigos();
+        } else if (id == R.id.solicitudesPartidos) {
+            cambiarSolicitudesPartidos();
         } else if (id == R.id.buscarPartidos) {
             //buscarPartidosPublicos();
-        } else if (id == R.id.solicitudesPartidos) {
+        } else if (id == R.id.solicitudesAmigos) {
             //buscarPartidosPublicos();
         } else if (id == R.id.menu_buscar_mapa){
             // Busca los partidos cercanos

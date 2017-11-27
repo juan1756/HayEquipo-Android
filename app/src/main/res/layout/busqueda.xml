@@ -100,7 +100,7 @@
                 android:padding="12dp"
                 android:background="@color/colorPrimary"
                 android:textColor="@color/white"
-                android:text="AGREGAR"/>
+                android:text="INVITAR"/>
 
         </LinearLayout>
         </LinearLayout>
