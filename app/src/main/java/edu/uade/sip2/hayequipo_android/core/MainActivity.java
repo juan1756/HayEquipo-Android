@@ -347,14 +347,15 @@ public class MainActivity extends AppCompatActivity
     private void cambiarSolicitudesPartidos() {
 
         try {
-
-
+            SolicitudDTO solicitudDTO = new SolicitudDTO();
+            solicitudDTO.setJugador(usuarioLogeado);
 
             VolleySingleton
                     .getInstance(getApplicationContext())
                     .addToRequestQueue(
                             new JsonArrayRequest(
                                     getString(R.string.servicio_url) + getString(R.string.servicio_solicitud_pendiente),
+                                    solicitudDTO.toJsonObject(),
                                     new Response.Listener<JSONArray>() {
 
                                         @Override
@@ -716,9 +717,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.solicitudesPartidos) {
             cambiarSolicitudesPartidos();
         } else if (id == R.id.buscarPartidos) {
-            //buscarPartidosPublicos();
+
         } else if (id == R.id.solicitudesAmigos) {
-            //buscarPartidosPublicos();
+
         } else if (id == R.id.menu_buscar_mapa){
             // Busca los partidos cercanos
             Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Buscando...", Snackbar.LENGTH_SHORT);

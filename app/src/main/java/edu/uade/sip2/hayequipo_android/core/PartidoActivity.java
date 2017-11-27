@@ -44,6 +44,7 @@ import edu.uade.sip2.hayequipo_android.conn.requestToBackend;
 import edu.uade.sip2.hayequipo_android.dto.JugadorDTO;
 import edu.uade.sip2.hayequipo_android.dto.ModalidadDTO;
 import edu.uade.sip2.hayequipo_android.dto.PartidoDTO;
+import edu.uade.sip2.hayequipo_android.dto.SolicitudDTO;
 import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
 import edu.uade.sip2.hayequipo_android.utils.Avatars;
 
@@ -95,6 +96,8 @@ public class PartidoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         partido = (PartidoDTO) getIntent().getSerializableExtra(EXTRA_PARTIDO);
         modalidades = (List<ModalidadDTO>) getIntent().getSerializableExtra(EXTRA_MODALIDADES);
         ArrayAdapter<ModalidadDTO> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_dropdown_item_1line, modalidades);
@@ -255,21 +258,13 @@ public class PartidoActivity extends AppCompatActivity {
         dialog.show();
         _agregar_usuario.setEnabled(false);
 
-
-
-
         _buscar_usuario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String apodo = _usuario.getText().toString();
 
-                mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-
                if(!apodo.equals("")){
-
-
                    try {
                        JugadorDTO j = new JugadorDTO();
                        j.setNombre(apodo);
@@ -323,8 +318,6 @@ public class PartidoActivity extends AppCompatActivity {
                        e.printStackTrace();
                        elegido = null;
                    }
-
-
                    hideKeyboard(view);
 
                 }else{
@@ -333,21 +326,22 @@ public class PartidoActivity extends AppCompatActivity {
             }
         });
 
-
         _agregar_usuario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 if(elegido!=null){
                     try {
-
+                        SolicitudDTO solicitudDTO = new SolicitudDTO();
+                        solicitudDTO.setJugador(elegido);
+                        solicitudDTO.setPartido(partido);
 
                         VolleySingleton
                                 .getInstance(getApplicationContext())
                                 .addToRequestQueue(
                                         new JsonObjectRequest(
                                                 getString(R.string.servicio_url) + getString(R.string.servicio_solicitud_agregar_jugador),
-                                                elegido.toJsonObject(),
+                                                solicitudDTO.toJsonObject(),
                                                 new Response.Listener<JSONObject>() {
 
                                                     @Override
@@ -378,16 +372,12 @@ public class PartidoActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-
                     hideKeyboard(view);
-
 
                 }else{
                     Log.e("agregar usr a partido", "error! ");
                     Toast.makeText(getBaseContext(), "error, no hay jugador seleccionado", Toast.LENGTH_LONG).show();
-
                 }
-
             }
         });
     }
