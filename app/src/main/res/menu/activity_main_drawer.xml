@@ -4,34 +4,22 @@
       tools:showIn="navigation_view"
     >
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Amigos"/>
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Canchas"/>
-        <item
-            android:id="@+id/solicitudesAmigos"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Solicitudes Amigos"/>
-        <item
-            android:id="@+id/solicitudesPartidos"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Solicitudes Partidos"
-            android:visible="false" />
-        <item
-            android:id="@+id/buscarPartidos"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="buscar Partidos"
-            android:visible="false" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Estadisticas"/>
-    </group>
+
+
+    <item android:title="Amigos">
+        <menu>
+            <item
+                android:id="@+id/nav_camera"
+                android:icon="@drawable/ic_accion_seleccionar"
+                android:title="Listado"/>
+            <item
+                android:id="@+id/solicitudesAmigos"
+                android:icon="@drawable/ic_menu_slideshow"
+                android:title="Solicitudes Amigos"/>
+
+        </menu>
+    </item>
+
 
     <item android:title="@string/menu_partido">
         <menu>
@@ -39,6 +27,16 @@
                 android:id="@+id/nav_gallery"
                 android:icon="@drawable/ic_accion_seleccionar"
                 android:title="Listado" />
+            <item
+                android:id="@+id/solicitudesPartidos"
+                android:icon="@drawable/ic_menu_slideshow"
+                android:title="Solicitudes Partidos"
+                android:visible="true" />
+            <item
+                android:id="@+id/buscarPartidos"
+                android:icon="@drawable/ic_menu_slideshow"
+                android:title="buscar Partidos"
+                android:visible="false" />
             <item
                 android:id="@+id/menu_buscar_mapa"
                 android:icon="@drawable/ic_accion_posicion"
@@ -48,11 +46,22 @@
 
     <item android:title="Opciones">
         <menu>
+
+            <item
+                android:id="@+id/canchas"
+                android:icon="@android:drawable/ic_dialog_map"
+                android:title="Canchas"
+                android:visible="true" />
+            <item
+                android:id="@+id/estadisticas"
+                android:icon="@android:drawable/ic_menu_sort_by_size"
+                android:title="Estadisticas"
+                android:visible="true" />
             <item
                 android:id="@+id/ayuda"
                 android:icon="@android:drawable/ic_menu_manage"
-                android:title="Ayuda"
-                android:visible="false" />
+                android:title="Configuración"
+                android:visible="true" />
 
             <item
                 android:id="@+id/salir"

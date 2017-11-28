@@ -63,18 +63,20 @@ public class SolicitudPartidoAdapter extends BaseAdapter {
 
         }
 
-        //TextView apodoJugador = view.findViewById(R.id.item_jugador_apodo);
-      //  TextView emailJugador = view.findViewById(R.id.item_jugador_email);
-      //  ImageView avatar = view.findViewById(R.id.item_jugador_avatar);
+        TextView apodo = view.findViewById(R.id.item_solicitud_apodo);
+        TextView direccion = view.findViewById(R.id.item_solicitud_direccion);
+        TextView fecha = view.findViewById(R.id.item_solicitud_fecha);
+        TextView desc = view.findViewById(R.id.item_solicitud_descripcion);
 
 
         if (solicitudes != null) {
             SolicitudDTO solicitud = (SolicitudDTO) getItem(posicion);
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
-            //  apodoJugador.setText(jugador.getNombre());
-          //  emailJugador.setText(jugador.getEmail());
-
+            apodo.setText("Invitación de: "+solicitud.getJugador().getNombre().toString());
+            direccion.setText(solicitud.getPartido().getLocalizacion().getDireccion().toString());
+            fecha.setText(solicitud.getPartido().getFecha().toString());
+            desc.setText(solicitud.getPartido().getComentario());
 
            // avatar.setImageResource(R.drawable.pelota);
            // if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){

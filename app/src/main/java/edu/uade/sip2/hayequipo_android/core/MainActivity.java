@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity
     private ObjectMapper mapper; // OBJECTO JACKSON
     private FancyAdapter listaAdapter;
     private String avatarSeleccionado = "";
+    private String lista;
 
     // CAMPOS PARA EL DIALOGO
     private AutoCompleteTextView campoLugar;
@@ -115,9 +116,11 @@ public class MainActivity extends AppCompatActivity
         listaView.setSelector(R.drawable.list_selector);
         listaView.setDrawSelectorOnTop(false);
         listaView.setAdapter(listaAdapter);
+        this.lista = "partidos";
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Mis Partidos");
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -138,8 +141,37 @@ public class MainActivity extends AppCompatActivity
 
         listaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int posicion, long id) {
-                cambiarPartido((PartidoDTO) listaAdapter.getItem(posicion));
+            public void onItemClick(final AdapterView<?> adapterView, View view, final int posicion, long id) {
+                if(lista.equals("partidos")) {
+                    cambiarPartido((PartidoDTO) listaAdapter.getItem(posicion));
+                }else if(lista.equals("solicitudes")){
+                    final ImageView item_aceptar = (ImageView) findViewById(R.id.item_solicitud_aceptar);
+
+                    item_aceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Log.e("solicitud","acepto");
+
+                            SolicitudDTO sol = (SolicitudDTO) adapterView.getAdapter().getItem(posicion);
+
+
+                            if(sol!=null){
+                                enviarSolicitudAcepto(sol);
+                                Toast.makeText(getBaseContext(),"remover solicitud!"+sol.toString(),Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                    final ImageView item_rechazar = (ImageView) findViewById(R.id.item_solicitud_rechazar);
+                    item_rechazar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Log.e("solicitud","rechazo");
+                            SolicitudDTO sol = (SolicitudDTO) adapterView.getAdapter().getItem(posicion);
+                            Toast.makeText(getBaseContext(),"remover solicitud!"+sol.toString(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
 
@@ -158,8 +190,8 @@ public class MainActivity extends AppCompatActivity
      */
     private void hacerLogin() throws JsonProcessingException, JSONException {
         JugadorDTO ejemplo = new JugadorDTO();
-//        ejemplo.setNombre("josue");
-        ejemplo.setNombre("pepe");
+        ejemplo.setNombre("josue");
+    //    ejemplo.setNombre("pablo");
 
         VolleySingleton
                 .getInstance(getApplicationContext())
@@ -257,6 +289,7 @@ public class MainActivity extends AppCompatActivity
                                             try {
                                                 PartidoDTO[] m = mapper.readValue(response.toString(), PartidoDTO[].class);
                                                 listaAdapter.agregarPartido(Arrays.asList(m));
+                                                lista = "partidos";
 
                                             } catch (Exception e) {
                                                 e.printStackTrace();
@@ -273,10 +306,93 @@ public class MainActivity extends AppCompatActivity
                             )
                     )
             ;
+
+
+
+
         } catch (JsonProcessingException | JSONException e) {
             e.printStackTrace();
         }
     }
+
+
+    private void enviarSolicitudAcepto(SolicitudDTO solicitud){
+        try {
+            VolleySingleton
+                    .getInstance(getApplicationContext())
+                    .addToRequestQueue(
+                            new JsonObjectRequest(
+                                    getString(R.string.servicio_url) + getString(R.string.servicio_solicitud_aceptar_jugador),
+                                    solicitud.toJsonObject(),
+                                    new Response.Listener<JSONObject>() {
+
+                                        @Override
+                                        public void onResponse(JSONObject jsonObject) {
+                                            try {
+                                                Toast.makeText(getBaseContext(),"solicitud aceptada!",Toast.LENGTH_LONG).show();
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Toast.makeText(getBaseContext(),"error solicitud!",Toast.LENGTH_LONG).show();
+                                            error.printStackTrace();
+                                        }
+                                    }
+                            )
+                    )
+            ;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void enviarSolicitudRechazo(SolicitudDTO solicitud){
+        try {
+
+            Log.e("solicitud id",solicitud.getCodigo().toString());
+
+            VolleySingleton
+                    .getInstance(getApplicationContext())
+                    .addToRequestQueue(
+                            new JsonObjectRequest(
+                                    getString(R.string.servicio_url) + getString(R.string.servicio_solicitud_rechazar_jugador),
+                                    solicitud.toJsonObject(),
+                                    new Response.Listener<JSONObject>() {
+
+                                        @Override
+                                        public void onResponse(JSONObject jsonObject) {
+                                            try {
+                                                Toast.makeText(getBaseContext(),"solicitud rechazada!",Toast.LENGTH_LONG).show();
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Toast.makeText(getBaseContext(),"error solicitud!",Toast.LENGTH_LONG).show();
+                                            error.printStackTrace();
+
+                                        }
+                                    }
+                            )
+                    )
+            ;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
 
     private void cambiarAmigos(){
         getSupportActionBar().setTitle("Mis Amigos");
@@ -309,6 +425,7 @@ public class MainActivity extends AppCompatActivity
 
                                                 jugadorAdapter.agregarJugador(Arrays.asList(j));
                                                 listaView.setAdapter(jugadorAdapter);
+                                                lista = "amigos";
 
                                             } catch (Exception e) {
                                                 e.printStackTrace();
@@ -331,6 +448,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void cambiarSolicitudesPartidos() {
+
+        getSupportActionBar().setTitle("Mis Solicitudes Partidos");
 
         try {
             SolicitudDTO solicitudDTO = new SolicitudDTO();
@@ -355,9 +474,12 @@ public class MainActivity extends AppCompatActivity
                                                 ListView listaView = findViewById(android.R.id.list);
                                                 listaView.setSelector(R.drawable.list_selector);
                                                 listaView.setDrawSelectorOnTop(false);
-
+                                                lista = "solicitudes";
                                                 solicitud.agregarSolicitud(Arrays.asList(j));
                                                 listaView.setAdapter(solicitud);
+
+
+
 
                                             } catch (Exception e) {
                                                 e.printStackTrace();
@@ -377,6 +499,10 @@ public class MainActivity extends AppCompatActivity
         }catch(Exception e){
             e.printStackTrace();
         }
+
+
+
+
     }
 
     private void cambiarCancha() {
@@ -701,7 +827,7 @@ public class MainActivity extends AppCompatActivity
             cambiarAmigos();
         } else if (id == R.id.nav_gallery) {
             todosLosPartidos(0);
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.canchas) {
             cambiarCancha();
         } else if (id == R.id.salir) {
             cerrarApp();

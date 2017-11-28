@@ -38,7 +38,7 @@ public class WaitTime extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        long delayInMillis = 3500;
+        long delayInMillis = 2500;
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override

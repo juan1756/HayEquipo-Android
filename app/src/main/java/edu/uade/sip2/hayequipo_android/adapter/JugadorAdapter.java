@@ -80,7 +80,7 @@ public class JugadorAdapter extends BaseAdapter {
             emailJugador.setText(jugador.getEmail());
 
 
-            avatar.setImageResource(R.drawable.pelota);
+            avatar.setImageResource(R.drawable.ic_launcher);
            // if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
              //   imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));
           //  }
