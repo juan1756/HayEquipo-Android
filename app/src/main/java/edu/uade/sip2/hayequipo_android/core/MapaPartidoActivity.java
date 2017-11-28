@@ -748,10 +748,19 @@ public class MapaPartidoActivity extends AppCompatActivity implements
 
                 inputBuscador.setText(direccionCompleta);
 
-                primeraVez = false;
-                posicionMarcada = new LatLng(direccion.getLatitude(), direccion.getLongitude());
-                agregarMarcador(posicionMarcada, "Localizacion Seleccionada", true);
-                actualizarDetalleMapa();
+                if (accion.equals(SELECCIONAR)){
+                    primeraVez = false;
+                    posicionMarcada = new LatLng(direccion.getLatitude(), direccion.getLongitude());
+                    agregarMarcador(posicionMarcada, "Localizacion Seleccionada", true);
+                    actualizarDetalleMapa();
+                } else {
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(new LatLng(direccion.getLatitude(), direccion.getLongitude()));
+                    LatLngBounds bounds = builder.build();
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 40));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                    ocultarDetalle();
+                }
             }
         });
     }
