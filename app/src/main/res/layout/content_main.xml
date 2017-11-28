@@ -10,13 +10,9 @@
 
     <ListView
         android:id="@android:id/list"
-        android:background="@color/primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:divider="@drawable/divider"
-        android:dividerHeight="4dp"
-        android:fadingEdge="none"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="8dp"/>
+        android:fadingEdge="horizontal"
+        />
 
 </RelativeLayout>

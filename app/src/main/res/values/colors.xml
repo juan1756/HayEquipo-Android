@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#34b051</color>
+    <color name="colorPrimary">#4caf50</color>
     <color name="colorPrimaryDark">#388E3C</color>
-    <color name="colorAccent">#8BC34A</color>
+    <color name="colorAccent">#8bc34a</color>
     <color name="colorBlueLogo">#1B5E20</color>
     <color name="primary">#4CAF50</color>
     <color name="primary_dark">#388E3C</color>
     <color name="primary_darker">#388E3C</color>
-    <color name="accent">#E8F5E9</color>
+    <color name="accent">#e8f5e9</color>
     <color name="darkblue"> #388E3C</color>
     <color name="black">#000000</color>
     <color name="jet">#222222</color>
     <color name="oil">#333333</color>
     <color name="monsoon">#777777</color>
     <color name="jumbo">#888888</color>
-    <color name="aluminum">#999999</color>
-    <color name="base">#AAAAAA</color>
+    <color name="aluminum">#e0e0e0</color>
+    <color name="base">#b9f6ca</color>
     <color name="iron">#E8F5E9</color>
     <color name="white">#FFFFFF</color>
 </resources>

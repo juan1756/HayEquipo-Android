@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="90dp"
-              android:background="#C8E6C9"
               android:orientation="horizontal">
 
     <ImageView
@@ -21,7 +20,7 @@
             android:id="@+id/textNombre"
             android:layout_width="match_parent"
             android:layout_height="35dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:padding="2dp"
             android:text="Partido X"
@@ -32,14 +31,14 @@
             android:id="@+id/textLugar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:text="Lugar X"/>
 
         <TextView
             android:id="@+id/textParticipantes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:text="Participantes: 0"/>
     </LinearLayout>
 
@@ -53,7 +52,7 @@
             android:id="@+id/label_fecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:text="Fecha"
             android:textAlignment="center"/>
 
@@ -61,7 +60,7 @@
             android:id="@+id/textFecha"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:text="-"
             android:textAlignment="center"/>
 

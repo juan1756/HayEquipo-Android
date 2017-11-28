@@ -16,7 +16,7 @@
     <!-- Commons -->
     <string name="_package">package:</string>
     <string name="background">activity_background</string>
-    <string name="draw_error">Draw over other app permission not available. Can't start the application without the permission.</string>
+    <string name="draw_error">Draw over other app permission not available. Can not start the application without the permission.</string>
 
     <string name="error_tag">error</string>
     <string name="uno_s">uno</string>
@@ -30,6 +30,7 @@
     <string name="permission_rationale_location">Se requiere el servicio de Localizacion para mostrar la ubicacion actual.</string>
     <string name="location_permission_denied">Se requiere el servicio de Localizacion para mostrar la ubicacion actual. Por favor intente mas tarde y acepte los permisos.\nEn caso de que se haya denegado, puede aceptarlo en Configuracion del Sistema &gt; Aplicaciones &gt; \'HayEquipO!\'.</string>
     <string name="permission_required_toast">El permiso de la localizacion es requerida para mostrar la ubicacion.</string>
+    <string name="texto_faltantes_mapa">%1$d de %2$d</string>
 
     <!-- SERVICIOS -->
     <string name="servicio_url">http://acarrea2.ddns.net/HayEquipo</string>
@@ -48,25 +49,5 @@
     <string name="servicio_solicitud_agregar_jugador">/api/solicitud/agregarJugador</string>
     <string name="servicio_solicitud_aceptar_jugador">/api/solicitud/aceptarJugador</string>
     <string name="servicio_solicitud_rechazar_jugador">/api/solicitud/rechazarJugador</string>
-
-
-    <!-- Arrays -->
-
-    <string-array name="amigos_mock">
-        <item>Amigo 1</item>
-        <item>Amigo 2</item>
-        <item>Amigo 3</item>
-        <item>Amigo 4</item>
-        <item>Amigo 5</item>
-        <item>Amigo 6</item>
-        <item>Amigo X</item>
-    </string-array>
-
-    <string-array name="solicitud_mock">
-        <item>Solicitud 1</item>
-        <item>Solicitud 2</item>
-        <item>Solicitud 3</item>
-        <item>Solicitud X</item>
-    </string-array>
 
 </resources>

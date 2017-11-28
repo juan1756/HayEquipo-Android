@@ -10,10 +10,6 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="Amigos"/>
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Partidos"/>
-        <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Canchas"/>
@@ -24,11 +20,13 @@
         <item
             android:id="@+id/solicitudesPartidos"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Solicitudes Partidos"/>
+            android:title="Solicitudes Partidos"
+            android:visible="false" />
         <item
             android:id="@+id/buscarPartidos"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="buscar Partidos"/>
+            android:title="buscar Partidos"
+            android:visible="false" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
@@ -38,8 +36,12 @@
     <item android:title="@string/menu_partido">
         <menu>
             <item
+                android:id="@+id/nav_gallery"
+                android:icon="@drawable/ic_accion_seleccionar"
+                android:title="Listado" />
+            <item
                 android:id="@+id/menu_buscar_mapa"
-                android:icon="@android:drawable/ic_dialog_map"
+                android:icon="@drawable/ic_accion_posicion"
                 android:title="@string/titulo_buscar_partido_mapa" />
         </menu>
     </item>
@@ -49,11 +51,12 @@
             <item
                 android:id="@+id/ayuda"
                 android:icon="@android:drawable/ic_menu_manage"
-                android:title="Ayuda" />
+                android:title="Ayuda"
+                android:visible="false" />
 
             <item
                 android:id="@+id/salir"
-                android:icon="@android:drawable/ic_media_play"
+                android:icon="@drawable/ic_accion_seleccionar"
                 android:title="Salir" />
         </menu>
     </item>

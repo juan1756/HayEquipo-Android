@@ -66,11 +66,12 @@ public class DireccionAutoCompleteAdapter extends BaseAdapter implements Filtera
         ;
         String linea1 = builder.toString();
 
-        builder = new StringBuilder()
-                .append(direccion.getLocality())
-                .append(" - ")
-                .append(direccion.getCountryName())
-        ;
+        builder = new StringBuilder();
+        if (direccion.getLocality() != null && !direccion.getLocality().isEmpty()){
+            builder = builder.append(direccion.getLocality())
+                            .append(" - ");
+        }
+        builder = builder.append(direccion.getCountryName());
         String linea2 = builder.toString();
 
         ((TextView) view.findViewById(R.id.text1)).setText(linea1);

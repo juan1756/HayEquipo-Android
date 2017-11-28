@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -45,7 +44,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -97,6 +95,8 @@ public class MainActivity extends AppCompatActivity
 
     // CAMPOS PARA EL DIALOGO
     private AutoCompleteTextView campoLugar;
+    private TextView campoFecha;
+    private TextView campoHora;
     private Spinner campoModalidad;
     private List<ModalidadDTO> modalidades = new ArrayList<>();
     private List<JugadorDTO> jugadores = new ArrayList<>();
@@ -158,8 +158,8 @@ public class MainActivity extends AppCompatActivity
      */
     private void hacerLogin() throws JsonProcessingException, JSONException {
         JugadorDTO ejemplo = new JugadorDTO();
-        ejemplo.setNombre("josue");
-//        ejemplo.setNombre("pepe");
+//        ejemplo.setNombre("josue");
+        ejemplo.setNombre("pepe");
 
         VolleySingleton
                 .getInstance(getApplicationContext())
@@ -279,15 +279,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void cambiarAmigos(){
-
-        //ListView listaView = findViewById(android.R.id.list);
-      //  listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
-      //  listaView.setSelector(R.drawable.list_selector);
-      //  listaView.setDrawSelectorOnTop(false);
-       // listaView.setAdapter(listaAdapter);
-
         getSupportActionBar().setTitle("Mis Amigos");
-
         try {
             ProgressDialog mDialog = new ProgressDialog(this);
             WaitTime wait = new WaitTime(mDialog);
@@ -297,11 +289,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         try {
-
-            //JugadorDTO ejemplo = new JugadorDTO();
-           // ejemplo.setNombre("josue");
-//        ejemplo.setNombre("pepe");
-
             VolleySingleton
                     .getInstance(getApplicationContext())
                     .addToRequestQueue(
@@ -339,9 +326,8 @@ public class MainActivity extends AppCompatActivity
                     )
             ;
         }catch(Exception e){
-        e.printStackTrace();
+            e.printStackTrace();
         }
-
     }
 
     private void cambiarSolicitudesPartidos() {
@@ -391,9 +377,6 @@ public class MainActivity extends AppCompatActivity
         }catch(Exception e){
             e.printStackTrace();
         }
-
-
-
     }
 
     private void cambiarCancha() {
@@ -419,7 +402,7 @@ public class MainActivity extends AppCompatActivity
                 calendar.set(Calendar.HOUR_OF_DAY, hora);
                 calendar.set(Calendar.MINUTE, minutos);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
                 String horaFormateada = sdf.format(calendar.getTime());
 
                 horaView.setText(horaFormateada);
@@ -430,7 +413,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showDatePickerDialog(final TextView fechaView) {
-        DatePickerFragment newFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
+        DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
 
             @SuppressLint("SimpleDateFormat")
             public void onDateSet(DatePicker datePicker, int anno, int mes, int day) {
@@ -444,9 +427,11 @@ public class MainActivity extends AppCompatActivity
 
                 fechaView.setText(fechaFormateada);
                 fechaView.setHint(fechaFormateada);
+                campoHora.callOnClick();
             }
         });
-        newFragment.show(getFragmentManager(), "datePicker");
+        datePickerFragment.setCancelable(false);
+        datePickerFragment.show(getFragmentManager(), "datePicker");
     }
 
     private void showPartidoDialog(final Context context) {
@@ -463,8 +448,8 @@ public class MainActivity extends AppCompatActivity
 
         final EditText campoNombre = dialog.findViewById(R.id.input_nombre_partido);
         final EditText campoDescripcion = dialog.findViewById(R.id.input_descripcion_partido);
-        final TextView campoFecha = dialog.findViewById(R.id.input_fecha_partido);
-        final TextView campoHora = dialog.findViewById(R.id.input_hora_partido);
+        campoFecha = dialog.findViewById(R.id.input_fecha_partido);
+        campoHora = dialog.findViewById(R.id.input_hora_partido);
         final EditText campoPrecio = dialog.findViewById(R.id.input_precio);
         final TextView avatarView = dialog.findViewById(R.id.input_avatar_partido);
         final CheckBox campoEsPublico = dialog.findViewById(R.id.campo_es_publico);
@@ -476,7 +461,7 @@ public class MainActivity extends AppCompatActivity
         campoModalidad.setAdapter(adapter);
 
         // Configuro el boton del mapa
-        ImageButton botonSeleccionarMapa = dialog.findViewById(R.id.boton_seleccionar_mapa);
+        final ImageButton botonSeleccionarMapa = dialog.findViewById(R.id.boton_seleccionar_mapa);
         botonSeleccionarMapa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -515,6 +500,14 @@ public class MainActivity extends AppCompatActivity
                 campoLugar.setText(direccionCompleta);
             }
         });
+        campoLugar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (campoLugar.getText().toString().isEmpty()){
+                    botonSeleccionarMapa.performClick();
+                }
+            }
+        });
 
         botonCerrarDialogo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -524,8 +517,8 @@ public class MainActivity extends AppCompatActivity
         });
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int dialogWidth = (int) (displayMetrics.widthPixels * 0.85);
-        int dialogHeight = (int) (displayMetrics.heightPixels * 0.85);
+        int dialogWidth = (int) (displayMetrics.widthPixels * 0.95);
+        int dialogHeight = (int) (displayMetrics.heightPixels * 0.95);
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
         dialog.show();
 
@@ -623,9 +616,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private boolean partidoValido(String nombre,String fecha,String hora,String lugar) {
-        if(nombre.equals("") || fecha.equals("") || hora.equals("") || lugar.equals(""))
-            return false;
-        return true;
+        return !(nombre.equals("") || fecha.equals("") || hora.equals("") || lugar.equals(""));
     }
 
     @Override

@@ -20,7 +20,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -65,6 +68,7 @@ import java.util.Locale;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.uade.sip2.hayequipo_android.R;
+import edu.uade.sip2.hayequipo_android.adapter.DireccionAutoCompleteAdapter;
 import edu.uade.sip2.hayequipo_android.conn.VolleySingleton;
 import edu.uade.sip2.hayequipo_android.dto.BusquedaPartidoDTO;
 import edu.uade.sip2.hayequipo_android.dto.JugadorDTO;
@@ -101,6 +105,7 @@ public class MapaPartidoActivity extends AppCompatActivity implements
     public static final int RESULTADO_PARTIDO_BUSCADO = 10;
     public static final int RESULTADO_UBICACION_SELECCIONADA = 20;
 
+    private boolean primeraVez; // NO AGREGO LA PRIMERA LOCALIZACION QUE ENCUENTRE
     private ObjectMapper mapper; // OBJECTO JACKSON
     private Integer accion;
     private JugadorDTO usuarioLogeado; // JUGADOR LOGEADO
@@ -119,8 +124,8 @@ public class MapaPartidoActivity extends AppCompatActivity implements
 
     @Bind(R.id.boton_mi_localizacion)
     FloatingActionButton botonMiLocalizacion;
-    @Bind(R.id.boton_seleccionar_localizacion)
-    FloatingActionButton botonSeleccionarLocalizacion;
+    @Bind(R.id.boton_mapa_detalle_aceptar)
+    ImageButton botonSeleccionarLocalizacion;
     @Bind(R.id.layout_mapa_detalle)
     LinearLayout layoutMapaDetalle;
     @Bind(R.id.layout_mapa_detalle_1)
@@ -133,6 +138,8 @@ public class MapaPartidoActivity extends AppCompatActivity implements
     TextView textoDetalleFaltantes;
     @Bind(R.id.texto_mapa_detalle_descripcion)
     TextView textoDetalleDescripcion;
+    @Bind(R.id.input_mapa_detalle_buscador)
+    AutoCompleteTextView inputBuscador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +170,6 @@ public class MapaPartidoActivity extends AppCompatActivity implements
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
-//        layoutMapaDetalle.setVisibility(View.INVISIBLE);
 
         geocoder = new Geocoder(this, Locale.getDefault());
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.layout_mapa);
@@ -214,17 +220,21 @@ public class MapaPartidoActivity extends AppCompatActivity implements
                     configurarLocalizacionGoogle();
                     configurarMiLocalizacion();
                     configurarSeleccionar();
+                    configurarBuscador();
 
                     switch (accion){
                         case BUSCAR:
                             partidoPublicoEncontrado = new ArrayList<>();
+                            botonSeleccionarLocalizacion.setVisibility(View.GONE);
+
                             break;
                         case SELECCIONAR:
                             mMap.setOnMapLongClickListener(MapaPartidoActivity.this);
-//                            layoutMapaDetalle.setVisibility(View.VISIBLE);
                             if (posicionMarcada != null){
                                 agregarMarcador(posicionMarcada, "Localizacion Escrita", true);
                                 actualizarDetalleMapa();
+                            } else {
+                                primeraVez = true;
                             }
                             break;
                     }
@@ -252,12 +262,20 @@ public class MapaPartidoActivity extends AppCompatActivity implements
                         }
                         break;
                     case SELECCIONAR:
-                        Intent intent = new Intent();
-                        intent.putExtra(EXTRA_LOCALIZACION_MARCADA, posicionMarcada);
-                        intent.putExtra(EXTRA_LOCALIZACION_TITULO, textoDetalleTitulo.getText());
+                        if (primeraVez){
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MapaPartidoActivity.this);
+                            builder.setMessage("DEBE SELECIONAR UNA DIRECCION")
+                                    .setTitle("Alerta");
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        } else {
+                            Intent intent = new Intent();
+                            intent.putExtra(EXTRA_LOCALIZACION_MARCADA, posicionMarcada);
+                            intent.putExtra(EXTRA_LOCALIZACION_TITULO, textoDetalleTitulo.getText());
 
-                        setResult(RESULTADO_UBICACION_SELECCIONADA, intent);
-                        finish();
+                            setResult(RESULTADO_UBICACION_SELECCIONADA, intent);
+                            finish();
+                        }
                         break;
                 }
             }
@@ -268,6 +286,7 @@ public class MapaPartidoActivity extends AppCompatActivity implements
         botonMiLocalizacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                primeraVez = false;
                 posicionMarcada = null;
                 obtenerUltimaLocalizacion();
             }
@@ -417,6 +436,7 @@ public class MapaPartidoActivity extends AppCompatActivity implements
 
     @Override
     public void onMapLongClick(LatLng latLng) {
+        primeraVez = false;
         posicionMarcada = latLng;
         agregarMarcador(latLng, "Localizacion Seleccionada");
         actualizarDetalleMapa();
@@ -427,10 +447,10 @@ public class MapaPartidoActivity extends AppCompatActivity implements
         ocultarDetalle();
     }
 
+    @SuppressLint("StringFormatInvalid")
     @Override
     public boolean onMarkerClick(Marker marker) {
         // CUANDO REALIZO UNA SELECCION DE UN PARTIDO
-//        layoutMapaDetalle.setVisibility(View.VISIBLE);
         Object data = marker.getTag();
 
         if (data != null && data instanceof PartidoDTO){
@@ -442,8 +462,18 @@ public class MapaPartidoActivity extends AppCompatActivity implements
             texto = new StringBuilder().append(partidoDTO.getLocalizacion().getDireccion());
             textoDetalleTitulo.setText(texto);
 
-            texto = new StringBuilder().append("FALTAN: ");
-            texto.append(partidoDTO.getCantidadFaltante());
+
+
+            texto = new StringBuilder().append(
+                    getString(
+                            R.string.texto_faltantes_mapa,
+                            new Object[]{
+                                partidoDTO.getCantidadFaltante(),
+                                partidoDTO.getModalidad().getMinimo()
+                            }
+                    ));
+//            texto.append();
+
             textoDetalleFaltantes.setText(texto);
 
             if (partidoDTO.getComentario() != null){
@@ -452,7 +482,7 @@ public class MapaPartidoActivity extends AppCompatActivity implements
             }
 
             if (partidoDTO.getPrecio() != null){
-                texto = new StringBuilder().append("PRECIO: ");
+                texto = new StringBuilder().append("");
                 texto.append(partidoDTO.getPrecio());
                 textoDetallePrecio.setText(texto);
             }
@@ -467,6 +497,10 @@ public class MapaPartidoActivity extends AppCompatActivity implements
                     }
                 }
             });
+
+            layoutMapaDetalleBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            layoutMapaDetalle1.setBackgroundColor(getColor(R.color.colorPrimary));
+            textoDetalleTitulo.setTextColor(getColor(R.color.white));
         }
 
         return false;
@@ -555,13 +589,15 @@ public class MapaPartidoActivity extends AppCompatActivity implements
 
     private void ocultarDetalle() {
         layoutMapaDetalleBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        hideKeyboard(layoutMapaDetalle);
+        inputBuscador.clearFocus();
     }
 
     private void actualizarDetalleMapa() {
         ocultarDetalle();
         try {
             List<Address> direcciones = geocoder.getFromLocation(posicionMarcada.latitude, posicionMarcada.longitude, 1);
-            if (direcciones.size() > 0){
+            if (direcciones.size() > 0 && !primeraVez){
                 Address direccion = direcciones.get(0);
                 StringBuilder direccionCompleta = new StringBuilder()
                         .append(direccion.getThoroughfare())
@@ -570,8 +606,10 @@ public class MapaPartidoActivity extends AppCompatActivity implements
                         .append(direccion.getLocality());
 
                 textoDetalleTitulo.setText(direccionCompleta);
-            }
 
+                botonSeleccionarLocalizacion.setBackgroundColor(getColor(R.color.colorPrimary));
+                botonSeleccionarLocalizacion.setImageResource(R.drawable.ic_accion_seleccionar_blanco);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -626,11 +664,13 @@ public class MapaPartidoActivity extends AppCompatActivity implements
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         for (LatLng p : posiciones){
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(p)
-                    .title( tituloPosiciones.get(posiciones.indexOf(p)) )
-            );
-            marker.setTag(data.get(posiciones.indexOf(p)));
+            if (!primeraVez) {
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .position(p)
+                        .title(tituloPosiciones.get(posiciones.indexOf(p)))
+                );
+                marker.setTag(data.get(posiciones.indexOf(p)));
+            }
 
             if (mueveCamaraMapa){
                 builder.include(p);
@@ -690,6 +730,36 @@ public class MapaPartidoActivity extends AppCompatActivity implements
             ;
         } catch (JsonProcessingException | JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void configurarBuscador() {
+        inputBuscador.setThreshold(5);
+        inputBuscador.setAdapter(new DireccionAutoCompleteAdapter(getApplicationContext()));
+        inputBuscador.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Address direccion = (Address) adapterView.getItemAtPosition(position);
+                StringBuilder direccionCompleta = new StringBuilder()
+                        .append(direccion.getThoroughfare())
+                        .append(direccion.getSubThoroughfare() == null ? "" : " " + direccion.getSubThoroughfare() )
+                        .append(", ")
+                        .append(direccion.getLocality());
+
+                inputBuscador.setText(direccionCompleta);
+
+                primeraVez = false;
+                posicionMarcada = new LatLng(direccion.getLatitude(), direccion.getLongitude());
+                agregarMarcador(posicionMarcada, "Localizacion Seleccionada", true);
+                actualizarDetalleMapa();
+            }
+        });
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }
