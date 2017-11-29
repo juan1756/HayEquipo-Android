@@ -37,9 +37,6 @@ public class AvatarPickerDialogFragment extends DialogFragment implements Adapte
     // Reference to the created AlertDialog instance
     private AlertDialog mCreatedDialog;
 
-
-
-
     /**
      * The activity that opens this dialog must implement AvatarPickerDialogListener.
      * This method stores the listener when the activity is attached.

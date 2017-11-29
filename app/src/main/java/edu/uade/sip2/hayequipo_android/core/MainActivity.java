@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity
     private List<ModalidadDTO> modalidades = new ArrayList<>();
     private List<JugadorDTO> jugadores = new ArrayList<>();
     private LatLng posicionMarcada;
+    private ImageView avatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -571,13 +572,13 @@ public class MainActivity extends AppCompatActivity
         posicionMarcada = null;
         ImageView botonCerrarDialogo = dialog.findViewById(R.id.black_cross);
         Button botonCrearPartido = dialog.findViewById(R.id.btn_crear_partido);
+        avatar = dialog.findViewById(R.id.avatar);
 
         final EditText campoNombre = dialog.findViewById(R.id.input_nombre_partido);
         final EditText campoDescripcion = dialog.findViewById(R.id.input_descripcion_partido);
         campoFecha = dialog.findViewById(R.id.input_fecha_partido);
         campoHora = dialog.findViewById(R.id.input_hora_partido);
         final EditText campoPrecio = dialog.findViewById(R.id.input_precio);
-        final TextView avatarView = dialog.findViewById(R.id.input_avatar_partido);
         final CheckBox campoEsPublico = dialog.findViewById(R.id.campo_es_publico);
 
         // Configuro el campo de modalidad
@@ -648,7 +649,7 @@ public class MainActivity extends AppCompatActivity
         dialog.getWindow().setLayout(dialogWidth, dialogHeight);
         dialog.show();
 
-        avatarView.setOnClickListener(new View.OnClickListener() {
+        avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createAvatarSelectDialog();
@@ -775,6 +776,9 @@ public class MainActivity extends AppCompatActivity
         // TextView input = (TextView) findViewById(R.id.input_username);
         Toast.makeText(getBaseContext(),"Avatar Seleccionado: "+avatarResourceName,Toast.LENGTH_SHORT).show();
         avatarSeleccionado = avatarResourceName;
+        if(this.avatar != null) {
+            this.avatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), avatarResourceName));
+        }
     }
 
 
