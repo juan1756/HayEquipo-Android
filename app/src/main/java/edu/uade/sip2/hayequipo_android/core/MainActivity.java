@@ -948,7 +948,7 @@ SwipeRefreshLayout.OnRefreshListener {
             notifyDataSetChanged();
         }
 
-        @SuppressLint({"SimpleDateFormat", "InflateParams", "ViewHolder"})
+        @SuppressLint({"SimpleDateFormat", "InflateParams", "ViewHolder", "SetTextI18n"})
         @Override
         public View getView(int posicion, View view, ViewGroup parent) {
             if (view == null) {
@@ -959,16 +959,35 @@ SwipeRefreshLayout.OnRefreshListener {
             TextView direccionPartido = view.findViewById(R.id.item_partido_direccion);
             TextView descripcionPartido = view.findViewById(R.id.item_partido_descripcion);
             TextView fechaPartido = view.findViewById(R.id.item_partido_fecha);
+            TextView horaPartido = view.findViewById(R.id.item_partido_hora);
+            TextView cantidadPartido = view.findViewById(R.id.item_partido_cantidad);
+            TextView precioPartido = view.findViewById(R.id.item_partido_precio);
             ImageView imagenAvatar = view.findViewById(R.id.item_partido_avatar);
 
             if (partidos != null) {
                 PartidoDTO partido = (PartidoDTO) getItem(posicion);
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+                SimpleDateFormat sdf;
 
                 apodoPartido.setText(partido.getApodo());
                 direccionPartido.setText(partido.getLocalizacion().getDireccion());
                 descripcionPartido.setText(partido.getComentario());
+
+                sdf = new SimpleDateFormat("EEE dd/MM/yy");
                 fechaPartido.setText(sdf.format(partido.getFecha()));
+
+                sdf = new SimpleDateFormat("hh:mm a");
+                horaPartido.setText(sdf.format(partido.getFecha()));
+
+                cantidadPartido.setText(
+                        getString(
+                                R.string.texto_faltantes_item,
+                                new Object[]{
+                                        partido.getCantidadAceptado(),
+                                        partido.getModalidad().getMinimo()
+                                }
+                        ));
+
+                precioPartido.setText(partido.getPrecio().toString());
 
                 imagenAvatar.setImageResource(R.drawable.pelota);
                 if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
