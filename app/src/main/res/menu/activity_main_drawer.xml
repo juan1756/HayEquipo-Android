@@ -10,12 +10,13 @@
         <menu>
             <item
                 android:id="@+id/nav_camera"
-                android:icon="@drawable/ic_accion_seleccionar"
-                android:title="Listado"/>
+                android:icon="@drawable/ic_accion_listado"
+                android:title="Listado" />
             <item
                 android:id="@+id/solicitudesAmigos"
                 android:icon="@drawable/ic_menu_slideshow"
-                android:title="Solicitudes Amigos"/>
+                android:title="Solicitudes Amigos"
+                android:visible="false" />
 
         </menu>
     </item>
@@ -25,11 +26,11 @@
         <menu>
             <item
                 android:id="@+id/nav_gallery"
-                android:icon="@drawable/ic_accion_seleccionar"
+                android:icon="@drawable/ic_accion_listado"
                 android:title="Listado" />
             <item
                 android:id="@+id/solicitudesPartidos"
-                android:icon="@drawable/ic_menu_slideshow"
+                android:icon="@drawable/ic_accion_notificaciones"
                 android:title="Solicitudes Partidos"
                 android:visible="true" />
             <item
@@ -49,23 +50,21 @@
 
             <item
                 android:id="@+id/canchas"
-                android:icon="@android:drawable/ic_dialog_map"
-                android:title="Canchas"
-                android:visible="true" />
+                android:title="Canchas" />
             <item
                 android:id="@+id/estadisticas"
                 android:icon="@android:drawable/ic_menu_sort_by_size"
                 android:title="Estadisticas"
-                android:visible="true" />
+                android:visible="false" />
             <item
-                android:id="@+id/ayuda"
-                android:icon="@android:drawable/ic_menu_manage"
-                android:title="Configuración"
+                android:id="@+id/acerca"
+                android:icon="@drawable/ic_accion_acerca"
+                android:title="Acerca"
                 android:visible="true" />
 
             <item
                 android:id="@+id/salir"
-                android:icon="@drawable/ic_accion_seleccionar"
+                android:icon="@drawable/ic_accion_salir"
                 android:title="Salir" />
         </menu>
     </item>

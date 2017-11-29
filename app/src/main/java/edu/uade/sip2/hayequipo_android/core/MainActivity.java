@@ -113,13 +113,14 @@ public class MainActivity extends AppCompatActivity
 
         // Se crea una vez y se utiliza
         mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         ListView listaView = findViewById(android.R.id.list);
 
         listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
         listaView.setSelector(R.drawable.list_selector);
         listaView.setDrawSelectorOnTop(false);
         listaView.setAdapter(listaAdapter);
+        listaView.setDividerHeight(20);
         this.lista = "partidos";
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -142,9 +143,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-
 
         listaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -193,13 +191,11 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-
-
         swipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        
+
                         switch(lista){
                             case "partidos":
                                 todosLosPartidos(0);
@@ -227,10 +223,8 @@ public class MainActivity extends AppCompatActivity
      */
     private void hacerLogin() throws JsonProcessingException, JSONException {
         JugadorDTO ejemplo = new JugadorDTO();
-   // ejemplo.setNombre("pepe");
-     // ejemplo.setNombre("luis");
-     //  ejemplo.setNombre("maria");
-        ejemplo.setNombre("pablo");
+      ejemplo.setNombre("lis");
+    //   ejemplo.setNombre("pepe");
 
         VolleySingleton
                 .getInstance(getApplicationContext())
@@ -280,6 +274,7 @@ public class MainActivity extends AppCompatActivity
             ListView listaView = findViewById(android.R.id.list);
             listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
             listaView.setSelector(R.drawable.list_selector);
+            listaView.setDividerHeight(20);
             listaView.setDrawSelectorOnTop(false);
             listaView.setAdapter(listaAdapter);
         }
@@ -345,10 +340,6 @@ public class MainActivity extends AppCompatActivity
                             )
                     )
             ;
-
-
-
-
         } catch (JsonProcessingException | JSONException e) {
             e.printStackTrace();
         }
@@ -399,9 +390,7 @@ public class MainActivity extends AppCompatActivity
 
     private void enviarSolicitudRechazo(SolicitudDTO solicitud){
         try {
-
             Log.e("solicitud id",solicitud.getCodigo().toString());
-
             VolleySingleton
                     .getInstance(getApplicationContext())
                     .addToRequestQueue(
@@ -436,8 +425,6 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-
-
 
     private void cambiarAmigos(){
         getSupportActionBar().setTitle("Mis Amigos");
@@ -544,10 +531,6 @@ public class MainActivity extends AppCompatActivity
         }catch(Exception e){
             e.printStackTrace();
         }
-
-
-
-
     }
 
     private void cambiarCancha() {
@@ -881,6 +864,8 @@ public class MainActivity extends AppCompatActivity
             todosLosPartidos(0);
         } else if (id == R.id.canchas) {
             cambiarCancha();
+        } else if (id == R.id.acerca) {
+            mostrarAcerca();
         } else if (id == R.id.salir) {
             cerrarApp();
         } else if (id == R.id.solicitudesPartidos) {
@@ -905,6 +890,28 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void mostrarAcerca() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        String str =    "Riccombeni, Maximiliano \n" +
+                "(Acarrea2 era el proyecto)\n\n" +
+                        "De Giovanni, German Federico \n" +
+                "(Tambien Dikroalum)\n\n" +
+                        "Gonzalez, Maria Victoria \n" +
+                "(The Dancer)\n\n" +
+                        "Mejia Rodriguez, Juan Jose \n" +
+                "(El Hispter)\n\n" +
+                        "Gonzalez Acuña, Lucas Gabriel \n" +
+                "(Acuerdate de la hamburguesa)\n\n" +
+                        "Lopez Hernandez, Josue David \n" +
+                "(Acarrea2 era el proyecto)"
+        ;
+        builder.setTitle("Proyecto para Seminario de Integracion II\n");
+        builder.setMessage(str);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void cerrarApp(){
@@ -980,6 +987,10 @@ public class MainActivity extends AppCompatActivity
                 SimpleDateFormat sdf;
 
                 apodoPartido.setText(partido.getApodo());
+                if (partido.getTipoPrivacidad().compareTo(TipoPrivacidadEnum.PRIVADO) == 0){
+                    apodoPartido.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_accion_privado1, 0, 0, 0);
+                }
+
                 direccionPartido.setText(partido.getLocalizacion().getDireccion());
                 descripcionPartido.setText(partido.getComentario());
 
