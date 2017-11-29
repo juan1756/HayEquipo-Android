@@ -178,6 +178,7 @@
                 android:layout_marginTop="10dp"
                 android:padding="12dp"
                 android:background="@color/colorPrimary"
+                android:visibility="gone"
                 android:textColor="@color/white"
                 android:text="Invitar amigos"/>
 
@@ -190,6 +191,7 @@
                 android:padding="12dp"
                 android:background="@color/colorPrimary"
                 android:textColor="@color/white"
+                android:visibility="gone"
                 android:text="Publicar partido"/>
 
             <android.support.v7.widget.AppCompatButton
