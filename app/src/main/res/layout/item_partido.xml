@@ -3,6 +3,7 @@
 
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
@@ -26,18 +27,83 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/item_partido_fecha"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp" />
+            android:orientation="horizontal"
+            android:paddingTop="5dp">
+
+            <TextView
+                android:id="@+id/item_partido_fecha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_weight="1"
+                android:drawablePadding="5dp"
+                android:drawableStart="@drawable/ic_accion_fecha1"
+                android:gravity="left|center"
+                tools:ignore="RtlHardcoded"
+                />
+
+            <TextView
+                android:id="@+id/item_partido_hora"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_weight="1"
+                android:drawablePadding="5dp"
+                android:drawableStart="@drawable/ic_accion_tiempo1"
+                android:gravity="left|center"
+                tools:ignore="RtlHardcoded"
+                />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/item_partido_direccion"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:drawableStart="@drawable/ic_accion_posicion1"
+            android:ellipsize="marquee"
+            android:gravity="left|center"
+            android:paddingTop="5dp"
+            android:singleLine="true"
+            android:text="sdfsdaf ds"
+            tools:ignore="RtlHardcoded" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingTop="5dp">
+
+            <TextView
+                android:id="@+id/item_partido_cantidad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_weight="1"
+                android:drawablePadding="5dp"
+                android:drawableStart="@drawable/ic_accion_personas1"
+                android:gravity="left|center"
+                android:text="asfas as asd "
+                tools:ignore="RtlHardcoded" />
+
+            <TextView
+                android:id="@+id/item_partido_precio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_weight="1"
+                android:drawablePadding="5dp"
+                android:drawableStart="@drawable/ic_accion_precio1"
+                android:gravity="left|center"
+                android:text="asd asdas"
+                tools:ignore="RtlHardcoded" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/item_partido_descripcion"
@@ -45,5 +111,6 @@
             android:layout_height="match_parent"
             android:ellipsize="end"
             android:maxLines="1" />
+
     </LinearLayout>
 </LinearLayout>
