@@ -26,10 +26,12 @@ public class JugadorAdapter extends BaseAdapter {
 
     private List<JugadorDTO> jugadores;
     private Context context;
+    private String yo;
 
     public JugadorAdapter(ArrayList<JugadorDTO> jugadores,Context context) {
         this.context = context;
         this.jugadores = jugadores;
+
     }
 
     @Override
@@ -71,7 +73,7 @@ public class JugadorAdapter extends BaseAdapter {
         TextView emailJugador = view.findViewById(R.id.item_jugador_email);
         ImageView avatar = view.findViewById(R.id.item_jugador_avatar);
 
-
+        //TODO: HARCODEADO QUE NO ME PONGA A MI ( EL LOGEADO )
         if (jugadores != null) {
             JugadorDTO jugador = (JugadorDTO) getItem(posicion);
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");

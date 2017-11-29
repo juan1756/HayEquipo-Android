@@ -16,6 +16,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -84,7 +85,9 @@ import edu.uade.sip2.hayequipo_android.utils.TimePickerFragment;
 import edu.uade.sip2.hayequipo_android.utils.WaitTime;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AvatarPickerDialogFragment.AvatarPickerDialogListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AvatarPickerDialogFragment.AvatarPickerDialogListener,
+SwipeRefreshLayout.OnRefreshListener {
+
 
     private static final int ACTIVIDAD_MAPA = 100;
 
@@ -102,6 +105,7 @@ public class MainActivity extends AppCompatActivity
     private List<ModalidadDTO> modalidades = new ArrayList<>();
     private List<JugadorDTO> jugadores = new ArrayList<>();
     private LatLng posicionMarcada;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,8 +114,9 @@ public class MainActivity extends AppCompatActivity
 
         // Se crea una vez y se utiliza
         mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         ListView listaView = findViewById(android.R.id.list);
+
         listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
         listaView.setSelector(R.drawable.list_selector);
         listaView.setDrawSelectorOnTop(false);
@@ -138,6 +143,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
 
         listaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -179,8 +187,28 @@ public class MainActivity extends AppCompatActivity
         try {
             hacerLogin();
         } catch (Exception e){
+            JugadorDTO ejemplo = new JugadorDTO();
+            ejemplo.setNombre("lis");
+            usuarioLogeado = ejemplo;
             e.printStackTrace();
         }
+
+
+
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+
+                        Toast.makeText(getBaseContext(),"TODO: on refresh list swipe",Toast.LENGTH_SHORT).show();
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                       // myUpdateOperation();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }
+        );
+
 //        todosLosPartidos(1);
     }
 
@@ -190,8 +218,8 @@ public class MainActivity extends AppCompatActivity
      */
     private void hacerLogin() throws JsonProcessingException, JSONException {
         JugadorDTO ejemplo = new JugadorDTO();
-//        ejemplo.setNombre("josue");
-        ejemplo.setNombre("pablo");
+      ejemplo.setNombre("lis");
+    //   ejemplo.setNombre("pepe");
 
         VolleySingleton
                 .getInstance(getApplicationContext())
@@ -745,6 +773,19 @@ public class MainActivity extends AppCompatActivity
         return !(nombre.equals("") || fecha.equals("") || hora.equals("") || lugar.equals(""));
     }
 
+
+    /**
+     * This method is called when swipe refresh is pulled down
+     */
+    @Override
+    public void onRefresh() {
+        Toast.makeText(getBaseContext(),"on refresh list swipe",Toast.LENGTH_SHORT).show();
+        //todosLosPartidos(0);
+    }
+
+
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
@@ -846,6 +887,7 @@ public class MainActivity extends AppCompatActivity
             intent.putExtra(MapaPartidoActivity.EXTRA_JUGADOR, usuarioLogeado);
             intent.putExtra(MapaPartidoActivity.EXTRA_ACCION, MapaPartidoActivity.BUSCAR);
             startActivity(intent);
+            Toast.makeText(getBaseContext(),"hola",Toast.LENGTH_LONG).show();
             return true;
         }
 
