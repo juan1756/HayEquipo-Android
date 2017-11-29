@@ -505,7 +505,7 @@ public class MapaPartidoActivity extends AppCompatActivity implements
                     getString(
                             R.string.texto_faltantes_mapa,
                             new Object[]{
-                                partidoDTO.getCantidadFaltante(),
+                                partidoDTO.getCantidadAceptado(),
                                 partidoDTO.getModalidad().getMinimo()
                             }
                     ));
