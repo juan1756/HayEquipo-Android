@@ -195,17 +195,17 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Realizo un login (En caso de que no tengo disponible un usuario)
-       /*
+
         try {
-            hacerLogin();
+            hacerLogin(usuarioLogeado);
         } catch (Exception e){
             JugadorDTO ejemplo = new JugadorDTO();
-            ejemplo.setNombre("pepe");
+            ejemplo.setNombre("josue");
             usuarioLogeado = ejemplo;
             Toast.makeText(getBaseContext(),"error, me logeo con usr por defecto",Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-        */
+
         swipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -236,9 +236,9 @@ public class MainActivity extends AppCompatActivity
      * METODO QUE NO VA IR POR EL TEMA DE HACER EL LOGIN Y GUARDARME EN LA VARIABLE
      * usuarioLogeado, EL OBJETO DE JugadorDTO
      */
-    private void hacerLogin() throws JsonProcessingException, JSONException {
-        JugadorDTO ejemplo = new JugadorDTO();
-      ejemplo.setNombre("luis");
+    private void hacerLogin(JugadorDTO usuario) throws JsonProcessingException, JSONException {
+       // JugadorDTO ejemplo = new JugadorDTO();
+    //  ejemplo.setNombre("luis");
     //   ejemplo.setNombre("pepe");
 
         VolleySingleton
@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity
                 .addToRequestQueue(
                         new JsonObjectRequest(
                                 getString(R.string.servicio_url) + getString(R.string.servicio_buscar_jugador),
-                                ejemplo.toJsonObject(),
+                                usuario.toJsonObject(),
                                 new Response.Listener<JSONObject>() {
 
                                     @Override
@@ -469,7 +469,7 @@ public class MainActivity extends AppCompatActivity
                                                 ListView listaView = findViewById(android.R.id.list);
                                                 listaView.setSelector(R.drawable.list_selector);
                                                   listaView.setDrawSelectorOnTop(false);
-
+                                                listaView.setDividerHeight(20);
                                                 jugadorAdapter.agregarJugador(Arrays.asList(j));
                                                 listaView.setAdapter(jugadorAdapter);
                                                 lista = "amigos";
@@ -521,6 +521,7 @@ public class MainActivity extends AppCompatActivity
                                                 ListView listaView = findViewById(android.R.id.list);
                                                 listaView.setSelector(R.drawable.list_selector);
                                                 listaView.setDrawSelectorOnTop(false);
+                                                listaView.setDividerHeight(20);
                                                 lista = "solicitudes";
                                                 solicitud.agregarSolicitud(Arrays.asList(j));
                                                 listaView.setAdapter(solicitud);

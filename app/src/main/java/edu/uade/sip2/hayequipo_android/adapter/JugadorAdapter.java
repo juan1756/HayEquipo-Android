@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,8 +83,13 @@ public class JugadorAdapter extends BaseAdapter {
             apodoJugador.setText(jugador.getNombre());
          //   emailJugador.setText(jugador.getEmail());
 
-
-            avatar.setImageResource(R.drawable.ic_launcher);
+            try {
+                int id = context.getResources().getIdentifier("drawable/j" + posicion, null, context.getPackageName());
+              //  Toast.makeText(context,"id:"+String.valueOf(id)+"pack:"+String.valueOf(context.getPackageName()),Toast.LENGTH_LONG).show();
+                avatar.setImageResource(id);
+            }catch(Exception e){
+                avatar.setImageResource(R.drawable.ic_launcher);
+            }
            // if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
              //   imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));
           //  }

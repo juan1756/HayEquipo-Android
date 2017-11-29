@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="#C8E6C9"
+              android:background="@drawable/background_item_partido"
               android:orientation="horizontal"
     >
 
@@ -15,6 +15,7 @@
         android:layout_marginBottom="5dp"
         android:layout_marginRight="15dp"
         android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
         android:background="@drawable/ic_launcher"
         android:gravity="center_vertical"/>
 
