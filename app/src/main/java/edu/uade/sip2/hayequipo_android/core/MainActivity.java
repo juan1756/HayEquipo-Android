@@ -218,8 +218,8 @@ SwipeRefreshLayout.OnRefreshListener {
      */
     private void hacerLogin() throws JsonProcessingException, JSONException {
         JugadorDTO ejemplo = new JugadorDTO();
-      ejemplo.setNombre("lis");
-    //   ejemplo.setNombre("pepe");
+//      ejemplo.setNombre("lis");
+       ejemplo.setNombre("pablo");
 
         VolleySingleton
                 .getInstance(getApplicationContext())
@@ -334,10 +334,6 @@ SwipeRefreshLayout.OnRefreshListener {
                             )
                     )
             ;
-
-
-
-
         } catch (JsonProcessingException | JSONException e) {
             e.printStackTrace();
         }
@@ -382,9 +378,7 @@ SwipeRefreshLayout.OnRefreshListener {
 
     private void enviarSolicitudRechazo(SolicitudDTO solicitud){
         try {
-
             Log.e("solicitud id",solicitud.getCodigo().toString());
-
             VolleySingleton
                     .getInstance(getApplicationContext())
                     .addToRequestQueue(
@@ -419,8 +413,6 @@ SwipeRefreshLayout.OnRefreshListener {
             e.printStackTrace();
         }
     }
-
-
 
     private void cambiarAmigos(){
         getSupportActionBar().setTitle("Mis Amigos");
@@ -527,10 +519,6 @@ SwipeRefreshLayout.OnRefreshListener {
         }catch(Exception e){
             e.printStackTrace();
         }
-
-
-
-
     }
 
     private void cambiarCancha() {
@@ -870,6 +858,8 @@ SwipeRefreshLayout.OnRefreshListener {
             todosLosPartidos(0);
         } else if (id == R.id.canchas) {
             cambiarCancha();
+        } else if (id == R.id.acerca) {
+            mostrarAcerca();
         } else if (id == R.id.salir) {
             cerrarApp();
         } else if (id == R.id.solicitudesPartidos) {
@@ -894,6 +884,28 @@ SwipeRefreshLayout.OnRefreshListener {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void mostrarAcerca() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        String str =    "Riccombeni, Maximiliano \n" +
+                "(Acarrea2 era el proyecto)\n\n" +
+                        "De Giovanni, German Federico \n" +
+                "(Tambien Dikroalum)\n\n" +
+                        "Gonzalez, Maria Victoria \n" +
+                "(The Dancer)\n\n" +
+                        "Mejia Rodriguez, Juan Jose \n" +
+                "(El Hispter)\n\n" +
+                        "Gonzalez Acuña, Lucas Gabriel \n" +
+                "(Acuerdate de la hamburguesa)\n\n" +
+                        "Lopez Hernandez, Josue David \n" +
+                "(Acarrea2 era el proyecto)"
+        ;
+        builder.setTitle("Proyecto para Seminario de Integracion II\n");
+        builder.setMessage(str);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void cerrarApp(){
