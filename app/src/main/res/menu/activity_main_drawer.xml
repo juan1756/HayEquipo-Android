@@ -6,7 +6,7 @@
 
 
 
-    <item android:title="Amigos">
+    <item android:title="Amigos" android:visible="false">
         <menu>
             <item
                 android:id="@+id/nav_camera"
@@ -31,7 +31,7 @@
                 android:id="@+id/solicitudesPartidos"
                 android:icon="@drawable/ic_menu_slideshow"
                 android:title="Solicitudes Partidos"
-                android:visible="true" />
+                android:visible="false" />
             <item
                 android:id="@+id/buscarPartidos"
                 android:icon="@drawable/ic_menu_slideshow"
@@ -51,7 +51,7 @@
                 android:id="@+id/canchas"
                 android:icon="@android:drawable/ic_dialog_map"
                 android:title="Canchas"
-                android:visible="true" />
+                android:visible="false" />
             <item
                 android:id="@+id/estadisticas"
                 android:icon="@android:drawable/ic_menu_sort_by_size"
