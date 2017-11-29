@@ -77,9 +77,9 @@ public class SolicitudPartidoAdapter extends BaseAdapter {
             apodo.setText("Invitación de: "+solicitud.getPartido().getCreador().getNombre().toString());
             direccion.setText(solicitud.getPartido().getLocalizacion().getDireccion().toString());
             fecha.setText(solicitud.getPartido().getFecha().toString());
-            desc.setText(solicitud.getPartido().getComentario());
+            desc.setText(solicitud.getPartido().getComentario().toString());
 
-            Log.e("solicitud jugador","jugador:" +solicitud.getJugador().getNombre().toString()+"pos del view: "+String.valueOf(posicion));
+            Log.e("solicitud jugador"," dejugador:" +solicitud.getPartido().getCreador().getNombre().toString()+"pos del view: "+String.valueOf(posicion));
            // avatar.setImageResource(R.drawable.pelota);
            // if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
              //   imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));

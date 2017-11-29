@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -128,7 +129,9 @@ public class MainActivity extends AppCompatActivity
         // Se crea una vez y se utiliza
         mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        ListView listaView = findViewById(android.R.id.list);
+        final ListView listaView = findViewById(android.R.id.list);
+
+
 
         listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
         listaView.setSelector(R.drawable.list_selector);
@@ -145,7 +148,9 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPartidoDialog(MainActivity.this);
+                if(lista.equals("partidos")) {
+                    showPartidoDialog(MainActivity.this);
+                }
             }
         });
 
@@ -158,36 +163,60 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //
+       // LayoutInflater layoutInflater = (LayoutInflater)
+          //      getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+      //  View sol = layoutInflater.inflate(R.layout.item_solicitud, null,   false);
+
+        //
+
         listaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> adapterView, View view, final int posicion, long id) {
+
                 if(lista.equals("partidos")) {
                     cambiarPartido((PartidoDTO) listaAdapter.getItem(posicion));
                 }else if(lista.equals("solicitudes")){
-                    final ImageView item_aceptar = (ImageView) findViewById(R.id.item_solicitud_aceptar);
+
+                    final ImageView item_aceptar = (ImageView) view.findViewById(R.id.item_solicitud_aceptar);
+                    final ImageView item_rechazar = (ImageView) view.findViewById(R.id.item_solicitud_rechazar);
 
                     item_aceptar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.e("solicitud","acepto");
-
+                            Log.e("solicitud","acepto, posicion: "+String.valueOf(posicion));
+                            Log.e("deberia solicitud obj:",adapterView.getAdapter().getItem(posicion).toString());
                             SolicitudDTO sol = (SolicitudDTO) adapterView.getAdapter().getItem(posicion);
 
 
                             if(sol!=null){
                                 enviarSolicitudAcepto(sol);
-                                Toast.makeText(getBaseContext(),"remover solicitud!"+sol.toString(),Toast.LENGTH_SHORT).show();
+                               // Toast.makeText(getBaseContext(),"solicitud aceptada!"+sol.toString(),Toast.LENGTH_SHORT).show();
+
+                                adapterView.removeViewInLayout(view);
+                                cambiarSolicitudesPartidos();
+                                Log.e("remuevo vista","remover vista de la pos: "+posicion);
                             }
                         }
                     });
 
-                    final ImageView item_rechazar = (ImageView) findViewById(R.id.item_solicitud_rechazar);
+
                     item_rechazar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.e("solicitud","rechazo");
+                            Log.e("solicitud","rechazo, posicion: "+String.valueOf(posicion));
+                            Log.e("deberia solicitud obj:",adapterView.getAdapter().getItem(posicion).toString());
                             SolicitudDTO sol = (SolicitudDTO) adapterView.getAdapter().getItem(posicion);
-                            Toast.makeText(getBaseContext(),"remover solicitud!"+sol.toString(),Toast.LENGTH_SHORT).show();
+
+
+                            if(sol!=null){
+                                enviarSolicitudRechazo(sol);
+
+                                adapterView.removeViewInLayout(view);
+                                cambiarSolicitudesPartidos();
+                                Log.e("remuevo vista","remover vista de la pos: "+posicion);
+                            }
                         }
                     });
                 }
@@ -393,6 +422,7 @@ public class MainActivity extends AppCompatActivity
                                         public void onErrorResponse(VolleyError error) {
                                             Toast.makeText(getBaseContext(),"error solicitud!",Toast.LENGTH_LONG).show();
                                             error.printStackTrace();
+
                                         }
                                     }
                             )
@@ -404,8 +434,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void enviarSolicitudRechazo(SolicitudDTO solicitud){
+
+        SolicitudDTO nueva = new SolicitudDTO();
+        nueva.setCodigo(solicitud.getCodigo());
+
         try {
-            Log.e("solicitud id",solicitud.getCodigo().toString());
+
             VolleySingleton
                     .getInstance(getApplicationContext())
                     .addToRequestQueue(
@@ -422,6 +456,7 @@ public class MainActivity extends AppCompatActivity
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
+
                                         }
                                     },
                                     new Response.ErrorListener() {
@@ -514,7 +549,7 @@ public class MainActivity extends AppCompatActivity
                                         public void onResponse(JSONArray response) {
                                             try {
                                                 SolicitudDTO[] j = mapper.readValue(response.toString(), SolicitudDTO[].class);
-                                                Log.e("solicitud partido",j.toString());
+                                                Log.e("solicitud partido list",j.toString());
                                                 //  modalidades = Arrays.asList(m);
                                                 //Log.e("jug",j.toString());
                                                 SolicitudPartidoAdapter solicitud = new SolicitudPartidoAdapter(new ArrayList<SolicitudDTO>(),getBaseContext());
@@ -824,7 +859,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onAvatarSelected(AvatarPickerDialogFragment dialog, String avatarResourceName) {
         // TextView input = (TextView) findViewById(R.id.input_username);
-        Toast.makeText(getBaseContext(),"Avatar Seleccionado: "+avatarResourceName,Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(getBaseContext(),"Avatar Seleccionado: "+avatarResourceName,Toast.LENGTH_SHORT).show();
         avatarSeleccionado = avatarResourceName;
     }
 

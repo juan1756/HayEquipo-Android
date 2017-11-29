@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -92,7 +93,7 @@ public class PartidoActivity extends AppCompatActivity {
     //JUGADOR AL QUE LE QUIERO ENVIAR SOLICITUD
     private JugadorDTO elegido;
 
-    private String usuario_logeado;
+    private String usuario_logeado = "";
 
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
     @Override
@@ -141,9 +142,11 @@ public class PartidoActivity extends AppCompatActivity {
         }
 
         try {
-            Toast.makeText(this,"usr logeado:"+usuario_logeado.toString(),Toast.LENGTH_LONG).show();
-            if (!usuario_logeado.equals("") && !usuario_logeado.equals(partido.getCreador().getNombre().toString())) {
+          //  Toast.makeText(this,"usr logeado:"+usuario_logeado.toString(),Toast.LENGTH_LONG).show();
+           if (!usuario_logeado.equals(partido.getCreador().getNombre().toString())) {
                 botonPublicar.setEnabled(false);
+                botonPublicar.setActivated(false);
+                botonPublicar.setBackgroundColor(Color.DKGRAY);
 
             }
         }catch(Exception e){
