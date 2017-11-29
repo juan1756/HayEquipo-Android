@@ -111,6 +111,20 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Recupero el usuario del login
+        String usuario = getIntent().getStringExtra("jugador");
+        if(usuario.equals("")){
+            Toast.makeText(getBaseContext(),"error login, conectando usuario por defecto josue",Toast.LENGTH_SHORT).show();
+            JugadorDTO jugador = new JugadorDTO();
+            jugador.setNombre("josue");
+            usuarioLogeado = jugador;
+        }else{
+           // Toast.makeText(getBaseContext(),"logeado como: "+usuario,Toast.LENGTH_LONG).show();
+            JugadorDTO jugador = new JugadorDTO();
+            jugador.setNombre(usuario);
+            usuarioLogeado = jugador;
+        }
+
         // Se crea una vez y se utiliza
         mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
@@ -181,6 +195,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Realizo un login (En caso de que no tengo disponible un usuario)
+       /*
         try {
             hacerLogin();
         } catch (Exception e){
@@ -190,7 +205,7 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getBaseContext(),"error, me logeo con usr por defecto",Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-
+        */
         swipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -223,7 +238,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void hacerLogin() throws JsonProcessingException, JSONException {
         JugadorDTO ejemplo = new JugadorDTO();
-      ejemplo.setNombre("lis");
+      ejemplo.setNombre("luis");
     //   ejemplo.setNombre("pepe");
 
         VolleySingleton
@@ -238,7 +253,7 @@ public class MainActivity extends AppCompatActivity
                                     public void onResponse(JSONObject response) {
                                         try {
                                             usuarioLogeado = mapper.readValue(response.toString(), JugadorDTO.class);
-                                            todosLosPartidos(1);
+                                            todosLosPartidos(0);
 
                                         } catch (Exception e) {
                                             e.printStackTrace();
