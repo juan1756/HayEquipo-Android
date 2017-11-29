@@ -114,13 +114,14 @@ SwipeRefreshLayout.OnRefreshListener {
 
         // Se crea una vez y se utiliza
         mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         ListView listaView = findViewById(android.R.id.list);
 
         listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
         listaView.setSelector(R.drawable.list_selector);
         listaView.setDrawSelectorOnTop(false);
         listaView.setAdapter(listaAdapter);
+        listaView.setDividerHeight(20);
         this.lista = "partidos";
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -143,9 +144,6 @@ SwipeRefreshLayout.OnRefreshListener {
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-
 
         listaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -192,8 +190,6 @@ SwipeRefreshLayout.OnRefreshListener {
             usuarioLogeado = ejemplo;
             e.printStackTrace();
         }
-
-
 
         swipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
@@ -269,6 +265,7 @@ SwipeRefreshLayout.OnRefreshListener {
             ListView listaView = findViewById(android.R.id.list);
             listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
             listaView.setSelector(R.drawable.list_selector);
+            listaView.setDividerHeight(20);
             listaView.setDrawSelectorOnTop(false);
             listaView.setAdapter(listaAdapter);
         }
@@ -981,6 +978,10 @@ SwipeRefreshLayout.OnRefreshListener {
                 SimpleDateFormat sdf;
 
                 apodoPartido.setText(partido.getApodo());
+                if (partido.getTipoPrivacidad().compareTo(TipoPrivacidadEnum.PRIVADO) == 0){
+                    apodoPartido.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_accion_privado1, 0, 0, 0);
+                }
+
                 direccionPartido.setText(partido.getLocalizacion().getDireccion());
                 descripcionPartido.setText(partido.getComentario());
 
