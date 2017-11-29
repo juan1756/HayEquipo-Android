@@ -190,8 +190,8 @@ public class MainActivity extends AppCompatActivity
      */
     private void hacerLogin() throws JsonProcessingException, JSONException {
         JugadorDTO ejemplo = new JugadorDTO();
-        ejemplo.setNombre("josue");
-    //    ejemplo.setNombre("pablo");
+//        ejemplo.setNombre("josue");
+        ejemplo.setNombre("pablo");
 
         VolleySingleton
                 .getInstance(getApplicationContext())

@@ -98,60 +98,103 @@
                 android:id="@+id/layout_mapa_detalle_2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/accent"
+                android:background="@color/white"
                 android:padding="10dp">
 
                 <TextView
-                    android:id="@+id/texto_mapa_detalle_descripcion"
-                    android:layout_width="match_parent"
+                    android:id="@+id/texto_mapa_detalle_nombre"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/texto_mapa_detalle_faltantes"
-                    android:layout_marginTop="10dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/texto_mapa_detalle_precio"
                     android:drawablePadding="5dp"
-                    android:drawableStart="@drawable/ic_accion_comentario"
                     android:ellipsize="marquee"
                     android:gravity="left|center"
-                    android:maxLines="2"
-                    android:text="@string/titulo_buscar_partido_mapa"
-                    android:textColor="#212121"
-                    android:textSize="18sp" />
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
-                    android:id="@+id/dummyView1"
+                    android:id="@+id/texto_mapa_detalle_fecha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/texto_mapa_detalle_nombre"
+                    android:layout_marginTop="10dp"
+                    android:layout_toStartOf="@id/divisorDummy1"
+                    android:drawablePadding="5dp"
+                    android:drawableStart="@drawable/ic_accion_fecha"
+                    android:gravity="left|center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/texto_mapa_detalle_hora"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/texto_mapa_detalle_nombre"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@id/divisorDummy1"
+                    android:drawablePadding="5dp"
+                    android:drawableStart="@drawable/ic_accion_tiempo"
+                    android:gravity="left|center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/divisorDummy1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true" />
 
                 <TextView
-                    android:id="@+id/texto_mapa_detalle_faltantes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_toLeftOf="@id/dummyView1"
-                    android:drawablePadding="5dp"
-                    android:drawableStart="@drawable/ic_accion_buscar"
-                    android:gravity="left|center"
-                    android:text="@string/titulo_buscar_partido_mapa"
-                    android:textColor="#212121"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
                     android:id="@+id/texto_mapa_detalle_precio"
-                    android:layout_width="match_parent"
+                    android:layout_width="130dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_toRightOf="@id/dummyView1"
+                    android:layout_alignParentEnd="true"
                     android:drawablePadding="5dp"
                     android:drawableStart="@drawable/ic_accion_precio"
                     android:gravity="left|center"
-                    android:text="@string/titulo_buscar_partido_mapa"
                     android:textColor="@color/primary"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/texto_mapa_detalle_faltantes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/texto_mapa_detalle_fecha"
+                    android:layout_marginTop="10dp"
+                    android:drawablePadding="5dp"
+                    android:drawableStart="@drawable/ic_accion_personas"
+                    android:gravity="left|center"
+                    android:textColor="#212121"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/texto_mapa_detalle_descripcion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/boton_mapa_detalle_seleccionar"
+                    android:layout_below="@id/texto_mapa_detalle_faltantes"
+                    android:layout_marginTop="10dp"
+                    android:drawablePadding="5dp"
+                    android:drawableStart="@drawable/ic_accion_comentario"
+                    android:ellipsize="marquee"
+                    android:gravity="top|left"
+                    android:maxLines="2"
+                    android:textColor="#212121"
+                    android:textSize="18sp"
+                    tools:ignore="RtlHardcoded" />
 
                 <Button
-                    android:id="@+id/button3"
+                    android:id="@+id/boton_mapa_detalle_seleccionar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"

@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -59,6 +60,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -121,11 +123,14 @@ public class MapaPartidoActivity extends AppCompatActivity implements
 
     private boolean permisoDenegado = false;
     private BottomSheetBehavior layoutMapaDetalleBehavior;
+    private Marker marcadorSeleccionado; // LO GUARDO PARA ELIMINAR DESPUES EL TEXTO
 
     @Bind(R.id.boton_mi_localizacion)
     FloatingActionButton botonMiLocalizacion;
     @Bind(R.id.boton_mapa_detalle_aceptar)
     ImageButton botonSeleccionarLocalizacion;
+    @Bind(R.id.boton_mapa_detalle_seleccionar)
+    Button botonDetalleSeleccionar;
     @Bind(R.id.layout_mapa_detalle)
     LinearLayout layoutMapaDetalle;
     @Bind(R.id.layout_mapa_detalle_1)
@@ -138,6 +143,12 @@ public class MapaPartidoActivity extends AppCompatActivity implements
     TextView textoDetalleFaltantes;
     @Bind(R.id.texto_mapa_detalle_descripcion)
     TextView textoDetalleDescripcion;
+    @Bind(R.id.texto_mapa_detalle_nombre)
+    TextView textoDetalleNombre;
+    @Bind(R.id.texto_mapa_detalle_fecha)
+    TextView textoDetalleFecha;
+    @Bind(R.id.texto_mapa_detalle_hora)
+    TextView textoDetalleHora;
     @Bind(R.id.input_mapa_detalle_buscador)
     AutoCompleteTextView inputBuscador;
 
@@ -244,6 +255,12 @@ public class MapaPartidoActivity extends AppCompatActivity implements
     }
 
     private void configurarSeleccionar() {
+        botonDetalleSeleccionar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                botonSeleccionarLocalizacion.callOnClick();
+            }
+        });
         botonSeleccionarLocalizacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -289,6 +306,10 @@ public class MapaPartidoActivity extends AppCompatActivity implements
                 primeraVez = false;
                 posicionMarcada = null;
                 obtenerUltimaLocalizacion();
+
+                if (accion.equals(BUSCAR)){
+                    onMapClick(null);
+                }
             }
         });
     }
@@ -445,12 +466,30 @@ public class MapaPartidoActivity extends AppCompatActivity implements
     @Override
     public void onMapClick(LatLng latLng) {
         ocultarDetalle();
+        if (accion.equals(BUSCAR)){
+            eliminarPosicionMarcada();
+        }
     }
 
-    @SuppressLint("StringFormatInvalid")
+    private void eliminarPosicionMarcada() {
+        posicionMarcada = null;
+        partidoMarcado = null;
+
+        if (marcadorSeleccionado != null){
+            marcadorSeleccionado.hideInfoWindow();
+        }
+
+        textoDetalleTitulo.setText(getString(R.string.titulo_seleccionar_partido_mapa));
+        textoDetalleTitulo.setTextColor(getColor(R.color.black));
+
+        layoutMapaDetalle1.setBackgroundColor(getColor(R.color.white));
+    }
+
+    @SuppressLint({"StringFormatInvalid", "SimpleDateFormat"})
     @Override
     public boolean onMarkerClick(Marker marker) {
         // CUANDO REALIZO UNA SELECCION DE UN PARTIDO
+        marcadorSeleccionado = marker;
         Object data = marker.getTag();
 
         if (data != null && data instanceof PartidoDTO){
@@ -462,8 +501,6 @@ public class MapaPartidoActivity extends AppCompatActivity implements
             texto = new StringBuilder().append(partidoDTO.getLocalizacion().getDireccion());
             textoDetalleTitulo.setText(texto);
 
-
-
             texto = new StringBuilder().append(
                     getString(
                             R.string.texto_faltantes_mapa,
@@ -472,7 +509,6 @@ public class MapaPartidoActivity extends AppCompatActivity implements
                                 partidoDTO.getModalidad().getMinimo()
                             }
                     ));
-//            texto.append();
 
             textoDetalleFaltantes.setText(texto);
 
@@ -486,6 +522,17 @@ public class MapaPartidoActivity extends AppCompatActivity implements
                 texto.append(partidoDTO.getPrecio());
                 textoDetallePrecio.setText(texto);
             }
+
+            texto = new StringBuilder().append(partidoDTO.getApodo());
+            textoDetalleNombre.setText(texto);
+
+            SimpleDateFormat sdf;
+
+            sdf = new SimpleDateFormat("EEE dd/MM/yy");
+            textoDetalleFecha.setText(sdf.format(partidoDTO.getFecha()));
+
+            sdf = new SimpleDateFormat("hh:mm a");
+            textoDetalleHora.setText(sdf.format(partidoDTO.getFecha()));
 
             layoutMapaDetalle1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -502,7 +549,6 @@ public class MapaPartidoActivity extends AppCompatActivity implements
             layoutMapaDetalle1.setBackgroundColor(getColor(R.color.colorPrimary));
             textoDetalleTitulo.setTextColor(getColor(R.color.white));
         }
-
         return false;
     }
 
@@ -578,7 +624,8 @@ public class MapaPartidoActivity extends AppCompatActivity implements
             LatLng punto = new LatLng(partidoDTO.getLocalizacion().getLatitud(), partidoDTO.getLocalizacion().getLongitud());
 
             puntos.add(punto);
-            titulos.add(partidoDTO.getApodo());
+//            titulos.add(partidoDTO.getApodo());
+            titulos.add("Partido Seleccionado");
             datas.add(partidoDTO);
 
             partidoPublicoEncontrado.add(partidoDTO);
