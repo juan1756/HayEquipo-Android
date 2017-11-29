@@ -2,6 +2,7 @@ package edu.uade.sip2.hayequipo_android.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,11 +74,12 @@ public class SolicitudPartidoAdapter extends BaseAdapter {
             SolicitudDTO solicitud = (SolicitudDTO) getItem(posicion);
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
-            apodo.setText("Invitación de: "+solicitud.getJugador().getNombre().toString());
+            apodo.setText("Invitación de: "+solicitud.getPartido().getCreador().getNombre().toString());
             direccion.setText(solicitud.getPartido().getLocalizacion().getDireccion().toString());
             fecha.setText(solicitud.getPartido().getFecha().toString());
             desc.setText(solicitud.getPartido().getComentario());
 
+            Log.e("solicitud jugador","jugador:" +solicitud.getJugador().getNombre().toString()+"pos del view: "+String.valueOf(posicion));
            // avatar.setImageResource(R.drawable.pelota);
            // if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
              //   imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));

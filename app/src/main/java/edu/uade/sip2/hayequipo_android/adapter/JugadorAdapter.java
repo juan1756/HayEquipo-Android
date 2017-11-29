@@ -2,6 +2,7 @@ package edu.uade.sip2.hayequipo_android.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +71,7 @@ public class JugadorAdapter extends BaseAdapter {
         }
 
         TextView apodoJugador = view.findViewById(R.id.item_jugador_apodo);
-        TextView emailJugador = view.findViewById(R.id.item_jugador_email);
+      // TextView emailJugador = view.findViewById(R.id.item_jugador_email);
         ImageView avatar = view.findViewById(R.id.item_jugador_avatar);
 
         //TODO: HARCODEADO QUE NO ME PONGA A MI ( EL LOGEADO )
@@ -79,7 +80,7 @@ public class JugadorAdapter extends BaseAdapter {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
             apodoJugador.setText(jugador.getNombre());
-            emailJugador.setText(jugador.getEmail());
+         //   emailJugador.setText(jugador.getEmail());
 
 
             avatar.setImageResource(R.drawable.ic_launcher);

@@ -85,9 +85,8 @@ import edu.uade.sip2.hayequipo_android.utils.TimePickerFragment;
 import edu.uade.sip2.hayequipo_android.utils.WaitTime;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AvatarPickerDialogFragment.AvatarPickerDialogListener,
-SwipeRefreshLayout.OnRefreshListener {
-
+        implements NavigationView.OnNavigationItemSelectedListener, AvatarPickerDialogFragment.AvatarPickerDialogListener
+{
 
     private static final int ACTIVIDAD_MAPA = 100;
 
@@ -188,8 +187,9 @@ SwipeRefreshLayout.OnRefreshListener {
             hacerLogin();
         } catch (Exception e){
             JugadorDTO ejemplo = new JugadorDTO();
-            ejemplo.setNombre("lis");
+            ejemplo.setNombre("pepe");
             usuarioLogeado = ejemplo;
+            Toast.makeText(getBaseContext(),"error, me logeo con usr por defecto",Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -199,11 +199,20 @@ SwipeRefreshLayout.OnRefreshListener {
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-
-                        Toast.makeText(getBaseContext(),"TODO: on refresh list swipe",Toast.LENGTH_SHORT).show();
-                        // This method performs the actual data-refresh operation.
-                        // The method calls setRefreshing(false) when it's finished.
-                       // myUpdateOperation();
+                        
+                        switch(lista){
+                            case "partidos":
+                                todosLosPartidos(0);
+                                break;
+                            case "amigos":
+                                cambiarAmigos();
+                                break;
+                            case "solicitudes":
+                                cambiarSolicitudesPartidos();
+                                break;
+                            default:
+                                break;
+                        }
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 }
@@ -218,8 +227,10 @@ SwipeRefreshLayout.OnRefreshListener {
      */
     private void hacerLogin() throws JsonProcessingException, JSONException {
         JugadorDTO ejemplo = new JugadorDTO();
-      ejemplo.setNombre("lis");
-    //   ejemplo.setNombre("pepe");
+   // ejemplo.setNombre("pepe");
+     // ejemplo.setNombre("luis");
+     //  ejemplo.setNombre("maria");
+        ejemplo.setNombre("pablo");
 
         VolleySingleton
                 .getInstance(getApplicationContext())
@@ -345,13 +356,19 @@ SwipeRefreshLayout.OnRefreshListener {
 
 
     private void enviarSolicitudAcepto(SolicitudDTO solicitud){
+
+        //Pruebo hacer una solicitud nueva solo con el codigo
+        SolicitudDTO nueva = new SolicitudDTO();
+        nueva.setCodigo(solicitud.getCodigo());
+
+
         try {
             VolleySingleton
                     .getInstance(getApplicationContext())
                     .addToRequestQueue(
                             new JsonObjectRequest(
                                     getString(R.string.servicio_url) + getString(R.string.servicio_solicitud_aceptar_jugador),
-                                    solicitud.toJsonObject(),
+                                    nueva.toJsonObject(),
                                     new Response.Listener<JSONObject>() {
 
                                         @Override
@@ -542,6 +559,7 @@ SwipeRefreshLayout.OnRefreshListener {
     private void cambiarPartido(PartidoDTO partido) {
         Intent intent = new Intent(this, PartidoActivity.class);
         intent.putExtra(PartidoActivity.EXTRA_PARTIDO, partido);
+        intent.putExtra("usuario_logeado", this.usuarioLogeado);
         intent.putExtra(PartidoActivity.EXTRA_MODALIDADES, (Serializable) modalidades);
         startActivity(intent);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
@@ -774,14 +792,7 @@ SwipeRefreshLayout.OnRefreshListener {
     }
 
 
-    /**
-     * This method is called when swipe refresh is pulled down
-     */
-    @Override
-    public void onRefresh() {
-        Toast.makeText(getBaseContext(),"on refresh list swipe",Toast.LENGTH_SHORT).show();
-        //todosLosPartidos(0);
-    }
+
 
 
 
@@ -887,7 +898,7 @@ SwipeRefreshLayout.OnRefreshListener {
             intent.putExtra(MapaPartidoActivity.EXTRA_JUGADOR, usuarioLogeado);
             intent.putExtra(MapaPartidoActivity.EXTRA_ACCION, MapaPartidoActivity.BUSCAR);
             startActivity(intent);
-            Toast.makeText(getBaseContext(),"hola",Toast.LENGTH_LONG).show();
+
             return true;
         }
 

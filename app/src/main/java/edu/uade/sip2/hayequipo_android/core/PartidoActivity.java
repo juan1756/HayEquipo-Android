@@ -92,12 +92,14 @@ public class PartidoActivity extends AppCompatActivity {
     //JUGADOR AL QUE LE QUIERO ENVIAR SOLICITUD
     private JugadorDTO elegido;
 
+    private String usuario_logeado;
+
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
+        usuario_logeado = getIntent().getStringExtra("usuario_logeado");
         partido = (PartidoDTO) getIntent().getSerializableExtra(EXTRA_PARTIDO);
         modalidades = (List<ModalidadDTO>) getIntent().getSerializableExtra(EXTRA_MODALIDADES);
         ArrayAdapter<ModalidadDTO> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_dropdown_item_1line, modalidades);
@@ -122,8 +124,30 @@ public class PartidoActivity extends AppCompatActivity {
         campoLugar.setText(partido.getLocalizacion().getDireccion());
         campoPrecio.setText(partido.getPrecio().toString());
         campoModalidad.setSelection(posicionModalidad);
+        List<JugadorDTO> jugadores = partido.getJugadoresAceptado();
+        if(jugadores!=null){
+            for(JugadorDTO j : jugadores){
+
+                try{
+                    campoJugadores.setText(campoJugadores.getText().toString()+" - "+j.getNombre().toString());
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
         if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
             imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));
+        }
+
+        try {
+            Toast.makeText(this,"usr logeado:"+usuario_logeado.toString(),Toast.LENGTH_LONG).show();
+            if (!usuario_logeado.equals("") && !usuario_logeado.equals(partido.getCreador().getNombre().toString())) {
+                botonPublicar.setEnabled(false);
+
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
 //        campoHora.setText(p.getHora().toString());
