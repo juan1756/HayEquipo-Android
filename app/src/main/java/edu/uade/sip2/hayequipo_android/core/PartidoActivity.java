@@ -4,10 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -36,17 +37,17 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.uade.sip2.hayequipo_android.R;
 import edu.uade.sip2.hayequipo_android.conn.VolleySingleton;
-import edu.uade.sip2.hayequipo_android.conn.requestToBackend;
 import edu.uade.sip2.hayequipo_android.dto.JugadorDTO;
 import edu.uade.sip2.hayequipo_android.dto.ModalidadDTO;
 import edu.uade.sip2.hayequipo_android.dto.PartidoDTO;
 import edu.uade.sip2.hayequipo_android.dto.SolicitudDTO;
-import edu.uade.sip2.hayequipo_android.entities.HarcodedUsersAndPlays;
+import edu.uade.sip2.hayequipo_android.dto.enumerado.TipoPrivacidadEnum;
 import edu.uade.sip2.hayequipo_android.utils.Avatars;
 
 /**
@@ -114,9 +115,9 @@ public class PartidoActivity extends AppCompatActivity {
 
         int posicionModalidad = buscarModalidad(partido.getModalidad().getCodigo());
         SimpleDateFormat sdf;
-        sdf = new SimpleDateFormat("dd/MM/yyyy");
+        sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("es","ES"));
         String fechaFormateada = sdf.format(partido.getFecha());
-        sdf = new SimpleDateFormat("hh:mm");
+        sdf = new SimpleDateFormat("hh:mm", new Locale("es","ES"));
         String horaFormateada = sdf.format(partido.getFecha());
 
         campoFecha.setText(fechaFormateada);
@@ -188,42 +189,60 @@ public class PartidoActivity extends AppCompatActivity {
             }
         });
 
+        if (partido.getTipoPrivacidad().compareTo(TipoPrivacidadEnum.PUBLICO) == 0){
+            botonPublicar.setVisibility(View.GONE);
+        }
+
         botonPublicar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AlertDialog alert;
+                AlertDialog.Builder builder = new AlertDialog.Builder(PartidoActivity.this);
+                builder.setTitle("Confirmacion Publicacion")
+                        .setMessage("El partido sera publicado, para que cualquier persona pueda unirse al partido.\n\nSi esta de acuerdo, presione Publicar")
+                        .setPositiveButton("Publicar", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Publico el partido
+                                try {
+                                    VolleySingleton
+                                            .getInstance(getApplicationContext())
+                                            .addToRequestQueue(
+                                                    new JsonObjectRequest(
+                                                            getString(R.string.servicio_url) + getString(R.string.servicio_publicar_partido),
+                                                            partido.toJsonObject(),
+                                                            new Response.Listener<JSONObject>() {
 
-                // Publico el partido
-                try {
-                    VolleySingleton
-                            .getInstance(getApplicationContext())
-                            .addToRequestQueue(
-                                    new JsonObjectRequest(
-                                            getString(R.string.servicio_url) + getString(R.string.servicio_publicar_partido),
-                                            partido.toJsonObject(),
-                                            new Response.Listener<JSONObject>() {
+                                                                @Override
+                                                                public void onResponse(JSONObject response) {
+                                                                    try {
+                                                                        ObjectMapper mapper = new ObjectMapper();
+                                                                        PartidoDTO partidoPublicado = mapper.readValue(response.toString(), PartidoDTO.class);
 
-                                                @Override
-                                                public void onResponse(JSONObject response) {
-                                                    try {
-                                                        ObjectMapper mapper = new ObjectMapper();
-                                                        PartidoDTO partidoPublicado = mapper.readValue(response.toString(), PartidoDTO.class);
+                                                                    } catch (Exception e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                }
+                                                            },
+                                                            new Response.ErrorListener() {
 
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                }
-                                            },
-                                            new Response.ErrorListener() {
+                                                                @Override
+                                                                public void onErrorResponse(VolleyError error) {
+                                                                    error.printStackTrace();
+                                                                }
+                                                            }
+                                                    ));
+                                } catch (JsonProcessingException | JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        })
+                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
 
-                                                @Override
-                                                public void onErrorResponse(VolleyError error) {
-                                                    error.printStackTrace();
-                                                }
-                                            }
-                                    ));
-                } catch (JsonProcessingException | JSONException e) {
-                    e.printStackTrace();
-                }
+                            }
+                        });
+                alert = builder.create();
+                alert.show();
             }
         });
 

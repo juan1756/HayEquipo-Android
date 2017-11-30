@@ -23,7 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import edu.uade.sip2.hayequipo_android.R;
 import edu.uade.sip2.hayequipo_android.adapter.DireccionAutoCompleteAdapter;
@@ -608,7 +608,7 @@ public class MainActivity extends AppCompatActivity
                 calendar.set(Calendar.HOUR_OF_DAY, hora);
                 calendar.set(Calendar.MINUTE, minutos);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("es","ES"));
                 String horaFormateada = sdf.format(calendar.getTime());
 
                 horaView.setText(horaFormateada);
@@ -628,7 +628,7 @@ public class MainActivity extends AppCompatActivity
                 calendar.set(Calendar.MONTH, mes);
                 calendar.set(Calendar.DAY_OF_MONTH, day);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("es","ES"));
                 String fechaFormateada = sdf.format(calendar.getTime());
 
                 fechaView.setText(fechaFormateada);
@@ -1045,10 +1045,10 @@ public class MainActivity extends AppCompatActivity
                 direccionPartido.setText(partido.getLocalizacion().getDireccion());
                 descripcionPartido.setText(partido.getComentario());
 
-                sdf = new SimpleDateFormat("EEE dd/MM/yy");
+                sdf = new SimpleDateFormat("EEE dd/MM/yy", new Locale("es","ES"));
                 fechaPartido.setText(sdf.format(partido.getFecha()));
 
-                sdf = new SimpleDateFormat("hh:mm a");
+                sdf = new SimpleDateFormat("hh:mm a", new Locale("es","ES"));
                 horaPartido.setText(sdf.format(partido.getFecha()));
 
                 cantidadPartido.setText(

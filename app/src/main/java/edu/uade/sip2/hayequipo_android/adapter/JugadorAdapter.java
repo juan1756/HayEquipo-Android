@@ -2,23 +2,20 @@ package edu.uade.sip2.hayequipo_android.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import edu.uade.sip2.hayequipo_android.R;
 import edu.uade.sip2.hayequipo_android.dto.JugadorDTO;
-import edu.uade.sip2.hayequipo_android.dto.PartidoDTO;
-import edu.uade.sip2.hayequipo_android.utils.Avatars;
 
 /**
  * Created by Usuario on 26/11/2017.
@@ -78,7 +75,7 @@ public class JugadorAdapter extends BaseAdapter {
         //TODO: HARCODEADO QUE NO ME PONGA A MI ( EL LOGEADO )
         if (jugadores != null) {
             JugadorDTO jugador = (JugadorDTO) getItem(posicion);
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm", new Locale("es","ES"));
 
             apodoJugador.setText(jugador.getNombre());
          //   emailJugador.setText(jugador.getEmail());

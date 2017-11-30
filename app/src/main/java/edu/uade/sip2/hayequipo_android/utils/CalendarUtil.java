@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by josue on 21/11/17.
@@ -17,9 +18,9 @@ public class CalendarUtil {
     public static Date formatearFechaHora(String fecha, String hora) throws ParseException {
         SimpleDateFormat sdf;
 
-        sdf = new SimpleDateFormat("dd/MM/yyyy");
+        sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("es","ES"));
         Date fechaFormateada = sdf.parse(fecha);
-        sdf= new SimpleDateFormat("hh:mm");
+        sdf= new SimpleDateFormat("hh:mm", new Locale("es","ES"));
         Date horaFormateada = sdf.parse(hora);
 
         Calendar calendarHora = Calendar.getInstance();

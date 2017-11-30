@@ -528,10 +528,10 @@ public class MapaPartidoActivity extends AppCompatActivity implements
 
             SimpleDateFormat sdf;
 
-            sdf = new SimpleDateFormat("EEE dd/MM/yy");
+            sdf = new SimpleDateFormat("EEE dd/MM/yy", new Locale("es","ES"));
             textoDetalleFecha.setText(sdf.format(partidoDTO.getFecha()));
 
-            sdf = new SimpleDateFormat("hh:mm a");
+            sdf = new SimpleDateFormat("hh:mm a", new Locale("es","ES"));
             textoDetalleHora.setText(sdf.format(partidoDTO.getFecha()));
 
             layoutMapaDetalle1.setOnClickListener(new View.OnClickListener() {
