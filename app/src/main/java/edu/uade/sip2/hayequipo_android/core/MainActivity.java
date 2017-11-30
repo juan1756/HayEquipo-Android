@@ -776,7 +776,7 @@ public class MainActivity extends AppCompatActivity
                         partido.setAvatar(avatarSeleccionado);
                         partido.setModalidad(modalidad);
                         partido.setLocalizacion(localizacion);
-                        partido.setTipoPrivacidad(campoEsPublico.isChecked() ? TipoPrivacidadEnum.PUBLICO : TipoPrivacidadEnum.PRIVADO);
+                        partido.setTipoPrivacidad(TipoPrivacidadEnum.PUBLICO);
 
                         // Creo el partido
                         VolleySingleton
