@@ -12,11 +12,10 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import edu.uade.sip2.hayequipo_android.R;
 import edu.uade.sip2.hayequipo_android.dto.JugadorDTO;
-import edu.uade.sip2.hayequipo_android.dto.PartidoDTO;
-import edu.uade.sip2.hayequipo_android.utils.Avatars;
 
 /**
  * Created by Usuario on 26/11/2017.
@@ -26,10 +25,12 @@ public class JugadorAdapter extends BaseAdapter {
 
     private List<JugadorDTO> jugadores;
     private Context context;
+    private String yo;
 
     public JugadorAdapter(ArrayList<JugadorDTO> jugadores,Context context) {
         this.context = context;
         this.jugadores = jugadores;
+
     }
 
     @Override
@@ -68,19 +69,24 @@ public class JugadorAdapter extends BaseAdapter {
         }
 
         TextView apodoJugador = view.findViewById(R.id.item_jugador_apodo);
-        TextView emailJugador = view.findViewById(R.id.item_jugador_email);
+      // TextView emailJugador = view.findViewById(R.id.item_jugador_email);
         ImageView avatar = view.findViewById(R.id.item_jugador_avatar);
 
-
+        //TODO: HARCODEADO QUE NO ME PONGA A MI ( EL LOGEADO )
         if (jugadores != null) {
             JugadorDTO jugador = (JugadorDTO) getItem(posicion);
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm", new Locale("es","ES"));
 
             apodoJugador.setText(jugador.getNombre());
-            emailJugador.setText(jugador.getEmail());
+         //   emailJugador.setText(jugador.getEmail());
 
-
-            avatar.setImageResource(R.drawable.ic_launcher);
+            try {
+                int id = context.getResources().getIdentifier("drawable/j" + posicion, null, context.getPackageName());
+              //  Toast.makeText(context,"id:"+String.valueOf(id)+"pack:"+String.valueOf(context.getPackageName()),Toast.LENGTH_LONG).show();
+                avatar.setImageResource(id);
+            }catch(Exception e){
+                avatar.setImageResource(R.drawable.ic_launcher);
+            }
            // if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
              //   imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));
           //  }

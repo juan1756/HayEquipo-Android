@@ -30,7 +30,8 @@
     <string name="permission_rationale_location">Se requiere el servicio de Localizacion para mostrar la ubicacion actual.</string>
     <string name="location_permission_denied">Se requiere el servicio de Localizacion para mostrar la ubicacion actual. Por favor intente mas tarde y acepte los permisos.\nEn caso de que se haya denegado, puede aceptarlo en Configuracion del Sistema &gt; Aplicaciones &gt; \'HayEquipO!\'.</string>
     <string name="permission_required_toast">El permiso de la localizacion es requerida para mostrar la ubicacion.</string>
-    <string name="texto_faltantes_mapa">%1$d de %2$d</string>
+    <string name="texto_faltantes_mapa">%1$d de %2$d Jugadores</string>
+    <string name="texto_faltantes_item">%1$d de %2$d</string>
 
     <!-- SERVICIOS -->
     <string name="servicio_url">http://acarrea2.ddns.net/HayEquipo</string>

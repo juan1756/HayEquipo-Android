@@ -16,6 +16,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -63,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import edu.uade.sip2.hayequipo_android.R;
 import edu.uade.sip2.hayequipo_android.adapter.DireccionAutoCompleteAdapter;
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity
     private List<ModalidadDTO> modalidades = new ArrayList<>();
     private List<JugadorDTO> jugadores = new ArrayList<>();
     private LatLng posicionMarcada;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView avatar;
 
     @Override
@@ -109,14 +112,32 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Recupero el usuario del login
+        String usuario = getIntent().getStringExtra("jugador");
+        if(usuario.equals("")){
+            Toast.makeText(getBaseContext(),"error login, conectando usuario por defecto josue",Toast.LENGTH_SHORT).show();
+            JugadorDTO jugador = new JugadorDTO();
+            jugador.setNombre("josue");
+            usuarioLogeado = jugador;
+        }else{
+           // Toast.makeText(getBaseContext(),"logeado como: "+usuario,Toast.LENGTH_LONG).show();
+            JugadorDTO jugador = new JugadorDTO();
+            jugador.setNombre(usuario);
+            usuarioLogeado = jugador;
+        }
+
         // Se crea una vez y se utiliza
         mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        final ListView listaView = findViewById(android.R.id.list);
 
-        ListView listaView = findViewById(android.R.id.list);
+
+
         listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
         listaView.setSelector(R.drawable.list_selector);
         listaView.setDrawSelectorOnTop(false);
         listaView.setAdapter(listaAdapter);
+        listaView.setDividerHeight(20);
         this.lista = "partidos";
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -127,7 +148,9 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPartidoDialog(MainActivity.this);
+                if(lista.equals("partidos")) {
+                    showPartidoDialog(MainActivity.this);
+                }
             }
         });
 
@@ -140,36 +163,60 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //
+       // LayoutInflater layoutInflater = (LayoutInflater)
+          //      getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+      //  View sol = layoutInflater.inflate(R.layout.item_solicitud, null,   false);
+
+        //
+
         listaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> adapterView, View view, final int posicion, long id) {
+
                 if(lista.equals("partidos")) {
                     cambiarPartido((PartidoDTO) listaAdapter.getItem(posicion));
                 }else if(lista.equals("solicitudes")){
-                    final ImageView item_aceptar = (ImageView) findViewById(R.id.item_solicitud_aceptar);
+
+                    final ImageView item_aceptar = (ImageView) view.findViewById(R.id.item_solicitud_aceptar);
+                    final ImageView item_rechazar = (ImageView) view.findViewById(R.id.item_solicitud_rechazar);
 
                     item_aceptar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.e("solicitud","acepto");
-
+                            Log.e("solicitud","acepto, posicion: "+String.valueOf(posicion));
+                            Log.e("deberia solicitud obj:",adapterView.getAdapter().getItem(posicion).toString());
                             SolicitudDTO sol = (SolicitudDTO) adapterView.getAdapter().getItem(posicion);
 
 
                             if(sol!=null){
                                 enviarSolicitudAcepto(sol);
-                                Toast.makeText(getBaseContext(),"remover solicitud!"+sol.toString(),Toast.LENGTH_SHORT).show();
+                               // Toast.makeText(getBaseContext(),"solicitud aceptada!"+sol.toString(),Toast.LENGTH_SHORT).show();
+
+                                adapterView.removeViewInLayout(view);
+                                cambiarSolicitudesPartidos();
+                                Log.e("remuevo vista","remover vista de la pos: "+posicion);
                             }
                         }
                     });
 
-                    final ImageView item_rechazar = (ImageView) findViewById(R.id.item_solicitud_rechazar);
+
                     item_rechazar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.e("solicitud","rechazo");
+                            Log.e("solicitud","rechazo, posicion: "+String.valueOf(posicion));
+                            Log.e("deberia solicitud obj:",adapterView.getAdapter().getItem(posicion).toString());
                             SolicitudDTO sol = (SolicitudDTO) adapterView.getAdapter().getItem(posicion);
-                            Toast.makeText(getBaseContext(),"remover solicitud!"+sol.toString(),Toast.LENGTH_SHORT).show();
+
+
+                            if(sol!=null){
+                                enviarSolicitudRechazo(sol);
+
+                                adapterView.removeViewInLayout(view);
+                                cambiarSolicitudesPartidos();
+                                Log.e("remuevo vista","remover vista de la pos: "+posicion);
+                            }
                         }
                     });
                 }
@@ -177,11 +224,40 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Realizo un login (En caso de que no tengo disponible un usuario)
+
         try {
-            hacerLogin();
+            hacerLogin(usuarioLogeado);
         } catch (Exception e){
+            JugadorDTO ejemplo = new JugadorDTO();
+            ejemplo.setNombre("josue");
+            usuarioLogeado = ejemplo;
+            Toast.makeText(getBaseContext(),"error, me logeo con usr por defecto",Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+
+                        switch(lista){
+                            case "partidos":
+                                todosLosPartidos(0);
+                                break;
+                            case "amigos":
+                                cambiarAmigos();
+                                break;
+                            case "solicitudes":
+                                cambiarSolicitudesPartidos();
+                                break;
+                            default:
+                                break;
+                        }
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }
+        );
+
 //        todosLosPartidos(1);
     }
 
@@ -189,24 +265,24 @@ public class MainActivity extends AppCompatActivity
      * METODO QUE NO VA IR POR EL TEMA DE HACER EL LOGIN Y GUARDARME EN LA VARIABLE
      * usuarioLogeado, EL OBJETO DE JugadorDTO
      */
-    private void hacerLogin() throws JsonProcessingException, JSONException {
-        JugadorDTO ejemplo = new JugadorDTO();
-        ejemplo.setNombre("josue");
-    //    ejemplo.setNombre("pablo");
+    private void hacerLogin(JugadorDTO usuario) throws JsonProcessingException, JSONException {
+       // JugadorDTO ejemplo = new JugadorDTO();
+    //  ejemplo.setNombre("luis");
+    //   ejemplo.setNombre("pepe");
 
         VolleySingleton
                 .getInstance(getApplicationContext())
                 .addToRequestQueue(
                         new JsonObjectRequest(
                                 getString(R.string.servicio_url) + getString(R.string.servicio_buscar_jugador),
-                                ejemplo.toJsonObject(),
+                                usuario.toJsonObject(),
                                 new Response.Listener<JSONObject>() {
 
                                     @Override
                                     public void onResponse(JSONObject response) {
                                         try {
                                             usuarioLogeado = mapper.readValue(response.toString(), JugadorDTO.class);
-                                            todosLosPartidos(1);
+                                            todosLosPartidos(0);
 
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -242,6 +318,7 @@ public class MainActivity extends AppCompatActivity
             ListView listaView = findViewById(android.R.id.list);
             listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
             listaView.setSelector(R.drawable.list_selector);
+            listaView.setDividerHeight(20);
             listaView.setDrawSelectorOnTop(false);
             listaView.setAdapter(listaAdapter);
         }
@@ -307,10 +384,6 @@ public class MainActivity extends AppCompatActivity
                             )
                     )
             ;
-
-
-
-
         } catch (JsonProcessingException | JSONException e) {
             e.printStackTrace();
         }
@@ -318,13 +391,19 @@ public class MainActivity extends AppCompatActivity
 
 
     private void enviarSolicitudAcepto(SolicitudDTO solicitud){
+
+        //Pruebo hacer una solicitud nueva solo con el codigo
+        SolicitudDTO nueva = new SolicitudDTO();
+        nueva.setCodigo(solicitud.getCodigo());
+
+
         try {
             VolleySingleton
                     .getInstance(getApplicationContext())
                     .addToRequestQueue(
                             new JsonObjectRequest(
                                     getString(R.string.servicio_url) + getString(R.string.servicio_solicitud_aceptar_jugador),
-                                    solicitud.toJsonObject(),
+                                    nueva.toJsonObject(),
                                     new Response.Listener<JSONObject>() {
 
                                         @Override
@@ -343,6 +422,7 @@ public class MainActivity extends AppCompatActivity
                                         public void onErrorResponse(VolleyError error) {
                                             Toast.makeText(getBaseContext(),"error solicitud!",Toast.LENGTH_LONG).show();
                                             error.printStackTrace();
+
                                         }
                                     }
                             )
@@ -354,9 +434,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void enviarSolicitudRechazo(SolicitudDTO solicitud){
-        try {
 
-            Log.e("solicitud id",solicitud.getCodigo().toString());
+        SolicitudDTO nueva = new SolicitudDTO();
+        nueva.setCodigo(solicitud.getCodigo());
+
+        try {
 
             VolleySingleton
                     .getInstance(getApplicationContext())
@@ -374,6 +456,7 @@ public class MainActivity extends AppCompatActivity
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
+
                                         }
                                     },
                                     new Response.ErrorListener() {
@@ -392,8 +475,6 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-
-
 
     private void cambiarAmigos(){
         getSupportActionBar().setTitle("Mis Amigos");
@@ -423,7 +504,7 @@ public class MainActivity extends AppCompatActivity
                                                 ListView listaView = findViewById(android.R.id.list);
                                                 listaView.setSelector(R.drawable.list_selector);
                                                   listaView.setDrawSelectorOnTop(false);
-
+                                                listaView.setDividerHeight(20);
                                                 jugadorAdapter.agregarJugador(Arrays.asList(j));
                                                 listaView.setAdapter(jugadorAdapter);
                                                 lista = "amigos";
@@ -468,13 +549,14 @@ public class MainActivity extends AppCompatActivity
                                         public void onResponse(JSONArray response) {
                                             try {
                                                 SolicitudDTO[] j = mapper.readValue(response.toString(), SolicitudDTO[].class);
-                                                Log.e("solicitud partido",j.toString());
+                                                Log.e("solicitud partido list",j.toString());
                                                 //  modalidades = Arrays.asList(m);
                                                 //Log.e("jug",j.toString());
                                                 SolicitudPartidoAdapter solicitud = new SolicitudPartidoAdapter(new ArrayList<SolicitudDTO>(),getBaseContext());
                                                 ListView listaView = findViewById(android.R.id.list);
                                                 listaView.setSelector(R.drawable.list_selector);
                                                 listaView.setDrawSelectorOnTop(false);
+                                                listaView.setDividerHeight(20);
                                                 lista = "solicitudes";
                                                 solicitud.agregarSolicitud(Arrays.asList(j));
                                                 listaView.setAdapter(solicitud);
@@ -500,10 +582,6 @@ public class MainActivity extends AppCompatActivity
         }catch(Exception e){
             e.printStackTrace();
         }
-
-
-
-
     }
 
     private void cambiarCancha() {
@@ -515,6 +593,7 @@ public class MainActivity extends AppCompatActivity
     private void cambiarPartido(PartidoDTO partido) {
         Intent intent = new Intent(this, PartidoActivity.class);
         intent.putExtra(PartidoActivity.EXTRA_PARTIDO, partido);
+        intent.putExtra("usuario_logeado", this.usuarioLogeado);
         intent.putExtra(PartidoActivity.EXTRA_MODALIDADES, (Serializable) modalidades);
         startActivity(intent);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
@@ -529,7 +608,7 @@ public class MainActivity extends AppCompatActivity
                 calendar.set(Calendar.HOUR_OF_DAY, hora);
                 calendar.set(Calendar.MINUTE, minutos);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("es","ES"));
                 String horaFormateada = sdf.format(calendar.getTime());
 
                 horaView.setText(horaFormateada);
@@ -549,7 +628,7 @@ public class MainActivity extends AppCompatActivity
                 calendar.set(Calendar.MONTH, mes);
                 calendar.set(Calendar.DAY_OF_MONTH, day);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("es","ES"));
                 String fechaFormateada = sdf.format(calendar.getTime());
 
                 fechaView.setText(fechaFormateada);
@@ -746,6 +825,12 @@ public class MainActivity extends AppCompatActivity
         return !(nombre.equals("") || fecha.equals("") || hora.equals("") || lugar.equals(""));
     }
 
+
+
+
+
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
@@ -774,7 +859,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onAvatarSelected(AvatarPickerDialogFragment dialog, String avatarResourceName) {
         // TextView input = (TextView) findViewById(R.id.input_username);
-        Toast.makeText(getBaseContext(),"Avatar Seleccionado: "+avatarResourceName,Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(getBaseContext(),"Avatar Seleccionado: "+avatarResourceName,Toast.LENGTH_SHORT).show();
         avatarSeleccionado = avatarResourceName;
         if(this.avatar != null) {
             this.avatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), avatarResourceName));
@@ -833,6 +918,8 @@ public class MainActivity extends AppCompatActivity
             todosLosPartidos(0);
         } else if (id == R.id.canchas) {
             cambiarCancha();
+        } else if (id == R.id.acerca) {
+            mostrarAcerca();
         } else if (id == R.id.salir) {
             cerrarApp();
         } else if (id == R.id.solicitudesPartidos) {
@@ -856,6 +943,28 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void mostrarAcerca() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        String str =    "Riccombeni, Maximiliano \n" +
+                "(Acarrea2 era el proyecto)\n\n" +
+                        "De Giovanni, German Federico \n" +
+                "(Tambien Dikroalum)\n\n" +
+                        "Gonzalez, Maria Victoria \n" +
+                "(The Dancer)\n\n" +
+                        "Mejia Rodriguez, Juan Jose \n" +
+                "(El Hispter)\n\n" +
+                        "Gonzalez Acuña, Lucas Gabriel \n" +
+                "(Acuerdate de la hamburguesa)\n\n" +
+                        "Lopez Hernandez, Josue David \n" +
+                "(Acarrea2 era el proyecto)"
+        ;
+        builder.setTitle("Proyecto para Seminario de Integracion II\n");
+        builder.setMessage(str);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void cerrarApp(){
@@ -910,7 +1019,7 @@ public class MainActivity extends AppCompatActivity
             notifyDataSetChanged();
         }
 
-        @SuppressLint({"SimpleDateFormat", "InflateParams", "ViewHolder"})
+        @SuppressLint({"SimpleDateFormat", "InflateParams", "ViewHolder", "SetTextI18n"})
         @Override
         public View getView(int posicion, View view, ViewGroup parent) {
             if (view == null) {
@@ -921,16 +1030,39 @@ public class MainActivity extends AppCompatActivity
             TextView direccionPartido = view.findViewById(R.id.item_partido_direccion);
             TextView descripcionPartido = view.findViewById(R.id.item_partido_descripcion);
             TextView fechaPartido = view.findViewById(R.id.item_partido_fecha);
+            TextView horaPartido = view.findViewById(R.id.item_partido_hora);
+            TextView cantidadPartido = view.findViewById(R.id.item_partido_cantidad);
+            TextView precioPartido = view.findViewById(R.id.item_partido_precio);
             ImageView imagenAvatar = view.findViewById(R.id.item_partido_avatar);
 
             if (partidos != null) {
                 PartidoDTO partido = (PartidoDTO) getItem(posicion);
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+                SimpleDateFormat sdf;
 
                 apodoPartido.setText(partido.getApodo());
+                if (partido.getTipoPrivacidad().compareTo(TipoPrivacidadEnum.PRIVADO) == 0){
+                    apodoPartido.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_accion_privado1, 0, 0, 0);
+                }
+
                 direccionPartido.setText(partido.getLocalizacion().getDireccion());
                 descripcionPartido.setText(partido.getComentario());
+
+                sdf = new SimpleDateFormat("EEE dd/MM/yy", new Locale("es","ES"));
                 fechaPartido.setText(sdf.format(partido.getFecha()));
+
+                sdf = new SimpleDateFormat("hh:mm a", new Locale("es","ES"));
+                horaPartido.setText(sdf.format(partido.getFecha()));
+
+                cantidadPartido.setText(
+                        getString(
+                                R.string.texto_faltantes_item,
+                                new Object[]{
+                                        partido.getCantidadAceptado(),
+                                        partido.getModalidad().getMinimo()
+                                }
+                        ));
+
+                precioPartido.setText(partido.getPrecio().toString());
 
                 imagenAvatar.setImageResource(R.drawable.pelota);
                 if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
