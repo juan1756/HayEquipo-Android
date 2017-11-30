@@ -142,17 +142,7 @@ public class PartidoActivity extends AppCompatActivity {
             imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));
         }
 
-        try {
-          //  Toast.makeText(this,"usr logeado:"+usuario_logeado.toString(),Toast.LENGTH_LONG).show();
-           if (!usuario_logeado.equals(partido.getCreador().getNombre().toString())) {
-                botonPublicar.setEnabled(false);
-                botonPublicar.setActivated(false);
-                botonPublicar.setBackgroundColor(Color.DKGRAY);
-
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+         definirBotones();
 
 //        campoHora.setText(p.getHora().toString());
 //        if(p.getPrecio()==0) {
@@ -247,6 +237,22 @@ public class PartidoActivity extends AppCompatActivity {
         });
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
+
+
+    private void definirBotones(){
+       Log.e("partido","defino BOTONES");
+        try {
+            //  Toast.makeText(this,"usr logeado:"+usuario_logeado.toString(),Toast.LENGTH_LONG).show();
+            if (!usuario_logeado.equals(partido.getCreador().getNombre().toString())) {
+               // botonPublicar.setEnabled(false);
+               // botonPublicar.setActivated(false);
+                botonPublicar.setBackgroundColor(Color.DKGRAY);
+
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private int buscarModalidad(Long codigo) {

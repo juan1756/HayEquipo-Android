@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity
 
         //Recupero el usuario del login
         String usuario = getIntent().getStringExtra("jugador");
-        if(usuario.equals("")){
+        if(usuario==null || usuario.equals("")){
             Toast.makeText(getBaseContext(),"error login, conectando usuario por defecto josue",Toast.LENGTH_SHORT).show();
             JugadorDTO jugador = new JugadorDTO();
             jugador.setNombre("josue");

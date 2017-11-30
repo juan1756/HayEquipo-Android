@@ -1,5 +1,6 @@
 package edu.uade.sip2.hayequipo_android.core;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -112,10 +113,9 @@ public class CanchaActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent();
+        setResult(Activity.RESULT_OK, intent);
         finish();
-        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 
 
     }

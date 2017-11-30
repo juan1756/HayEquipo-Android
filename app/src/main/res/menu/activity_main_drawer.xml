@@ -50,6 +50,7 @@
 
             <item
                 android:id="@+id/canchas"
+                android:icon="@android:drawable/ic_input_get"
                 android:title="Canchas" />
             <item
                 android:id="@+id/estadisticas"
