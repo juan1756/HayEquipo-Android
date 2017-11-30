@@ -620,7 +620,10 @@ public class MapaPartidoActivity extends AppCompatActivity implements
         List<String> titulos = new ArrayList<>();
         List<Object> datas = new ArrayList<>();
 
-        for (PartidoDTO partidoDTO : partidos){
+        ArrayList<PartidoDTO> partidos_mutable = new ArrayList<>(partidos);
+        filtrarPartidosLlenos(partidos_mutable);
+
+        for (PartidoDTO partidoDTO : partidos_mutable) {
             LatLng punto = new LatLng(partidoDTO.getLocalizacion().getLatitud(), partidoDTO.getLocalizacion().getLongitud());
 
             puntos.add(punto);
@@ -631,7 +634,24 @@ public class MapaPartidoActivity extends AppCompatActivity implements
             partidoPublicoEncontrado.add(partidoDTO);
         }
 
-        this.agregarMarcador(puntos, datas, titulos, false, false);
+        this.agregarMarcador(puntos, datas, titulos, true, false);
+    }
+
+
+    private void filtrarPartidosLlenos(List<PartidoDTO> lista) {
+        int i = 0;
+        while (lista != null && i < lista.size()) {
+            PartidoDTO p = lista.get(i);
+            if(estaLleno(p)) {
+                lista.remove(p);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    private boolean estaLleno(PartidoDTO partido) {
+        return partido.getCantidadAceptado() >= partido.getModalidad().getMinimo();
     }
 
     private void ocultarDetalle() {

@@ -23,6 +23,6 @@ public class ModalidadDTO extends BaseDTO {
 
     @Override
     public String toString() {
-        return descripcion + " (" + minimo + ")";
+        return descripcion;
     }
 }

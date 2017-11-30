@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity
     private TextView campoHora;
     private Spinner campoModalidad;
     private List<ModalidadDTO> modalidades = new ArrayList<>();
-    private List<JugadorDTO> jugadores = new ArrayList<>();
     private LatLng posicionMarcada;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView avatar;
@@ -114,13 +113,13 @@ public class MainActivity extends AppCompatActivity
 
         //Recupero el usuario del login
         String usuario = getIntent().getStringExtra("jugador");
-        if(usuario.equals("")){
-            Toast.makeText(getBaseContext(),"error login, conectando usuario por defecto josue",Toast.LENGTH_SHORT).show();
+        if (usuario.equals("")) {
+            Toast.makeText(getBaseContext(), "error login, conectando usuario por defecto josue", Toast.LENGTH_SHORT).show();
             JugadorDTO jugador = new JugadorDTO();
             jugador.setNombre("josue");
             usuarioLogeado = jugador;
-        }else{
-           // Toast.makeText(getBaseContext(),"logeado como: "+usuario,Toast.LENGTH_LONG).show();
+        } else {
+            // Toast.makeText(getBaseContext(),"logeado como: "+usuario,Toast.LENGTH_LONG).show();
             JugadorDTO jugador = new JugadorDTO();
             jugador.setNombre(usuario);
             usuarioLogeado = jugador;
@@ -130,7 +129,6 @@ public class MainActivity extends AppCompatActivity
         mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         final ListView listaView = findViewById(android.R.id.list);
-
 
 
         listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
@@ -148,7 +146,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(lista.equals("partidos")) {
+                if (lista.equals("partidos")) {
                     showPartidoDialog(MainActivity.this);
                 }
             }
@@ -164,10 +162,10 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //
-       // LayoutInflater layoutInflater = (LayoutInflater)
-          //      getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        // LayoutInflater layoutInflater = (LayoutInflater)
+        //      getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-      //  View sol = layoutInflater.inflate(R.layout.item_solicitud, null,   false);
+        //  View sol = layoutInflater.inflate(R.layout.item_solicitud, null,   false);
 
         //
 
@@ -175,9 +173,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(final AdapterView<?> adapterView, View view, final int posicion, long id) {
 
-                if(lista.equals("partidos")) {
+                if (lista.equals("partidos")) {
                     cambiarPartido((PartidoDTO) listaAdapter.getItem(posicion));
-                }else if(lista.equals("solicitudes")){
+                } else if (lista.equals("solicitudes")) {
 
                     final ImageView item_aceptar = (ImageView) view.findViewById(R.id.item_solicitud_aceptar);
                     final ImageView item_rechazar = (ImageView) view.findViewById(R.id.item_solicitud_rechazar);
@@ -185,18 +183,18 @@ public class MainActivity extends AppCompatActivity
                     item_aceptar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.e("solicitud","acepto, posicion: "+String.valueOf(posicion));
-                            Log.e("deberia solicitud obj:",adapterView.getAdapter().getItem(posicion).toString());
+                            Log.e("solicitud", "acepto, posicion: " + String.valueOf(posicion));
+                            Log.e("deberia solicitud obj:", adapterView.getAdapter().getItem(posicion).toString());
                             SolicitudDTO sol = (SolicitudDTO) adapterView.getAdapter().getItem(posicion);
 
 
-                            if(sol!=null){
+                            if (sol != null) {
                                 enviarSolicitudAcepto(sol);
-                               // Toast.makeText(getBaseContext(),"solicitud aceptada!"+sol.toString(),Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(getBaseContext(),"solicitud aceptada!"+sol.toString(),Toast.LENGTH_SHORT).show();
 
                                 adapterView.removeViewInLayout(view);
                                 cambiarSolicitudesPartidos();
-                                Log.e("remuevo vista","remover vista de la pos: "+posicion);
+                                Log.e("remuevo vista", "remover vista de la pos: " + posicion);
                             }
                         }
                     });
@@ -205,17 +203,17 @@ public class MainActivity extends AppCompatActivity
                     item_rechazar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.e("solicitud","rechazo, posicion: "+String.valueOf(posicion));
-                            Log.e("deberia solicitud obj:",adapterView.getAdapter().getItem(posicion).toString());
+                            Log.e("solicitud", "rechazo, posicion: " + String.valueOf(posicion));
+                            Log.e("deberia solicitud obj:", adapterView.getAdapter().getItem(posicion).toString());
                             SolicitudDTO sol = (SolicitudDTO) adapterView.getAdapter().getItem(posicion);
 
 
-                            if(sol!=null){
+                            if (sol != null) {
                                 enviarSolicitudRechazo(sol);
 
                                 adapterView.removeViewInLayout(view);
                                 cambiarSolicitudesPartidos();
-                                Log.e("remuevo vista","remover vista de la pos: "+posicion);
+                                Log.e("remuevo vista", "remover vista de la pos: " + posicion);
                             }
                         }
                     });
@@ -227,11 +225,11 @@ public class MainActivity extends AppCompatActivity
 
         try {
             hacerLogin(usuarioLogeado);
-        } catch (Exception e){
+        } catch (Exception e) {
             JugadorDTO ejemplo = new JugadorDTO();
             ejemplo.setNombre("josue");
             usuarioLogeado = ejemplo;
-            Toast.makeText(getBaseContext(),"error, me logeo con usr por defecto",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(), "error, me logeo con usr por defecto", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -240,7 +238,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onRefresh() {
 
-                        switch(lista){
+                        switch (lista) {
                             case "partidos":
                                 todosLosPartidos(0);
                                 break;
@@ -266,9 +264,9 @@ public class MainActivity extends AppCompatActivity
      * usuarioLogeado, EL OBJETO DE JugadorDTO
      */
     private void hacerLogin(JugadorDTO usuario) throws JsonProcessingException, JSONException {
-       // JugadorDTO ejemplo = new JugadorDTO();
-    //  ejemplo.setNombre("luis");
-    //   ejemplo.setNombre("pepe");
+        // JugadorDTO ejemplo = new JugadorDTO();
+        //  ejemplo.setNombre("luis");
+        //   ejemplo.setNombre("pepe");
 
         VolleySingleton
                 .getInstance(getApplicationContext())
@@ -309,12 +307,12 @@ public class MainActivity extends AppCompatActivity
             ProgressDialog mDialog = new ProgressDialog(this);
             WaitTime wait = new WaitTime(mDialog);
             wait.execute();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         //Para cuando entro a travès del drawertoogle
-        if(refresh == 0){
+        if (refresh == 0) {
             ListView listaView = findViewById(android.R.id.list);
             listaAdapter = new FancyAdapter(new ArrayList<PartidoDTO>());
             listaView.setSelector(R.drawable.list_selector);
@@ -390,7 +388,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void enviarSolicitudAcepto(SolicitudDTO solicitud){
+    private void enviarSolicitudAcepto(SolicitudDTO solicitud) {
 
         //Pruebo hacer una solicitud nueva solo con el codigo
         SolicitudDTO nueva = new SolicitudDTO();
@@ -409,7 +407,7 @@ public class MainActivity extends AppCompatActivity
                                         @Override
                                         public void onResponse(JSONObject jsonObject) {
                                             try {
-                                                Toast.makeText(getBaseContext(),"solicitud aceptada!",Toast.LENGTH_LONG).show();
+                                                Toast.makeText(getBaseContext(), "solicitud aceptada!", Toast.LENGTH_LONG).show();
 
                                             } catch (Exception e) {
                                                 e.printStackTrace();
@@ -420,7 +418,7 @@ public class MainActivity extends AppCompatActivity
 
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
-                                            Toast.makeText(getBaseContext(),"error solicitud!",Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getBaseContext(), "error solicitud!", Toast.LENGTH_LONG).show();
                                             error.printStackTrace();
 
                                         }
@@ -428,12 +426,12 @@ public class MainActivity extends AppCompatActivity
                             )
                     )
             ;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void enviarSolicitudRechazo(SolicitudDTO solicitud){
+    private void enviarSolicitudRechazo(SolicitudDTO solicitud) {
 
         SolicitudDTO nueva = new SolicitudDTO();
         nueva.setCodigo(solicitud.getCodigo());
@@ -451,7 +449,7 @@ public class MainActivity extends AppCompatActivity
                                         @Override
                                         public void onResponse(JSONObject jsonObject) {
                                             try {
-                                                Toast.makeText(getBaseContext(),"solicitud rechazada!",Toast.LENGTH_LONG).show();
+                                                Toast.makeText(getBaseContext(), "solicitud rechazada!", Toast.LENGTH_LONG).show();
 
                                             } catch (Exception e) {
                                                 e.printStackTrace();
@@ -463,7 +461,7 @@ public class MainActivity extends AppCompatActivity
 
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
-                                            Toast.makeText(getBaseContext(),"error solicitud!",Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getBaseContext(), "error solicitud!", Toast.LENGTH_LONG).show();
                                             error.printStackTrace();
 
                                         }
@@ -471,18 +469,18 @@ public class MainActivity extends AppCompatActivity
                             )
                     )
             ;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void cambiarAmigos(){
+    private void cambiarAmigos() {
         getSupportActionBar().setTitle("Mis Amigos");
         try {
             ProgressDialog mDialog = new ProgressDialog(this);
             WaitTime wait = new WaitTime(mDialog);
             wait.execute();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -498,12 +496,12 @@ public class MainActivity extends AppCompatActivity
                                         public void onResponse(JSONArray response) {
                                             try {
                                                 JugadorDTO[] j = mapper.readValue(response.toString(), JugadorDTO[].class);
-                                              //  modalidades = Arrays.asList(m);
+                                                //  modalidades = Arrays.asList(m);
                                                 //Log.e("jug",j.toString());
-                                                JugadorAdapter jugadorAdapter = new JugadorAdapter(new ArrayList<JugadorDTO>(),getBaseContext());
+                                                JugadorAdapter jugadorAdapter = new JugadorAdapter(new ArrayList<JugadorDTO>(), getBaseContext());
                                                 ListView listaView = findViewById(android.R.id.list);
                                                 listaView.setSelector(R.drawable.list_selector);
-                                                  listaView.setDrawSelectorOnTop(false);
+                                                listaView.setDrawSelectorOnTop(false);
                                                 listaView.setDividerHeight(20);
                                                 jugadorAdapter.agregarJugador(Arrays.asList(j));
                                                 listaView.setAdapter(jugadorAdapter);
@@ -524,7 +522,7 @@ public class MainActivity extends AppCompatActivity
                             )
                     )
             ;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -549,10 +547,10 @@ public class MainActivity extends AppCompatActivity
                                         public void onResponse(JSONArray response) {
                                             try {
                                                 SolicitudDTO[] j = mapper.readValue(response.toString(), SolicitudDTO[].class);
-                                                Log.e("solicitud partido list",j.toString());
+                                                Log.e("solicitud partido list", j.toString());
                                                 //  modalidades = Arrays.asList(m);
                                                 //Log.e("jug",j.toString());
-                                                SolicitudPartidoAdapter solicitud = new SolicitudPartidoAdapter(new ArrayList<SolicitudDTO>(),getBaseContext());
+                                                SolicitudPartidoAdapter solicitud = new SolicitudPartidoAdapter(new ArrayList<SolicitudDTO>(), getBaseContext());
                                                 ListView listaView = findViewById(android.R.id.list);
                                                 listaView.setSelector(R.drawable.list_selector);
                                                 listaView.setDrawSelectorOnTop(false);
@@ -560,8 +558,6 @@ public class MainActivity extends AppCompatActivity
                                                 lista = "solicitudes";
                                                 solicitud.agregarSolicitud(Arrays.asList(j));
                                                 listaView.setAdapter(solicitud);
-
-
 
 
                                             } catch (Exception e) {
@@ -579,7 +575,7 @@ public class MainActivity extends AppCompatActivity
                             )
                     )
             ;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -608,7 +604,7 @@ public class MainActivity extends AppCompatActivity
                 calendar.set(Calendar.HOUR_OF_DAY, hora);
                 calendar.set(Calendar.MINUTE, minutos);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("es","ES"));
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("es", "ES"));
                 String horaFormateada = sdf.format(calendar.getTime());
 
                 horaView.setText(horaFormateada);
@@ -628,7 +624,7 @@ public class MainActivity extends AppCompatActivity
                 calendar.set(Calendar.MONTH, mes);
                 calendar.set(Calendar.DAY_OF_MONTH, day);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("es","ES"));
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
                 String fechaFormateada = sdf.format(calendar.getTime());
 
                 fechaView.setText(fechaFormateada);
@@ -674,7 +670,7 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(context, MapaPartidoActivity.class);
                 intent.putExtra(MapaPartidoActivity.EXTRA_JUGADOR, usuarioLogeado);
                 intent.putExtra(MapaPartidoActivity.EXTRA_ACCION, MapaPartidoActivity.SELECCIONAR);
-                if (posicionMarcada != null){
+                if (posicionMarcada != null) {
                     intent.putExtra(MapaPartidoActivity.EXTRA_POSICION, posicionMarcada);
                 }
                 startActivityForResult(intent, ACTIVIDAD_MAPA);
@@ -698,7 +694,7 @@ public class MainActivity extends AppCompatActivity
                 Address direccion = (Address) adapterView.getItemAtPosition(position);
                 StringBuilder direccionCompleta = new StringBuilder()
                         .append(direccion.getThoroughfare())
-                        .append(direccion.getSubThoroughfare() == null ? "" : " " + direccion.getSubThoroughfare() )
+                        .append(direccion.getSubThoroughfare() == null ? "" : " " + direccion.getSubThoroughfare())
                         .append(", ")
                         .append(direccion.getLocality());
 
@@ -709,7 +705,7 @@ public class MainActivity extends AppCompatActivity
         campoLugar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (campoLugar.getText().toString().isEmpty()){
+                if (campoLugar.getText().toString().isEmpty()) {
                     botonSeleccionarMapa.performClick();
                 }
             }
@@ -756,7 +752,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                if (partidoValido(campoNombre.getText().toString(),campoFecha.getText().toString(),campoHora.getText().toString(),campoLugar.getText().toString())){
+                if (partidoValido(campoNombre.getText().toString(), campoFecha.getText().toString(), campoHora.getText().toString(), campoLugar.getText().toString())) {
                     try {
                         final PartidoDTO partido = new PartidoDTO();
                         partido.setCreador(usuarioLogeado);
@@ -769,7 +765,7 @@ public class MainActivity extends AppCompatActivity
                         ModalidadDTO modalidad = (ModalidadDTO) campoModalidad.getSelectedItem();
 
                         Double precio = 0D;
-                        if (campoPrecio.getText() != null && !campoPrecio.getText().toString().isEmpty()){
+                        if (campoPrecio.getText() != null && !campoPrecio.getText().toString().isEmpty()) {
                             precio = Double.valueOf(campoPrecio.getText().toString());
                         }
 
@@ -780,7 +776,7 @@ public class MainActivity extends AppCompatActivity
                         partido.setAvatar(avatarSeleccionado);
                         partido.setModalidad(modalidad);
                         partido.setLocalizacion(localizacion);
-                        partido.setTipoPrivacidad( campoEsPublico.isChecked() ? TipoPrivacidadEnum.PUBLICO : TipoPrivacidadEnum.PRIVADO);
+                        partido.setTipoPrivacidad(campoEsPublico.isChecked() ? TipoPrivacidadEnum.PUBLICO : TipoPrivacidadEnum.PRIVADO);
 
                         // Creo el partido
                         VolleySingleton
@@ -814,28 +810,23 @@ public class MainActivity extends AppCompatActivity
                     } catch (JsonProcessingException | JSONException | ParseException e) {
                         e.printStackTrace();
                     }
-                }else{
-                    Toast.makeText(getBaseContext(),"por favor complete todos los campos",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getBaseContext(), "por favor complete todos los campos", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
-    private boolean partidoValido(String nombre,String fecha,String hora,String lugar) {
+    private boolean partidoValido(String nombre, String fecha, String hora, String lugar) {
         return !(nombre.equals("") || fecha.equals("") || hora.equals("") || lugar.equals(""));
     }
 
 
-
-
-
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case ACTIVIDAD_MAPA:
-                switch (resultCode){
+                switch (resultCode) {
                     case MapaPartidoActivity.RESULTADO_UBICACION_SELECCIONADA:
                         posicionMarcada = data.getExtras().getParcelable(MapaPartidoActivity.EXTRA_LOCALIZACION_MARCADA);
                         String posicionTitulo = data.getExtras().getString(MapaPartidoActivity.EXTRA_LOCALIZACION_TITULO);
@@ -859,9 +850,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onAvatarSelected(AvatarPickerDialogFragment dialog, String avatarResourceName) {
         // TextView input = (TextView) findViewById(R.id.input_username);
-      //  Toast.makeText(getBaseContext(),"Avatar Seleccionado: "+avatarResourceName,Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(getBaseContext(),"Avatar Seleccionado: "+avatarResourceName,Toast.LENGTH_SHORT).show();
         avatarSeleccionado = avatarResourceName;
-        if(this.avatar != null) {
+        if (this.avatar != null) {
             this.avatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), avatarResourceName));
         }
     }
@@ -870,7 +861,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onCancelled(AvatarPickerDialogFragment dialog) {
         // TextView input = (TextView) findViewById(R.id.input_username);
-        Toast.makeText(getBaseContext(),"cancel!",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), "cancel!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -928,7 +919,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.solicitudesAmigos) {
 
-        } else if (id == R.id.menu_buscar_mapa){
+        } else if (id == R.id.menu_buscar_mapa) {
             // Busca los partidos cercanos
             Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Buscando...", Snackbar.LENGTH_SHORT);
             snackbar.show();
@@ -947,19 +938,18 @@ public class MainActivity extends AppCompatActivity
 
     private void mostrarAcerca() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String str =    "Riccombeni, Maximiliano \n" +
+        String str = "Riccombeni, Maximiliano \n" +
                 "(Acarrea2 era el proyecto)\n\n" +
-                        "De Giovanni, German Federico \n" +
+                "De Giovanni, German Federico \n" +
                 "(Tambien Dikroalum)\n\n" +
-                        "Gonzalez, Maria Victoria \n" +
+                "Gonzalez, Maria Victoria \n" +
                 "(The Dancer)\n\n" +
-                        "Mejia Rodriguez, Juan Jose \n" +
+                "Mejia Rodriguez, Juan Jose \n" +
                 "(El Hispter)\n\n" +
-                        "Gonzalez Acuña, Lucas Gabriel \n" +
+                "Gonzalez Acuña, Lucas Gabriel \n" +
                 "(Acuerdate de la hamburguesa)\n\n" +
-                        "Lopez Hernandez, Josue David \n" +
-                "(Acarrea2 era el proyecto)"
-        ;
+                "Lopez Hernandez, Josue David \n" +
+                "(Acarrea2 era el proyecto)";
         builder.setTitle("Proyecto para Seminario de Integracion II\n");
         builder.setMessage(str);
 
@@ -967,7 +957,7 @@ public class MainActivity extends AppCompatActivity
         dialog.show();
     }
 
-    private void cerrarApp(){
+    private void cerrarApp() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Desea salir de la aplicación?")
                 .setPositiveButton("SALIR", new DialogInterface.OnClickListener() {
@@ -1014,7 +1004,7 @@ public class MainActivity extends AppCompatActivity
             notifyDataSetChanged();
         }
 
-        void agregarPartido(PartidoDTO partido){
+        void agregarPartido(PartidoDTO partido) {
             partidos.add(partido);
             notifyDataSetChanged();
         }
@@ -1040,17 +1030,17 @@ public class MainActivity extends AppCompatActivity
                 SimpleDateFormat sdf;
 
                 apodoPartido.setText(partido.getApodo());
-                if (partido.getTipoPrivacidad().compareTo(TipoPrivacidadEnum.PRIVADO) == 0){
+                if (partido.getTipoPrivacidad().compareTo(TipoPrivacidadEnum.PRIVADO) == 0) {
                     apodoPartido.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_accion_privado1, 0, 0, 0);
                 }
 
                 direccionPartido.setText(partido.getLocalizacion().getDireccion());
                 descripcionPartido.setText(partido.getComentario());
 
-                sdf = new SimpleDateFormat("EEE dd/MM/yy", new Locale("es","ES"));
+                sdf = new SimpleDateFormat("EEE dd/MM/yy", new Locale("es", "ES"));
                 fechaPartido.setText(sdf.format(partido.getFecha()));
 
-                sdf = new SimpleDateFormat("hh:mm a", new Locale("es","ES"));
+                sdf = new SimpleDateFormat("hh:mm a", new Locale("es", "ES"));
                 horaPartido.setText(sdf.format(partido.getFecha()));
 
                 cantidadPartido.setText(
@@ -1065,7 +1055,7 @@ public class MainActivity extends AppCompatActivity
                 precioPartido.setText(partido.getPrecio().toString());
 
                 imagenAvatar.setImageResource(R.drawable.pelota);
-                if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()){
+                if (partido.getAvatar() != null && !partido.getAvatar().isEmpty()) {
                     imagenAvatar.setImageResource(Avatars.getAvatarResourceId(getApplicationContext(), partido.getAvatar()));
                 }
             }

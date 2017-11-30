@@ -51,4 +51,15 @@
     <string name="servicio_solicitud_aceptar_jugador">/api/solicitud/aceptarJugador</string>
     <string name="servicio_solicitud_rechazar_jugador">/api/solicitud/rechazarJugador</string>
 
+    <string-array name="modalidades">
+        <item>1 Jugador</item>
+        <item>2 Jugadores</item>
+        <item>3 Jugadores</item>
+    </string-array>
+
+    <integer-array name="modalidades_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </integer-array>
 </resources>
